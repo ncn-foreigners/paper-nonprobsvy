@@ -2,15 +2,23 @@
 documentclass: jss
 author:
   - name: Łukasz Chrostowski
-    orcid: 0000-0000-0000-0000
     affiliation: Adam Mickiewicz University
     affiliation2: Pearson
     # use this syntax to add text on several lines
     address: |
       | First line
       | Second line
-    email: \email{name@company.com}
+    email: \email{lukchr@st.amu.edu.pl}
     url: https://posit.co
+  - name: Piotr Chlebicki
+    orcid: 0009-0006-4867-7434
+    address: |
+      | Department of Statistics and Mathematics,
+      | Faculty of Biosciences,
+      | Universitat Autònoma de Barcelona
+    affiliation: |
+      | Stockholm University \AND
+    email: \email{piotr.chlebicki@math.su.se}
   - name: Maciej Beręsewicz
     orcid: 0000-0002-8281-4301
     address: |
@@ -18,17 +26,11 @@ author:
       | Institute of Informatics and Electronic Economy,
       | Poznań University of Economics and Business
     affiliation: |
-      | Poznań University of Economics and Business\AND
+      | Poznań University of Economics and Business
     affiliation2: 'Statistical Office in Poznań'
     # To add another line, use \AND at the end of the previous one as above
-  - name: Piotr Chlebicki
-    orcid: 0000-0000-0000-0000
-    address: |
-      | Department of Statistics and Mathematics,
-      | Faculty of Biosciences,
-      | Universitat Autònoma de Barcelona
-    affiliation: |
-      | Stockholm University 
+    email: \email{maciej.beresewicz@ue.poznan.pl}
+    url: https://posit.co
 title:
   formatted: "\\pkg{nonprobsvy} -- An R package for modern methods for non-probability surveys"
   # If you use tex in the formatted title, also supply version without
@@ -43,7 +45,41 @@ keywords:
   plain:     [keywords, not capitalized, R]
 preamble: >
   \usepackage{amsmath}
+  \newcommand{\bX}{\boldsymbol{X}}
+  \newcommand{\bx}{\boldsymbol{x}}
+  \newcommand{\bY}{\boldsymbol{Y}}
+  \newcommand{\by}{\boldsymbol{y}}
+  \newcommand{\bh}{\boldsymbol{h}}
+  \newcommand{\bH}{\boldsymbol{H}}
+  \newcommand{\ba}{\boldsymbol{a}}
+  \newcommand{\bp}{\boldsymbol{p}}
+  \newcommand{\bA}{\boldsymbol{A}}
+  \newcommand{\bw}{\boldsymbol{w}}
+  \newcommand{\bd}{\boldsymbol{d}}
+  \newcommand{\bZ}{\boldsymbol{Z}}
+  \newcommand{\bz}{\boldsymbol{z}}
+  \newcommand{\bv}{\boldsymbol{v}}
+  \newcommand{\bu}{\boldsymbol{u}}
+  \newcommand{\bU}{\boldsymbol{U}}
+  \newcommand{\bQ}{\boldsymbol{Q}}
+  \newcommand{\bG}{\boldsymbol{G}}
+  \newcommand{\HT}{\text{\rm HT}}
+  \newcommand{\bbeta}{\boldsymbol{\beta}}
+  \newcommand{\balpha}{\boldsymbol{\alpha}}
+  \newcommand{\btau}{\boldsymbol{\tau}}
+  \newcommand{\bgamma}{\boldsymbol{\gamma}}
+  \newcommand{\btheta}{\boldsymbol{\theta}}
+  \newcommand{\blambda}{\boldsymbol{\lambda}}
+  \newcommand{\bPhi}{\boldsymbol{\Phi}}
+  \newcommand{\bEta}{\boldsymbol{\eta}}
+  \newcommand{\bZero}{\boldsymbol{0}}
+  \newcommand{\colvec}{\operatorname{colvec}}
+  \newcommand{\logit}{\operatorname{logit}}
+  \newcommand{\Exp}{\operatorname{Exp}}
+  \newcommand{\Ber}{\operatorname{Bernoulli}}
+  \newcommand{\Uni}{\operatorname{Uniform}}
 output: rticles::jss_article
+bibliography: references.bib
 ---
 
 ```{r, setup, include=FALSE}
@@ -65,7 +101,20 @@ One exception is inline code, which can be written inside a pair of backticks (i
 
 If you want to use LaTeX commands in headers, you need to provide a `short-title` attribute. You can also provide a custom identifier if necessary. See the header of Section \ref{r-code} for example.
 
-# \proglang{R} code {short-title="R code" #r-code}
+# Methods for non-probability samples \proglang{R} code {short-title="R code" #r-code}
+
+## Basic setup
+
+Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ (a realisation of the random vector $\bX_{i}$ in the super-population) and the study variable $y_{i}$ (a realisation of the random variable $Y_{i}$ in the super-population). Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}\right), i \in S_B\}$ be a dataset of a probability sample of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi$ (which in the super population model are also considered to be random variables) are available. Let $\delta$ be an indicator of inclusion into non-probability sample. Each unit in the sample $S_B$ has been assigned a~design-based weight given by $d_i = 1/\pi_i$. The setting is summarised in Table .. 
+
+The goal is to estimate a~finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. In this paper we do not consider modifications for the possibly occurring overlap.
+
+
+## Mass Imputation estimators
+
+## Inverse Probability Weighting estimators
+
+## Doubly Robust estimators
 
 Can be inserted in regular R markdown blocks.
 
@@ -78,3 +127,10 @@ x
 
 * Adding short titles to section headers is a feature specific to \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is currently not supported by Pandoc and we will update this template if [it is officially supported in the future](https://github.com/jgm/pandoc/issues/4409).
 * Using the `\AND` syntax in the `author` field to add authors on a new line. This is a specific to the `rticles::jss_article` format.
+
+# Package contents and implementation
+
+# Practical examples
+
+# Summary
+
