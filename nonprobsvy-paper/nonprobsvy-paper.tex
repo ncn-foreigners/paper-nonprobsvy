@@ -25,8 +25,10 @@ non-probability surveys}
 The abstract of the article.
 }
 
-\Keywords{keywords, not capitalized, \proglang{R}}
-\Plainkeywords{keywords, not capitalized, R}
+\Keywords{data integration, doubly robust estimation, propensity score
+estimation, mass imputation, \proglang{R}}
+\Plainkeywords{data integration, doubly robust estimation, propensity
+score estimation, mass imputation, R}
 
 %% publication information
 %% \Volume{50}
@@ -67,40 +69,92 @@ Poznań University of Economics and Business\\
 
 
 
-\usepackage{amsmath} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
+\usepackage{amsmath} \usepackage{amssymb} \usepackage[T1]{fontenc} \usepackage{lmodern} \usepackage[english]{babel}
+
+\selectlanguage{english}
+
+\usepackage{physics} \usepackage{amsfonts} \usepackage{graphicx} \usepackage{enumitem} \usepackage{float} \usepackage{amsthm} \usepackage{geometry} \usepackage{xcolor}
+
+\pagestyle{headings}
+
+\usepackage{fancyhdr}  \usepackage{color}  \usepackage{multirow} \usepackage{booktabs} \usepackage{url} \usepackage{array} \usepackage{graphicx} \usepackage[mathcal]{eucal} \usepackage{algorithm} \usepackage{algpseudocode} \usepackage{listings} \usepackage{tabularx} \usepackage{rotating} \usepackage{makecell} \usepackage{inconsolata} \usepackage{longtable} \usepackage{lscape} \usepackage{pdflscape} \usepackage{makecell} \usepackage{enumitem} \usepackage{siunitx} \usepackage{multirow} \usepackage{caption} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
 
 \begin{document}
 
 
 
-\section{Introduction}\label{introduction}
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
-This template demonstrates some of the basic LaTeX that you need to know
-to create a JSS article.
+With the availability of large sets of administrative data, voluntary
+internet panels, social media and big data, inference with
+non-probability samples is being heavily studied in the statistical
+literature \citet{beaumont2020probability},
+\citet{elliott_inference_2017}, \citet{berkesewicz2017two},
+\citet{citro2014multiple}. Because of their non-statistical character
+and unknown sampling mechanism, these sources cannot be used directly
+for estimating population characteristics.
 
-\subsection{Code formatting}\label{code-formatting}
+Several inference approaches have been proposed in the literature with
+respect to data from non-probability samples, which either involve data
+integration with population level data or probability samples from the
+same population (for recent review see \citet{wu2022statistical}).
 
-In general, don't use Markdown, but use the more precise LaTeX commands
-instead:
+Although probability samples are still the most popular standard among
+statisticians, the cost of obtaining them, in terms of time or capital,
+motivates the use of non-probability samples, which have to overcome
+other challenges. The first is that such samples generally do not
+represent the whole population, as can be said of probability samples.
+Another problem is the lack, or rather the ignorance, of the mechanism
+for selecting individuals for this type of sample, which does not allow
+the substantial use of existing statistical methods. For this reason,
+many different techniques have been proposed in the literature for
+integrating data in order to infer from available sources of different
+structural character.
 
-\begin{itemize}
-\item
-  \proglang{Java}
-\item
-  \pkg{plyr}
-\end{itemize}
+It should be noted that there are several packages that allow the
+correction of selection bias in nonprobability samples, such as
+\citet{GJRM}, \citet{NonProbEst} or even \citet{sampling}. However,
+these packages do not implement state-of-the-art approaches recently
+proposed in the literature: \citet{chen2020doubly},
+\citet{yang_doubly_2020}, \citet{wu2022statistical} nor do they use the
+survey package \citet{lumley2004} for inference.
 
-One exception is inline code, which can be written inside a pair of
-backticks (i.e., using the Markdown syntax).
+This paper describes the nonprobsvy package for inference with
+non--probability samples, available from the Comprehensive R Archive
+Network (CRAN) at
+\href{https://CRAN.R-project.org/package=nonprobsvy}{CRAN.R-project}.
+Development version of the package can be also found at
+\href{https://github.com/ncn-foreigners/nonprobsvy}{github}.
 
-If you want to use LaTeX commands in headers, you need to provide a
-\texttt{short-title} attribute. You can also provide a custom identifier
-if necessary. See the header of Section \ref{r-code} for example.
+Table \ref{tab:tabela1} shows the basic characteristics of each of the
+samples described. In particular, what are the advantages and
+disadvantages of each type of sample with respect to population
+coverage, bias, variance, costs, and the selection mechanism for
+observations into the samples.
+
+\begin{table}
+    \centering
+    \caption{Probability and non-probability samples}
+    \begin{tabular}{lll}
+    \hline
+    \textbf{Factor}     &  \textbf{Probability sample} & \textbf{Non-probability sample}\\
+    \hline
+    Selection     &  Sampling design & Auto-selection \\
+    Coverage     &  Typically good & Certain groups are excluded \\
+    Bias & Typically smaller & Large or very large \\
+    Variance & Typically larger & Small, or very small \\
+    Cost & Large or very large & Typically small \\
+    \hline
+    \end{tabular}
+    \label{tab:tabela1}
+\end{table}
 
 \section[R code]{Methods for non-probability samples \proglang{R}
 code}\label{r-code}
 
-\subsection{Basic setup}\label{basic-setup}
+\hypertarget{basic-setup}{%
+\subsection{Basic setup}\label{basic-setup}}
 
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
 labelled units. Each unit \(i\) has an associated vector of auxiliary
@@ -124,49 +178,528 @@ variable \(Y\). As values of \(y_{i}\) are not observed in the
 probability sample, it cannot be used to estimate the target quantity.
 Instead, one could try combining the non-probability and probability
 samples to estimate \(\mu_{y}\). In this paper we do not consider
-modifications for the possibly occurring overlap.
+modifications for the possibly occurring overlap. The above description
+of the data is presented in a more concise form in
+Table\textasciitilde{}\ref{tab:tabela1_1}.
 
+\begin{table}
+\centering
+\captionsetup{aboveskip=0pt, belowskip=0pt} % Reduce space around caption
+\scriptsize % Use \scriptsize or \tiny for smaller font size
+\setlength{\tabcolsep}{3pt} % Reduce horizontal padding between columns
+\renewcommand{\arraystretch}{0.8} % Reduce vertical padding between rows
+\caption{Two Sample Setting}
+% \vspace{+3mm} % Remove or adjust to save space
+\label{tab:tabela1_1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|>{\centering\arraybackslash}p{3cm}|c|>{\centering\arraybackslash}p{2.5cm}|}
+\hline 
+Sample & & 
+\begin{tabular}{c} % Changed from {l} to {c}
+Auxiliary Variables \\
+$\boldsymbol{X}$
+\end{tabular}
+& 
+\begin{tabular}{c} % Changed from {c} to {c} (already centered)
+Target Variable \\
+$Y$
+\end{tabular}
+& 
+\begin{tabular}{c} % Changed from {l} to {c}
+Design $(d)$ or \\ Calibration $(w)$ \\ Weights
+\end{tabular}
+\\
+\hline 
+\multirow{3}{*}{$S_A$ (non-probability)} 
+& 1 & $\checkmark$ & $\checkmark$ & ? \\
+\cline{2-5}
+& $\ldots$ & $\checkmark$ & $\checkmark$ & ? \\
+\cline{2-5}
+& $n_A$ & $\checkmark$ & $\checkmark$ & ? \\
+\hline 
+\multirow{3}{*}{$S_B$ (probability)} 
+& $n_A+1$ & $\checkmark$ & ? & $\checkmark$ \\
+\cline{2-5}
+& $\ldots$ & $\checkmark$ & ? & $\checkmark$ \\
+\cline{2-5}
+& $n_A+n_B$ & $\checkmark$ & ? & $\checkmark$ \\
+\hline
+\end{tabular}%
+} % End of \resizebox
+\end{table}
+
+\hypertarget{mass-imputation-estimators}{%
 \subsection{Mass Imputation
-estimators}\label{mass-imputation-estimators}
+estimators}\label{mass-imputation-estimators}}
 
+Imputation refers to the process of replacing missing or incomplete data
+with substituted values. The goal of imputation is to allow for more
+complete data analysis, as many statistical methods require complete
+datasets. Common imputation techniques include:
+
+\begin{itemize}
+    \item Mean imputation: where missing values are replaced by the mean of the observed data for that variable.
+    \item Median imputation: where the median value of the observed data is used.
+    \item Regression imputation: where missing values are estimated based on a regression model built from other available data.
+\end{itemize}
+
+Imputation helps prevent data bias and maintains dataset size, ensuring
+that missing data points do not skew analysis results. It is
+particularly useful when data is missing at random or when only a small
+portion of the data is missing.
+
+Mass imputation is the application of imputation techniques to entire
+datasets where many observations have missing values for the given
+variable. \citet{kim_combining_2021}, \citet{yang2021integration},
+\citet{Beres} propose the following imputation strategies as:
+
+\begin{itemize}
+    \item Model based apprach (GLM),
+    \item Nearest neigbour imputation (NN),
+    \item Predictive mean mathing (PMM).
+\end{itemize}
+
+Mass imputation is particularly useful in large datasets where missing
+data can be widespread, and it seeks to preserve the relationships
+between variables, thus improving the overall integrity of the data.
+
+By assumptions (Table \ref{tab:tabela1_1}), we do not know the value of
+the dependent variable \(Y\) for the units in the probability sample. In
+this case, the method will be to impute the values of the explanatory
+variable for all units in the probability sample. We therefore treat the
+non-probability sample as a training set that is used to build the
+imputation model. In this subsection, we distinguish three main methods
+of mass imputation based on linear models and the k-nearest neighbours
+algorithm. Other popular methods for estimating the variable \(Y\) from
+the variable \(\boldsymbol{X}\) can also be considered, e.g.~machine
+learning models such as random forests or neural networks.
+
+We can obtain an estimate of the population mean based on known design
+weights and an imputation model for units from the probability sample:
+
+\begin{equation}
+\hat{\mu}_{M I}=\frac{1}{\hat{N}^{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
+\end{equation} \(\hat{N}^{\mathrm{B}} = \sum_{i \in S_B} d_i^B\) and
+\(\hat{y}\) is the estimated value of \(y\) for units from probability
+samples based on mass imputation model.
+
+This estimator can be understood as a version of the Horvitz--Thompson
+estimator, which are used to estimate mean or total values in the
+population (based on probability sampling and inclusion probabilities).
+The only difference is that in our case, instead of the known values of
+the \(Y\) variable, we use its estimated equivalents.
+
+\hypertarget{inverse-probability-weighting-estimators}{%
 \subsection{Inverse Probability Weighting
-estimators}\label{inverse-probability-weighting-estimators}
+estimators}\label{inverse-probability-weighting-estimators}}
 
-\subsection{Doubly Robust estimators}\label{doubly-robust-estimators}
+The main disadvantage of non-probability sampling is the unknown
+selection mechanism for a unit to be included in the sample. This is why
+we talk about the so-called ``biased sample'\,' problem. The inverse
+probability approach is based on the assumption that a reference
+probability sample is available and therefore we can estimate the
+propensity score of the selection mechanism. In recent years, a number
+of articles have addressed this issue. \citet{chen2020doubly} propose
+maximum likelihood estimation approach for estimating propensity scores
+for selection mechanism. \citet{wu2022statistical} present the approach
+based on generalized estimating equations, this method is also mentioned
+in \citet{yang_doubly_2020}. On the other hand calibration approach for
+quantiles was explained \citet{beresewicz2024inference} and
+\citet{santanna_covariate_2022} present the approach based on maximize
+the covariate distribution balance among different treatment groups.
 
-Can be inserted in regular R markdown blocks.
+In the formal framework, let us introduce the following assumptions for
+propensity score model, which will imply a number of properties derived
+in the thesis.
+
+\begin{itemize}
+    \item[(A1)] The selection indicator $R_i^A$ and explanatory variable $y_i$ are independent.
+    \item[(A2)]All units have a so-called non-probability sample propensity score, which is non-zero, i.e. $\pi_i^{\mathrm{A}} > 0$, where $\pi_i^{\mathrm{A}} = P_q\left(R_i^A=1 \mid \boldsymbol{x}_i, y_i\right)$, where $q$ refers to the model for the selection mechanism for the non-probability sample (propensity score model).
+    \item[(A3)] Indicator variables $R_i^A$ and $R_j^A$ are independent with $i \neq j$. 
+\end{itemize}
+
+The estimated propensity score is used to construct an inverse
+probability weighting estimator of the population mean of the form
+
+\begin{equation}
+\begin{gathered}
+\hat{\mu}_{I P W}=\frac{1}{\hat{N}^A} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A}.
+\end{gathered}
+\end{equation} where
+\(\hat{N}^A = \sum_{i \in S_A} \hat{d}_i^A = \sum_{i \in S_A} \frac{1}{\hat{\pi}_i^A}\).
+
+\hypertarget{doubly-robust-estimators}{%
+\subsection{Doubly Robust estimators}\label{doubly-robust-estimators}}
+
+The inverse probability weighting and mass imputation estimators are
+sensible on misspecified models for propensity score and outcome
+variable respectively. For this purpose so called doubly-robust methods,
+which take into account these problems, are presented.
+
+The proposed estimation procedure addresses the challenge of combining
+data from nonprobability and probability survey samples. Traditional
+semiparametric models, often applied to such problems, are not directly
+usable in this context due to the distinct nature of the two samples.
+Instead, a joint randomization framework is employed, integrating
+semiparametric models for propensity scores with outcome regression for
+the nonprobability sample and design-based inference from the
+probability sample. This framework leads to a doubly robust (DR)
+estimation approach, which is effective in the presence of model
+misspecifications.
+
+Inverse Probability Weighted (IPW) estimators are sensitive to
+misspecified propensity score models, particularly when propensity
+scores are very small. To improve robustness and efficiency, the doubly
+robust method incorporates a prediction model for the response variable.
+Moreover, even if one of the models is misspecified, the DR estimator
+remains consistent, showcasing the ``double robustness'\,' property.
+
+\hypertarget{joint-randomization-approach}{%
+\subsubsection{Joint Randomization
+Approach}\label{joint-randomization-approach}}
+
+The joint randomization approach combines two processes: the selection
+mechanism of a non-probability sample, modeled by propensity scores, and
+the design-based inference from a probability sample.
+
+The response \(y_i\) is predicted using a regression model
+\(m(\boldsymbol{x}_i, \boldsymbol{\beta})\) (or NN/PMM methods), where
+\(\boldsymbol{\beta}\) is estimated from the non-probability sample.
+With known design weights \(d_i^B\) for \(i \in S_B\) we can define the
+DR estimator as \begin{equation}
+\label{dr}
+\hat{\mu}_{\mathrm{DR}}=\frac{1}{\hat{N}^{\mathrm{A}}} \sum_{i \in S_{\mathrm{A}}} d_i^{\mathrm{A}}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{\hat{N}^{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
+\end{equation} where
+\(d_i^A=\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)^{-1}, \hat{N}^A=\sum_{i \in S_A} d_i^A\)
+and \(\hat{N}^B=\sum_{i \in S_B} d_i^B\).
+
+It remains consistent if either the propensity score model
+\(\pi(\boldsymbol{x}_i, \boldsymbol{\theta})\) or the outcome regression
+model \(m(\boldsymbol{x}_i, \boldsymbol{\beta})\) is correctly
+specified.
+
+The joint randomization approach ensures robustness by accounting for
+randomness in both the non-probability sample through
+\(\pi(\boldsymbol{x}_i, \boldsymbol{\theta})\) and the probability
+sample through design-based inference.
+
+\hypertarget{minimization-of-the-bias-for-doubly-robust-methods}{%
+\subsubsection{Minimization of the bias for doubly robust
+methods}\label{minimization-of-the-bias-for-doubly-robust-methods}}
+
+By reducing the variance of the estimators, for example by variable
+selection, we cannot control the bias of the estimator, which may
+increase. Therefore, according to \citet{yang_doubly_2020}, the idea is
+to determine the equations leading to the estimation of the
+\(\boldsymbol{\beta}\) and \(\boldsymbol{\theta}\) parameters based on
+the bias of the population mean estimator. In contrast to the joint
+randomization approach, this method allows for the estimation of the
+parameters \(\boldsymbol{\beta}\) and \(\boldsymbol{\theta}\) in a
+single step, rather than in two separate steps.
+
+We will first present the bias of the doubly robust estimator and then,
+using optimisation techniques, discuss the equations leading to its
+minimization. Thus we have \begin{equation}
+\begin{aligned}
+\operatorname{bias}\left(\hat{\mu}_{D R}\right) & = \mid\hat{\mu}_{DR}-\mu\mid& \\
+& =\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi_i^A\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\beta}\right)\right\}\\
+& + \frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\beta}\right)
+\end{aligned}
+\end{equation}
+
+To minimize \(\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2\) let us
+calculate the gradient of the square of the bias at
+\(\left(\boldsymbol{\beta}, \boldsymbol{\theta}\right)\). We then have
+
+\begin{equation*}
+\frac{\partial \operatorname{bias}\left(\hat{\mu}_{D R}\right)^2}{\partial\left(\boldsymbol{\beta}^{\mathrm{T}}, \boldsymbol{\theta}^{\mathrm{T}}\right)^{\mathrm{T}}}=2 \operatorname{bias}\left(\hat{\mu}_{D R}\right) J(\theta, \beta),
+\end{equation*} where \begin{equation*}
+J(\theta, \beta)=\left(\begin{array}{l}
+J_1(\theta, \beta) \\
+J_2(\theta, \beta)
+\end{array}\right)=\left(\begin{array}{c}
+\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
+\sum_{i=1}^N \frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}-\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}
+\end{array}\right),
+\end{equation*} which leads to the problem of solving the following
+system of equations \begin{equation}
+\label{bias-min}
+    \left(\begin{array}{c}
+\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
+\sum_{i=1}^N \frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}-\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}
+\end{array}\right) = \boldsymbol{0},
+\end{equation} which can be solved using Newton--Raphson optimization
+method.
+
+\hypertarget{package-contents-and-implementation}{%
+\section{Package contents and
+implementation}\label{package-contents-and-implementation}}
+
+All of the methods described in this paper have been implemented in the
+R package \texttt{nonprobsvy} \citet{nonprobsvy}. In this chapter, we
+will show you how to use the main \texttt{nonprob} function of the
+package and what its main features are. The package has been written to
+be as compatible as possible with the survey package for probablistic
+inference. Namely, the first step to use the nonprobsvy package is to
+define an object using the svydesign function that stores the
+probability sample \texttt{data.frame} and other objects, such as design
+weights. This is a negligible step if, instead of the probability
+sample, we have access to the values of the vector of sums of variables
+in the population. It is also worth mentioning that in order to speed up
+the calculations in the case of variable selection, part of the package,
+or more precisely the whole variable selection algorithm, was written in
+\texttt{C++} using the \texttt{Rcpp} (\citet{Rcpp}) package, which
+allows the C++ code to be called in the R environment. Moreover, the
+package is supported by other R packages such as \texttt{foreach}
+\citet{foreach} (looping construct), \texttt{maxLik} \citet{maxLik}
+(maximum likelihood estimation), \texttt{Matrix} \citet{Matrix} (matrix
+operations), \texttt{MASS} \citet{MASS} (statistical functions and
+datasets), \texttt{ncvreg} \citet{ncvreg} (regularization methods),
+\texttt{mathjaxr} \citet{mathjaxr} (rendering equations in
+documentation), \texttt{nleqslv} \citet{nleqslv} (solving nonlinear
+equations), and \texttt{doParallel} \citet{doParallel} (parallel
+computing).
+
+\hypertarget{usage}{%
+\subsection{Usage}\label{usage}}
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> x <- 1:10
-R> x
+R> nonprob(
++   data,
++   selection = NULL,
++   outcome = NULL,
++   target = NULL,
++   svydesign = NULL,
++   pop_totals = NULL,
++   pop_means = NULL,
++   pop_size = NULL,
++   method_selection = c("logit", "cloglog", "probit"),
++   method_outcome = c("glm", "nn", "pmm"),
++   family_outcome = c("gaussian", "binomial", "poisson"),
++   subset = NULL,
++   strata = NULL,
++   weights = NULL,
++   na_action = NULL,
++   control_selection = controlSel(),
++   control_outcome = controlOut(),
++   control_inference = controlInf(),
++   start_selection = NULL,
++   start_outcome = NULL,
++   verbose = FALSE,
++   x = TRUE,
++   y = TRUE,
++   se = TRUE,
++   ...
++ )
 \end{CodeInput}
-\begin{CodeOutput}
- [1]  1  2  3  4  5  6  7  8  9 10
-\end{CodeOutput}
 \end{CodeChunk}
 
-\subsection[Features specific to rticles]{Features specific to
-\pkg{rticles}}\label{features-specific-to}
+\hypertarget{arguments}{%
+\subsection{Arguments}\label{arguments}}
 
-\begin{itemize}
-\tightlist
-\item
-  Adding short titles to section headers is a feature specific to
-  \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is
-  currently not supported by Pandoc and we will update this template if
-  \href{https://github.com/jgm/pandoc/issues/4409}{it is officially
-  supported in the future}.
-\item
-  Using the \texttt{\textbackslash{}AND} syntax in the \texttt{author}
-  field to add authors on a new line. This is a specific to the
-  \texttt{rticles::jss\_article} format.
-\end{itemize}
+Below is the definition of most of the arguments we can pass to the
+function. These are described in more detail in the documentation on the
+\href{https://CRAN.R-project.org/package=nonprobsvy}{CRAN} platform.
 
-\section{Package contents and
-implementation}\label{package-contents-and-implementation}
+\begin{longtable}{>{\ttfamily}p{5cm}p{10.5cm}}
+    \textbf{Argument} & \textbf{Description} \\
+    \texttt{data} & Data frame with data from the non-probability sample. \\
+    \texttt{selection} & Formula for the selection (propensity) equation. \\
+    \texttt{outcome} & Formula for the outcome equation. \\
+    \texttt{target} & Formula with target variables. \\
+    \texttt{svydesign} & Optional \texttt{svydesign} object containing probability sample and design weights. \\
+    \texttt{pop\_totals} & Optional named vector with population totals of the covariates. \\
+    \texttt{pop\_means} & Optional named vector with population means of the covariates. \\
+    \texttt{pop\_size} & Optional double with population size. \\
+    \texttt{method\_selection} & Character string specifying the method for propensity score estimation (e.g., "logit"). \\
+    \texttt{method\_outcome} & Character string specifying the method for response variable estimation (e.g., "glm"). \\
+    \texttt{family\_outcome} & Character string describing the error distribution and link function to be used in the model (e.g., "gaussian"). \\
+    \texttt{subset} & Optional vector specifying a subset of observations to be used in the fitting process. \\
+    \texttt{strata} & Optional vector specifying strata. \\
+    \texttt{weights} & Optional vector of prior weights to be used in the fitting process. \\
+    \texttt{na\_action} & Function indicating what should happen when the data contain NAs. \\
+    \texttt{control\_selection} & List indicating parameters to use in fitting selection model for propensity scores. \\
+    \texttt{control\_outcome} & List indicating parameters to use in fitting model for outcome variable. \\
+    \texttt{control\_inference} & List indicating parameters to use in inference based on probability and non-probability samples. \\
+    \texttt{start\_selection} & Optional vector with starting values for the parameters of the selection equation. \\
+    \texttt{start\_outcome} & Optional vector with starting values for the parameters of the outcome equation. \\
+    \texttt{verbose} & Logical value indicating if verbose output should be printed. \\
+    \texttt{x} & Logical value indicating whether to return the model matrix of covariates as part of the output. \\
+    \texttt{y} & Logical value indicating whether to return the vector of outcome variable as part of the output. \\
+    \texttt{se} & Logical value indicating whether to calculate and return the standard error of the estimated mean. \\
+    \texttt{...} & Additional optional arguments. \\
+\end{longtable}
 
-\section{Practical examples}\label{practical-examples}
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "glm", 
++   family_outcome = "gaussian"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection =  ~ x1 + x2 + ... + xk, 
++   target = ~ y, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_selection = "logit"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection = ~ x1 + x2 + ... + xk, 
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "glm", 
++   family_outcome = "gaussian",
++   method_selection = "logit"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection = ~ x1 + x2 + ... + xk, 
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "glm", 
++   family_outcome = "gaussian",
++   method_selection = "logit",
++   control_selection = controlSel(penalty = "SCAD"),
++   control_outcome = controlSel(penalty = "MCP"),
++   control_inference = controlInf(vars_selection = TRUE),
++   verbose = TRUE
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection = ~ x1 + x2 + ... + xk, 
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "glm", 
++   family_outcome = "gaussian",
++   method_selection = "logit",
++   control_selection = controlSel(est_method_sel = "gee", h = 2))
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection = ~ x1 + x2 + ... + xk, 
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "nn",
++   family_outcome = "gaussian",
++   method_selection = "logit",
++   control_outcome = controlOut(k = 3)
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprob(
++   selection = ~ x1 + x2 + ... + xk, 
++   outcome = y ~ x1 + x2 + ... + xk, 
++   data = nonprob, 
++   svydesign = prob, 
++   method_outcome = "glm", 
++   family_outcome = "gaussian",
++   method_selection = "logit",
++   control_selection = controlSel(penalty = "SCAD"),
++   control_inference = controlInf(vars_selection = TRUE,
++                                  bias_correction = TRUE,
++                                  var_method = "bootstrap"),
++   verbose = TRUE
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> Call:
++ nonprob(data = nonprob_df, selection = ~x1 + x2 + x3 + x4, outcome = y30 ~ 
++     x1 + x2 + x3 + x4, svydesign = svyprob, method_selection = "logit")
++ 
++ -------------------------
++ Estimated population mean: 9.374 with overall std.err of: 0.3955
++ And std.err for nonprobability and probability samples being respectively:
++ 0.364 and 0.1546
++ 
++ 95% Confidence interval for population mean:
++     lower_bound upper_bound
++ y30    8.598809    10.14916
++ 
++ Based on: Doubly-Robust method
++ For a population of estimate size: 20200.83
++ Obtained on a nonprobability sample of size: 950
++ With an auxiliary probability sample of size: 1001
++ -------------------------
++ 
++ Regression coefficients:
++ -----------------------
++ For glm regression on outcome variable:
++             Estimate Std. Error z value  P(>|z|)    
++ (Intercept) -0.44155    1.05815  -0.417 0.676469    
++ x1           1.20976    0.72852   1.661 0.096802 .  
++ x2           1.50153    0.44714   3.358 0.000785 ***
++ x3           1.35890    0.28206   4.818 1.45e-06 ***
++ x4           1.17264    0.08029  14.606  < 2e-16 ***
++ ---
++ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
++ 
++ -----------------------
++ For glm regression on selection variable:
++              Estimate Std. Error z value  P(>|z|)    
++ (Intercept) -4.480634   0.113868 -39.349  < 2e-16 ***
++ x1          -0.028191   0.074889  -0.376    0.707    
++ x2           0.277772   0.044721   6.211 5.26e-10 ***
++ x3           0.148772   0.029746   5.001 5.69e-07 ***
++ x4           0.172832   0.008622  20.046  < 2e-16 ***
++ -------------------------
++ 
++ Weights:
++    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
++   1.143  11.180  19.502  21.264  28.089  79.119 
++ -------------------------
++ 
++ Covariate balance:
++ (Intercept)          x1          x2          x3          x4 
++    72.18047  -425.80885  -584.02397  -351.61222  1508.57831 
++ -------------------------
++ 
++ Residuals:
++     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
++ -0.31329 -0.04205 -0.01799  0.42335  0.94734  0.98736 
++ 
++ AIC: 7255.979
++ BIC: 7283.86
++ Log-Likelihood: -3622.99 on 1946 Degrees of freedom
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{practical-examples}{%
+\section{Practical examples}\label{practical-examples}}
 
 \renewcommand\refname{Summary}
 \bibliography{references.bib}

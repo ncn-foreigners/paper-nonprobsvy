@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+nonprobsvy-paper/*.log
+nonprobsvy-paper/*.blg
+nonprobsvy-paper/*.aux
+nonprobsvy-paper/*.bbl
+
