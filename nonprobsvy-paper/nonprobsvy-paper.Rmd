@@ -394,6 +394,14 @@ Below is the definition of most of the arguments we can pass to the function. Th
     \texttt{...} & Additional optional arguments. \\
 \end{longtable}
 
+In addition to using the survey package for design-based inference when probability samples are available, it also supports the various methods for estimating propensity scores and outcome models described in this thesis, such as logistic regression, complementary log-log models, probit models, generalized linear models, nearest neighbour algorithms and predictive mean matching.
+
+After this neat description of the main functionality of the package, we will move on to some examples of its use. We will show how to define the given arguments in order to obtain estimates of interest as a result. We will be less interested in the results than in the way they are presented. There will be room in the following chapters for an analysis of simulations and applications of the package to the real world. We will focus on the three main estimators, as function calls for other functionalities such as variable selection, other linking functions or mass imputation methods.
+
+Suppose we have two data sets, the first \textit{nonprob} containing individuals from the non-probability sample. As assumed, this set contains information on $k$ variables $\bold{x}$, e.g. sex, income, etc., and the explanatory variable $y$. In addition, there is a probability sample defined using the survey package and the svydesign function, containing design weights and $\bold{x}$ variables, but no $y$ variable. 
+
+In the case of a \textbf{mass imputation} estimator, the function should be defined as follows
+
 ```{r, eval=FALSE}
 nonprob(
   outcome = y ~ x1 + x2 + ... + xk, 
@@ -403,6 +411,8 @@ nonprob(
   family_outcome = "gaussian"
 )
 ```
+
+As can be seen, we have defined a formula for the imputation of the explanatory variable similar to the function glm. We have also specified the datasets in the arguments data (non-probability sample) and svydesign (probability sample). Finally, we have provided information about the mass imputation method (glm) and the type of explanatory variable (continuous variable). Let us now look at the \textbf{propensity score} estimator
 
 ```{r, eval=FALSE}
 nonprob(
@@ -414,6 +424,7 @@ nonprob(
 )
 ```
 
+As you can see, three new arguments have appeared - \texttt{selection} and \texttt{target} are responsible for the formulas for modelling the inclusion model and for defining the variable for which we calculate the population mean. In addition, in the \texttt{method\_selection} argument, we specify the name of the link function that models the probability of inclusion in the non-probability sample. For the \textbf{doubly robust estimator} call it is as follows
 
 ```{r,eval=FALSE}
 nonprob(
@@ -426,6 +437,10 @@ nonprob(
   method_selection = "logit"
 )
 ```
+
+In this case the \texttt{target} is not needed as we define \texttt{selection} and \texttt{outcome} arguments. We also provide details on mass imputation and propensity score models to obtain a doubly robust estimator. Importantly, arguments such as \texttt{method\_outcome}, \texttt{method\_selection} or \texttt{family\_outcome} (and a few others) take default values described in more detail in the package documentation.
+According to the description of the control functions, we can enforce that the estimation using the DR method is preceded by variable selection using the SCAD method for the IPW part and the MCP method for the MI part.
+
 
 ```{r, eval=FALSE}
 nonprob(
@@ -443,6 +458,8 @@ nonprob(
 )
 ```
 
+In the control function concerning the selection mechanism for the non-probabilistic sample, we can also choose the weighting estimation method. The default value mle can be changed to gee along with the appropriate $h$ function (corresponding to $h\left(\bx_i, \btheta\right) = \bx_i$).
+
 ```{r, eval=FALSE}
 nonprob(
   selection = ~ x1 + x2 + ... + xk, 
@@ -454,6 +471,8 @@ nonprob(
   method_selection = "logit",
   control_selection = controlSel(est_method_sel = "gee", h = 2))
 ```
+
+Mass imputation methods are defined in the argument \texttt{method\_outcome}. In the control function, we can set the parameters of a given method, e.g., the number of nearest neighbours in the NN algorithm.
 
 ```{r, eval=FALSE}
 nonprob(
@@ -467,6 +486,8 @@ nonprob(
   control_outcome = controlOut(k = 3)
 )
 ```
+
+As the final example, we want to perform variable selection using the SCAD method for the IPW part, the default method for the MI part (also SCAD), choose bias minimization as the parameter estimation method for the DR estimator, and set the variance calculation method to bootstrap.
 
 ```{r, eval=FALSE}
 nonprob(
@@ -485,6 +506,7 @@ nonprob(
 )
 ```
 
+The result of the function call will be an object of the class \texttt{nonprobsvy} containing a list of elements related to the estimation, i.e. the value of the estimated parameters, the mean and its standard deviation. On such an object, we can call the \texttt{summary} method, familiar to users of the R language. The result will look like this
 
 ```{verbatim}
 Call:
@@ -547,9 +569,47 @@ BIC: 7283.86
 Log-Likelihood: -3622.99 on 1946 Degrees of freedom
 ```
 
-
-
 # Practical examples
+we apply our methods to integrate administrative and survey data about job vacancies in Poland. The goal is to estimate the percentage of single shift job vacancies according to available data sources. We defined our outcome variable $Y$ as follows: \textit{whether the vacancy notice was for single-shift work}. Now we present the description of data used.
+
+The first source is the Job Vacancy Survey (JVS, also known as the Labour Demand Survey) with a sample of 6523 units. The data include "the number of employed persons, as well as the number and structure of job vacancies, including newly created and vacant positions reported to employment offices. Information on newly created and eliminated jobs" (Central Statistical Office of Poland). The survey is conducted using a representative method. The sample is drawn separately for units employing more than 9 people and for units employing up to 9 people. The sampling frame for this survey is the Statistical Units Database.
+It includes information about NACE (The Nomenclature of Economic Activities) (19 levels), region (16 levels), sector (2 levels), size (3 levels) and the number of employees according to administrative data integrated by Statistics Poland (RE). 
+
+```{r, echo=FALSE, message=FALSE}
+library(nonprobsvy)
+```
+
+```{r}
+jvs <- read.csv("data-raw/jvs.csv",
+                  colClasses = c("character", "numeric",
+                                 rep("character", 3), "numeric"))
+head(jvs)
+```
+
+```{r}
+jvs_svy <- svydesign(ids = ~ 1, 
+                     weights = ~ weight,
+                     strata = ~ size + nace + region,
+                     data = jvs)
+svytotal(~size, jvs_svy)
+```
+
+
+The second source is the Central Job Offers Database (CBOP), which is a register of all vacancies submitted to Public Employment Offices and can be accessed via CBOP API. It contains job offers submitted by employers looking for new employees. If an employer is seeking new workers for their business, they can approach the County Employment Office (PUP) and submit the appropriate application. CBOP also
+contains information about unit identifiers (REGON and NIP), so we were able to link units to the sampling frame to obtain auxiliary variables with the same definitions as those used
+in the survey. Beyond that it contains \texttt{single\_shift} outcome variable.
+
+```{r}
+admin <- read.csv("data-raw/admin.csv",
+                 colClasses = c("character", "numeric",
+                                rep("character", 3), "logical")
+                 )
+head(admin)
+```
+
+
 
 # Summary
+
+
 
