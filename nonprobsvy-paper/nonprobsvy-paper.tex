@@ -73,11 +73,11 @@ Poznań University of Economics and Business\\
 
 \selectlanguage{english}
 
-\usepackage{physics} \usepackage{amsfonts} \usepackage{graphicx} \usepackage{enumitem} \usepackage{float} \usepackage{amsthm} \usepackage{geometry} \usepackage{xcolor}
+\usepackage{physics} \usepackage{amsfonts} \usepackage{graphicx} \usepackage{enumitem} \usepackage{float} \usepackage{tabularx} \usepackage{amsthm} \usepackage{geometry} \usepackage{xcolor}
 
 \pagestyle{headings}
 
-\usepackage{fancyhdr}  \usepackage{color}  \usepackage{multirow} \usepackage{booktabs} \usepackage{url} \usepackage{array} \usepackage{graphicx} \usepackage[mathcal]{eucal} \usepackage{algorithm} \usepackage{algpseudocode} \usepackage{listings} \usepackage{tabularx} \usepackage{rotating} \usepackage{makecell} \usepackage{inconsolata} \usepackage{longtable} \usepackage{lscape} \usepackage{pdflscape} \usepackage{makecell} \usepackage{enumitem} \usepackage{siunitx} \usepackage{multirow} \usepackage{caption} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
+\usepackage{fancyhdr}  \usepackage{color}  \usepackage{multirow} \usepackage{booktabs} \usepackage{url} \usepackage{array} \usepackage{graphicx} \usepackage[mathcal]{eucal} \usepackage{algorithm} \usepackage{algpseudocode} \usepackage{listings} \usepackage{makecell} \usepackage{inconsolata} \usepackage{lscape} \usepackage{pdflscape} \usepackage{makecell} \usepackage{enumitem} \usepackage{siunitx} \usepackage{multirow} \usepackage{caption} \usepackage{booktabs} \newcommand{\argmin}{\operatornamewithlimits{arg\,min}} \newcommand{\argmax}{\operatornamewithlimits{arg\,max}} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
 
 \begin{document}
 
@@ -113,10 +113,16 @@ integrating data in order to infer from available sources of different
 structural character.
 
 It should be noted that there are several packages that allow the
-correction of selection bias in nonprobability samples, such as
-\citet{GJRM}, \citet{NonProbEst} or even \citet{sampling}. However,
-these packages do not implement state-of-the-art approaches recently
-proposed in the literature: \citet{chen2020doubly},
+correction of selection bias in nonprobability samples, such as:
+
+\begin{itemize}
+\item @GJRM supports generalized joint regression modeling, enabling users to fit complex joint models for multivariate outcomes often needed in handling selection bias in nonprobability samples.
+\item @NonProbEst provides methods specifically designed for estimating population parameters from nonprobability samples, employing approaches like propensity score adjustment and calibration weighting to correct for sample selection bias.
+\item @sampling offers tools for implementing various sampling designs, including stratified, cluster, and unequal probability sampling, which are essential for creating representative samples and reducing selection bias in survey data analysis.
+\end{itemize}
+
+However, these packages do not implement state-of-the-art approaches
+recently proposed in the literature: \citet{chen2020doubly},
 \citet{yang_doubly_2020}, \citet{wu2022statistical} nor do they use the
 survey package \citet{lumley2004} for inference.
 
@@ -150,8 +156,9 @@ observations into the samples.
     \label{tab:tabela1}
 \end{table}
 
-\section[R code]{Methods for non-probability samples \proglang{R}
-code}\label{r-code}
+\hypertarget{methods-for-non-probability-samples}{%
+\section{Methods for non-probability
+samples}\label{methods-for-non-probability-samples}}
 
 \hypertarget{basic-setup}{%
 \subsection{Basic setup}\label{basic-setup}}
@@ -167,10 +174,10 @@ dataset of a non-probability sample of size \(n_A\) and let
 of a probability sample of size \(n_B\), where only information about
 variables \(\boldsymbol{X}\) and inclusion probabilities \(\pi\) (which
 in the super population model are also considered to be random
-variables) are available. Let \(\delta\) be an indicator of inclusion
-into non-probability sample. Each unit in the sample \(S_B\) has been
+variables) are available. Let \(R_i\) be an indicator of inclusion into
+non-probability sample. Each unit in the sample \(S_B\) has been
 assigned a\textasciitilde design-based weight given by
-\(d_i = 1/\pi_i\). The setting is summarised in Table ..
+\(d_i = 1/\pi_i\).
 
 The goal is to estimate a\textasciitilde finite population mean
 \(\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}\) of the target
@@ -179,8 +186,8 @@ probability sample, it cannot be used to estimate the target quantity.
 Instead, one could try combining the non-probability and probability
 samples to estimate \(\mu_{y}\). In this paper we do not consider
 modifications for the possibly occurring overlap. The above description
-of the data is presented in a more concise form in
-Table\textasciitilde{}\ref{tab:tabela1_1}.
+of the data is presented in a more concise form in Table
+\ref{tab:tabela1_1}.
 
 \begin{table}
 \centering
@@ -289,6 +296,182 @@ population (based on probability sampling and inclusion probabilities).
 The only difference is that in our case, instead of the known values of
 the \(Y\) variable, we use its estimated equivalents.
 
+\hypertarget{generalized-linear-models}{%
+\subsubsection{Generalized Linear
+Models}\label{generalized-linear-models}}
+
+Let us assume the following parametric model for the sample \(S_A\)
+based on the conditional expected value of the variable \(Y\). Let
+\begin{equation}
+\mathbb{E}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymbol{\beta}_0\right)
+\end{equation} for a certain \(p\)--dimensional vector
+\(\boldsymbol{\beta}_0\) and a known \(m\) function from a given class
+of mean functions for generalized linear models for which we can
+distinguish the following cases
+
+\begin{enumerate}
+    \item \textbf{\( Y \) variable is continous (linear model):}
+    \begin{align*}
+        m\left(\boldsymbol{x}_i, \boldsymbol{\beta}_0\right) &= \boldsymbol{x}_i^T \boldsymbol{\beta}_0
+    \end{align*}
+
+    \item \textbf{The variable \( Y \)  represents a discrete variable (\textit{count data}):}
+    \begin{align*}
+        m\left(\boldsymbol{x}_i, \boldsymbol{\beta}_0\right) &= \exp \left(\boldsymbol{x}_i^T \boldsymbol{\beta}_0\right)
+    \end{align*}
+
+    \item \textbf{The variable \( Y \)  is binary (logistic model):}
+    \begin{align*}
+        m\left(\boldsymbol{x}_i, \boldsymbol{\beta}_0\right) &= \frac{\exp \left(\boldsymbol{x}_i^T \boldsymbol{\beta}_0\right)}{\exp \left(\boldsymbol{x}_i^T \boldsymbol{\beta}_0\right) + 1}
+    \end{align*}
+\end{enumerate}
+
+According to the model described, we have \[
+y_i=m\left(\boldsymbol{x}_i\right)+\varepsilon_i, \quad i=1,2, \ldots, N.
+\] We also assume that the random variables \(\varepsilon_i\) are
+independent with \(\mathbb{E} \left(\varepsilon_i \right) = 0\) and
+\(\sigma^2 \left(\varepsilon_i \right) = \mathbf{v} \left(\boldsymbol{x}\right) \sigma^2\).
+It is assumed that \(\mathbf{v} \left(\boldsymbol{x}\right)\) has a
+known value and is homogeneous, i.e.~homogeneous, regardless of the
+sample under study. Let us represent the process of mass imputation of a
+linear model to a sample \(S_B\). Finally we are interesting in finding
+such \(\boldsymbol{\beta}\) that is the solution of the following
+equation \begin{equation}
+\label{eq-2.3}
+U(\boldsymbol{\beta})=\frac{1}{n_A} \sum_{i \in S_A}\left\{y_i-m\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right)\right\} h\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right)=\mathbf{0},
+\end{equation}
+
+for some \(p\)-dimensional vector of function
+\(h\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right)\), where
+\(h\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right) = \boldsymbol{x}_i\)
+might be used for certain applications. The mass imputation process is
+described in Algorithm \ref{algo-1}.
+
+\begin{algorithm}[H]
+\caption{Mass imputation based on a generalized linear model}
+\label{algo-1}
+\begin{algorithmic}[1]
+ \State Estimate the regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$\ basing on units from $S_A$ sample.
+ \State For each $i \in S_B$, calculate the imputed value as
+ $$
+ \hat{y}_i = m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right).
+ $$
+\end{algorithmic}
+\end{algorithm}
+
+\hypertarget{nearest-neighbour-algorithm}{%
+\subsection{Nearest Neighbour
+Algorithm}\label{nearest-neighbour-algorithm}}
+
+On the other hand, it is also possible to consider a non-parametric
+model for the problem described, i.e.~for each individual from sample
+\(S_B\), the k-nearest neighbours from sample \(S_A\) are found based on
+the values of the auxiliary vector \(\boldsymbol{X}\) and the
+corresponding metric. Then, the missing values of the variable \(Y\)
+from sample \(S_B\) are replaced by the values (or their mean if more
+than one neighbour is considered) of this variable for the corresponding
+neighbours from sample \(S_A\). The algorithm is as follows
+
+\begin{algorithm}[H]
+\caption{Mass imputation using the k-nearest-neighbour algorithm}
+\label{algo-2}
+\begin{algorithmic}[1]
+\State If $k=1$, then for each $i \in S_B$ match $\hat{\nu}(i)$ such that
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\boldsymbol{x}_i,\boldsymbol{x}_j\right)$.
+\State If $k>1$, then
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\boldsymbol{x}_i, \boldsymbol{x}_j\right)$$
+i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample.\;
+\State For each $i \in S_B$, calculate the imputed value as
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+Note that the algorithm differs depending on the number of nearest
+neighbours chosen. In case \(k=1\) the nearest neighbour value is
+imputed according to the chosen metric, for example the Euclidean
+metric. In case \(k>2\) the average of the nearest neighbours values is
+imputed. The literature indicates that this method suffers from the
+so-called curse of multidimensionality, i.e.~for samples with several
+explanatory variables, imputation can lead to a large variance in the
+estimator. On the other hand, the algorithm is easy to interpret and
+simple to implement.
+
+\hypertarget{predictive-mean-matching}{%
+\subsection{Predictive Mean Matching}\label{predictive-mean-matching}}
+
+Predictive mean-matching imputation is a particularly well-known way of
+dealing with non-response among respondents, and is favoured by
+statistical offices for compiling a country's official population
+statistics. It is a version of the k-nearest neighbour algorithm, but
+instead of looking at the distances between the vectors of the auxiliary
+variables, it looks at the distance between the functions of the mean
+vectors. Examples of such functions are described in Subsection
+\ref{sec1.3.1}. This helps to reduce the curse of multidimensionality
+and, at the same time, allows the observed values of the explanatory
+variable or their mean to be calculated. Let us therefore present two
+algorithms that describe the steps to follow to perform a mass
+imputation using the mean matching method.
+
+\begin{algorithm}[H]
+\caption{$\hat{y}-\hat{y}$ Imputation:}
+\label{algo-3}
+\begin{algorithmic}[1]
+\State Estimate regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
+\State Impute $$\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right), 
+\hat{y}_{j}=m\left(\boldsymbol{x}_{j},\hat{\boldsymbol{\beta}}\right)$$
+for $i\in S_{B}, j\in S_{A}$ and assign each 
+$i\in S_{B}$ to $\hat{\nu}(i)$, where
+$$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}\lVert \hat{y}_{i}-\hat{y}_{j}\rVert$$ or
+$$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right)$$ if $d$ is not induced by the norm.\;
+
+\State If $k>1$, then:
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)$$
+e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbor from a sample.\;
+\State For $i \in S_B$, calculate imputation value as 
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{$\hat{y}-y$ Imputation:}
+\label{algo-4}
+\begin{algorithmic}[1]
+\State Estimate regression $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
+\State Impute $\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right)$ 
+for $i \in S_{B}$ and assign each 
+$i \in S_{B}$ do $\hat{\nu}(i)$, where
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j \in S_{A}}\lVert \hat{y}_{i}-y_{j}\rVert$ or
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right)$ 
+if $d$ not induced by the norm.\;
+\State If $k>1$, then:
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}}
+d\left(\hat{y}_{i},y_{j}\right).$$
+\State For each $i \in S_B$ calculate imputation value as
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+As can be seen, the difference between the two algorithms is due to step
+2. In the first approach, we compare \(\hat{y}\) from samples \(S_A\)
+and \(S_B\). The second, on the other hand, compares \(\hat{y}\) from
+sample \(S_B\) with the known \(y\) from sample \(S_A\). It is worth
+noting that proof of the consistency of these estimators can be found in
+\citet{Beres}.
+
 \hypertarget{inverse-probability-weighting-estimators}{%
 \subsection{Inverse Probability Weighting
 estimators}\label{inverse-probability-weighting-estimators}}
@@ -328,6 +511,191 @@ probability weighting estimator of the population mean of the form
 \end{equation} where
 \(\hat{N}^A = \sum_{i \in S_A} \hat{d}_i^A = \sum_{i \in S_A} \frac{1}{\hat{\pi}_i^A}\).
 
+\hypertarget{maximum-likelihood-estimation}{%
+\subsubsection{Maximum Likelihood
+Estimation}\label{maximum-likelihood-estimation}}
+
+Consider the following likelihood function \begin{align}
+    \begin{split}
+ \ell(\boldsymbol{\theta}) & =\sum_{i=1}^N\left\{R_i^A \log \pi_i^{\mathrm{A}}+\left(1-R_i^A\right) \log \left(1-\pi_i^{\mathrm{A}}\right)\right\} \\ & =\sum_{i \in S_{\mathrm{A}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}\right\}+\sum_{i=1}^N \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\right\}
+    \end{split}
+\end{align} In practice, a function of this form cannot be used because
+we do not observe all units from the population. Hence, the second
+component of the function is replaced by the Horvitz-Thompson estimator,
+which is used when having access to the design weights for the units in
+the sample. In our case, these will be the weights \(d_i^B\) for the
+units in the sample \(S_B\). We then have \begin{equation}
+\ell^*(\boldsymbol{\theta})=\sum_{i \in S_{\mathrm{A}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}\right\}+\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\right\}.
+\end{equation} Our objective is to find the maximum likelihood estimator
+\(\hat{\pi}_{i}^{A} = \pi(\boldsymbol{x}_{i}, \hat{\boldsymbol{\theta}})\),
+such that \(\hat{\boldsymbol{\theta}}\) maximises the function defined
+above.
+
+\hypertarget{generalized-estimating-equations}{%
+\subsubsection{Generalized Estimating
+Equations}\label{generalized-estimating-equations}}
+
+Equations of the type
+\(\operatorname{U}(\boldsymbol{\theta}) = \boldsymbol{0}\), where
+\(\operatorname{U}(\boldsymbol{\theta}) = \frac{\partial}{\partial \boldsymbol{\theta}} l^*(\boldsymbol{\theta})\),
+obtained from the maximum likelihood estimation can be replaced by a
+system of generalized estimating equations of the form \begin{equation}
+\label{gee}
+\mathbf{G}(\boldsymbol{\theta})=\sum_{i \in S_A} h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{0},
+\end{equation} where
+\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\) is a certain
+continuous function. In the literature, the most commonly considered
+functions are
+\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{x}_i\)
+and
+\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{x}_i \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)^{-1}\).
+Note that if the function \(h\) is equal to the vector of observed
+characteristics \(\boldsymbol{x}\), then \(\mathbf{G}\) is reduced to \[
+\mathbf{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \boldsymbol{x}_i-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) \boldsymbol{x}_i.
+\] In the next subsection we will proof that this is disorted version of
+MLE approach with \(\pi_i^A\) modelling by logistic regression. If we
+use the second form of the function \(h\) we get the following form of
+the function \(\mathbf{G}\) \[
+\mathbf{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \frac{\boldsymbol{x}_i}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) }-\sum_{i \in S_B} d_i^B \boldsymbol{x}_i.
+\]
+
+The advantage of this method is the ability to estimate with global
+values of the variables (e.g.~from external sources) instead of a
+probability sample. Note that this is allowed by the second form of the
+\(\mathbf{G}\) function. Its second term is nothing more than the
+estimated sums of the \(\boldsymbol{x}\) variables. On the other hand,
+empirical studies suggest that the process of solving this type of
+equation may be less stable than the maximum likelihood method. In other
+words, the iterative algorithm for finding zeros that satisfy equation
+(\ref{gee}) may not converge.
+
+In the \texttt{nonprobsvy} package the propensity scores can modelled
+using three different link functions: logistic, complementary log-log
+and probit. The logistic regression is the most commonly used for
+modelling probabilities. This method is based on the so-called sigmoidal
+function and for our settign it has the form \begin{align}
+\label{logit-fun}
+    \pi_{i}^{A} = \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) = \frac{\exp\left(\boldsymbol{x}_{i}^{\top}\boldsymbol{\theta}_{0}\right)}{ 1 + \exp\left(\boldsymbol{x}_{i}^{\top}\boldsymbol{\theta}_{0}\right)}
+\end{align} It satisfies certain properties to model the probability.
+For our scheme, this will be the probability of belonging to the
+non-probability sample.
+
+Another approach to modelling binary variables and also probabilities is
+probit regression. It is based on the standard normal distribution.
+Probability density function is given by the following function
+\begin{displaymath}
+    \pdv{\Phi(t)}{t}=\phi(t)=\frac{1}{\sqrt{2 \pi}} \exp \left(-\frac{1}{2} t^2\right)
+\end{displaymath} and the probability is modelled as \begin{align*}
+    \pi_{i}^{A} = \pi(\boldsymbol{x}_{i},\boldsymbol{\theta}) = \Phi(\boldsymbol{x}_{i}^{\top}\boldsymbol{\theta}).
+\end{align*}
+
+Regression with the cloglog model is particularly useful if we are
+modelling rare phenomena, i.e.~the probabilities will oscillate around
+the values 1 and 0. Compared to the sigmoidal function and the
+distribution, the cloglog function is more asymmetric towards the value
+0.5. The model can be written as \begin{align*}
+    \pi_i^A = \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) = 1 - \exp(-\exp(\boldsymbol{x}_{i}^{\top}\boldsymbol{\theta})).
+\end{align*}
+
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
+\toprule
+Link & MLE Function & Gradient \\ \midrule
+
+\code{logit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
+& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \midrule
+
+\code{probit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
+& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
+& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
+\end{aligned}
+$ \\ \midrule
+
+\code{cloglog} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
+& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \bottomrule
+
+\end{tabular}
+\caption{MLE Functions and Gradients for Different Link Functions}
+\end{table}
+
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
+\toprule
+Link & GEE Jacobian \( h = \boldsymbol{x}_i \) & GEE Jacobian \( h = \boldsymbol{x}_i \pi\left( \boldsymbol{x}_i, \boldsymbol{\theta} \right)^{-1} \) \\ \midrule
+
+\code{logit} & 
+$\displaystyle
+\begin{aligned}
+& - \sum_{i \in S_B} \frac{1}{\pi_i^B} \, \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \left( 1 - \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right) \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& -\sum_{i \in S_A} \frac{ 1 - \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) }{ \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) } \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ \\ \midrule
+
+\code{probit} & 
+$\displaystyle
+\begin{aligned}
+& - \frac{1}{N} \sum_{i \in S_B} \frac{ \dot{\pi}_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) }{ \pi_i^B } \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& - \frac{1}{N} \sum_{i \in S_A} \frac{ \dot{\pi}_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) }{ \left( \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right)^2 } \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ \\ \midrule
+
+\code{cloglog} & 
+$\displaystyle
+\begin{aligned}
+& - \frac{1}{N} \sum_{i \in S_B} \frac{ 1 - \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) }{ \pi_i^B } \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& - \frac{1}{N} \sum_{i \in S_A} \frac{ 1 - \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) }{ \left( \pi_i^A\left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right)^2 } \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \boldsymbol{x}_i \boldsymbol{x}_i^{\top}
+\end{aligned}
+$ \\ \bottomrule
+\end{tabular}
+\caption{GEE Jacobians for Different Link Functions}
+\end{table}
+
 \hypertarget{doubly-robust-estimators}{%
 \subsection{Doubly Robust estimators}\label{doubly-robust-estimators}}
 
@@ -359,8 +727,8 @@ remains consistent, showcasing the ``double robustness'\,' property.
 Approach}\label{joint-randomization-approach}}
 
 The joint randomization approach combines two processes: the selection
-mechanism of a non-probability sample, modeled by propensity scores, and
-the design-based inference from a probability sample.
+mechanism of a non-probability sample, modelled by propensity scores,
+and the design-based inference from a probability sample.
 
 The response \(y_i\) is predicted using a regression model
 \(m(\boldsymbol{x}_i, \boldsymbol{\beta})\) (or NN/PMM methods), where
@@ -502,34 +870,42 @@ Below is the definition of most of the arguments we can pass to the
 function. These are described in more detail in the documentation on the
 \href{https://CRAN.R-project.org/package=nonprobsvy}{CRAN} platform.
 
-\begin{longtable}{>{\ttfamily}p{5cm}p{10.5cm}}
-    \textbf{Argument} & \textbf{Description} \\
-    \texttt{data} & Data frame with data from the non-probability sample. \\
-    \texttt{selection} & Formula for the selection (propensity) equation. \\
-    \texttt{outcome} & Formula for the outcome equation. \\
-    \texttt{target} & Formula with target variables. \\
-    \texttt{svydesign} & Optional \texttt{svydesign} object containing probability sample and design weights. \\
-    \texttt{pop\_totals} & Optional named vector with population totals of the covariates. \\
-    \texttt{pop\_means} & Optional named vector with population means of the covariates. \\
-    \texttt{pop\_size} & Optional double with population size. \\
-    \texttt{method\_selection} & Character string specifying the method for propensity score estimation (e.g., "logit"). \\
-    \texttt{method\_outcome} & Character string specifying the method for response variable estimation (e.g., "glm"). \\
-    \texttt{family\_outcome} & Character string describing the error distribution and link function to be used in the model (e.g., "gaussian"). \\
-    \texttt{subset} & Optional vector specifying a subset of observations to be used in the fitting process. \\
-    \texttt{strata} & Optional vector specifying strata. \\
-    \texttt{weights} & Optional vector of prior weights to be used in the fitting process. \\
-    \texttt{na\_action} & Function indicating what should happen when the data contain NAs. \\
-    \texttt{control\_selection} & List indicating parameters to use in fitting selection model for propensity scores. \\
-    \texttt{control\_outcome} & List indicating parameters to use in fitting model for outcome variable. \\
-    \texttt{control\_inference} & List indicating parameters to use in inference based on probability and non-probability samples. \\
-    \texttt{start\_selection} & Optional vector with starting values for the parameters of the selection equation. \\
-    \texttt{start\_outcome} & Optional vector with starting values for the parameters of the outcome equation. \\
-    \texttt{verbose} & Logical value indicating if verbose output should be printed. \\
-    \texttt{x} & Logical value indicating whether to return the model matrix of covariates as part of the output. \\
-    \texttt{y} & Logical value indicating whether to return the vector of outcome variable as part of the output. \\
-    \texttt{se} & Logical value indicating whether to calculate and return the standard error of the estimated mean. \\
-    \texttt{...} & Additional optional arguments. \\
-\end{longtable}
+\begin{table}[H]
+\centering
+\begin{tabular}{p{3cm}p{8cm}p{3cm}}
+\hline
+Argument & Description & Default \\
+\hline
+    \code{data} & \code{data.frame} with data from the non-probability sample. & - \\
+    \code{selection} & \code{formula} for the selection (propensity) equation. & NULL \\
+    \code{outcome} & \code{formula} for the outcome equation. & NULL \\
+    \code{target} & \code{formula} with target variables. & NULL \\
+    \code{svydesign} & Optional \code{svydesign} object containing probability sample and design weights. & NULL \\
+    \code{pop\_totals} & Optional named \code{vector} with population totals of the covariates. & NULL \\
+    \code{pop\_means} & Optional named \code{vector} with population means of the covariates. & NULL \\
+    \code{pop\_size} & Optional \code{double} with population size. & NULL \\
+    \code{method\_selection} & Character string specifying the method for propensity score estimation (e.g., "logit"). & "logit" \\
+    \code{method\_outcome} & Character string specifying the method for response variable estimation (e.g., "glm"). & "glm"\\
+    \code{family\_outcome} & Character string describing the error distribution and link function to be used in the model (e.g., "gaussian"). & "gaussian" \\
+    \code{subset} & Optional \code{vector} specifying a subset of observations to be used in the fitting process. & NULL\\
+    \code{strata} & Optional \code{vector} specifying strata. & NULL\\
+    \code{weights} & Optional \code{vector} of prior weights to be used in the fitting process. & NULL\\
+    \code{na\_action} & \code{function} indicating what should happen when the data contain NAs. & NULL\\
+    \code{control\_selection} & \code{list} indicating parameters to use in fitting selection model for propensity scores. & controlSel()\\
+    \code{control\_outcome} & \code{list} indicating parameters to use in fitting model for outcome variable. & controlOut() \\
+    \code{control\_inference} & \code{list} indicating parameters to use in inference based on probability and non-probability samples. & controlInf() \\
+    \code{start\_selection} & Optional \code{vector} with starting values for the parameters of the selection equation. & NULL \\
+    \code{start\_outcome} & Optional \code{vector} with starting values for the parameters of the outcome equation. & NULL \\
+    \code{verbose} & Logical value indicating if verbose output should be printed. & FALSE \\
+    \code{x} & Logical value indicating whether to return the model matrix of covariates as part of the output. & TRUE \\
+    \code{y} & Logical value indicating whether to return the vector of outcome variable as part of the output. & TRUE \\
+    \code{se} & Logical value indicating whether to calculate and return the standard error of the estimated mean. & FALSE \\
+    \code{...} & Additional optional arguments. & \\
+\hline
+\end{tabular}
+\caption{\code{nonprob} function arguments description}
+\label{tab-arguments-nonprob}
+\end{table}
 
 In addition to using the survey package for design-based inference when
 probability samples are available, it also supports the various methods
@@ -779,7 +1155,7 @@ R> Call:
 \hypertarget{practical-examples}{%
 \section{Practical examples}\label{practical-examples}}
 
-we apply our methods to integrate administrative and survey data about
+We apply our methods to integrate administrative and survey data about
 job vacancies in Poland. The goal is to estimate the percentage of
 single shift job vacancies according to available data sources. We
 defined our outcome variable \(Y\) as follows:
@@ -871,7 +1247,232 @@ R> head(admin)
 \end{CodeOutput}
 \end{CodeChunk}
 
-\renewcommand\refname{Summary}
+\hypertarget{ipw}{%
+\subsection{IPW}\label{ipw}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est1_logit <- nonprob(
++   selection = ~ region + private + nace + size,
++   target = ~ single_shift,
++   svydesign = jvs_svy,
++   data = admin,
++   method_selection = "logit"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> summary(est1_logit)
+\end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+nonprob(data = admin, selection = ~region + private + nace + 
+    size, target = ~single_shift, svydesign = jvs_svy, method_selection = "logit")
+
+-------------------------
+Estimated population mean: 0.7083 with overall std.err of: 0.01063
+And std.err for nonprobability and probability samples being respectively:
+0.0063 and 0.008567
+
+95% Confidence inverval for popualtion mean:
+             lower_bound upper_bound
+single_shift   0.6874801   0.7291656
+
+
+Based on: Inverse probability weighted method
+For a population of estimate size: 52898.13
+Obtained on a nonprobability sample of size: 9344
+With an auxiliary probability sample of size: 6523
+-------------------------
+
+Regression coefficients:
+-----------------------
+For glm regression on selection variable:
+            Estimate Std. Error z value  P(>|z|)    
+(Intercept) -0.65278    0.07498  -8.706  < 2e-16 ***
+region04     0.83780    0.07121  11.765  < 2e-16 ***
+region06     0.19954    0.07245   2.754  0.00589 ** 
+region08     0.10481    0.08911   1.176  0.23950    
+region10    -0.15756    0.06408  -2.459  0.01393 *  
+region12    -0.60987    0.06029 -10.115  < 2e-16 ***
+region14    -0.84150    0.05419 -15.530  < 2e-16 ***
+region16     0.76386    0.08660   8.821  < 2e-16 ***
+region18     1.17811    0.07142  16.495  < 2e-16 ***
+region20     0.22252    0.09261   2.403  0.01627 *  
+region22    -0.03753    0.06039  -0.621  0.53438    
+region24    -0.40670    0.05474  -7.430 1.09e-13 ***
+region26     0.20287    0.08489   2.390  0.01685 *  
+region28     0.57863    0.06797   8.513  < 2e-16 ***
+region30    -0.61021    0.05908 -10.328  < 2e-16 ***
+region32     0.32744    0.06957   4.706 2.52e-06 ***
+private      0.05899    0.05880   1.003  0.31571    
+naceD.E      0.77274    0.10033   7.702 1.34e-14 ***
+naceF       -0.37783    0.04271  -8.847  < 2e-16 ***
+naceG       -0.33370    0.03788  -8.809  < 2e-16 ***
+naceH       -0.65175    0.05977 -10.904  < 2e-16 ***
+naceI        0.41179    0.05726   7.191 6.41e-13 ***
+naceJ       -1.42639    0.13622 -10.471  < 2e-16 ***
+naceK.L      0.06171    0.07981   0.773  0.43941    
+naceM       -0.40678    0.06741  -6.034 1.60e-09 ***
+naceN        0.80035    0.06733  11.888  < 2e-16 ***
+naceO       -0.69355    0.09460  -7.331 2.28e-13 ***
+naceP        1.25095    0.07647  16.359  < 2e-16 ***
+naceQ        0.30287    0.06799   4.455 8.41e-06 ***
+naceR.S      0.22228    0.06975   3.187  0.00144 ** 
+sizeM       -0.36413    0.03444 -10.574  < 2e-16 ***
+sizeS       -1.02916    0.03504 -29.369  < 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+-------------------------
+
+Weights:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.169   2.673   4.333   5.661   7.178  49.951 
+-------------------------
+
+Residuals:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-0.8552 -0.2308  0.5393  0.3080  0.7987  0.9800 
+
+AIC: 43894.82
+BIC: 44140.32
+Log-Likelihood: -21915.41 on 15835 Degrees of freedom
+\end{CodeOutput}
+\end{CodeChunk}
+
+\hypertarget{ipw-calib}{%
+\subsection{IPW CALIB}\label{ipw-calib}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est2_logit <- nonprob(
++   selection = ~ region + private + nace + size,
++   target = ~ single_shift,
++   svydesign = jvs_svy,
++   data = admin,
++   method_selection = "logit",
++   control_selection = controlSel(h = 1, est_method_sel = "gee")
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{ipw-bootstrap}{%
+\subsection{IPW bootstrap}\label{ipw-bootstrap}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est3_logit <- nonprob(
++   selection = ~ region + private + nace + size,
++   target = ~ single_shift,
++   svydesign = jvs_svy,
++   data = admin,
++   method_selection = "logit",
++   control_inference = controlInf(var_method = "bootstrap", num_boot = 50),
++   verbose = T,
++ )
+\end{CodeInput}
+\begin{CodeOutput}
+  |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   2%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   6%  |                                                                              |======                                                                |   8%  |                                                                              |=======                                                               |  10%  |                                                                              |========                                                              |  12%  |                                                                              |==========                                                            |  14%  |                                                                              |===========                                                           |  16%  |                                                                              |=============                                                         |  18%  |                                                                              |==============                                                        |  20%  |                                                                              |===============                                                       |  22%  |                                                                              |=================                                                     |  24%  |                                                                              |==================                                                    |  26%  |                                                                              |====================                                                  |  28%  |                                                                              |=====================                                                 |  30%  |                                                                              |======================                                                |  32%  |                                                                              |========================                                              |  34%  |                                                                              |=========================                                             |  36%  |                                                                              |===========================                                           |  38%  |                                                                              |============================                                          |  40%  |                                                                              |=============================                                         |  42%  |                                                                              |===============================                                       |  44%  |                                                                              |================================                                      |  46%  |                                                                              |==================================                                    |  48%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================                                  |  52%  |                                                                              |======================================                                |  54%  |                                                                              |=======================================                               |  56%  |                                                                              |=========================================                             |  58%  |                                                                              |==========================================                            |  60%  |                                                                              |===========================================                           |  62%  |                                                                              |=============================================                         |  64%  |                                                                              |==============================================                        |  66%  |                                                                              |================================================                      |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |==================================================                    |  72%  |                                                                              |====================================================                  |  74%  |                                                                              |=====================================================                 |  76%  |                                                                              |=======================================================               |  78%  |                                                                              |========================================================              |  80%  |                                                                              |=========================================================             |  82%  |                                                                              |===========================================================           |  84%  |                                                                              |============================================================          |  86%  |                                                                              |==============================================================        |  88%  |                                                                              |===============================================================       |  90%  |                                                                              |================================================================      |  92%  |                                                                              |==================================================================    |  94%  |                                                                              |===================================================================   |  96%  |                                                                              |===================================================================== |  98%  |                                                                              |======================================================================| 100%
+\end{CodeOutput}
+\end{CodeChunk}
+
+\hypertarget{mi}{%
+\subsection{MI}\label{mi}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est5_glm <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "glm",
++   family_outcome = "gaussian"
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{dr}{%
+\subsection{DR}\label{dr}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est8_dr1 <- nonprob(
++   selection = ~ region + private + nace + size,
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_selection = "logit",
++   method_outcome = "glm",
++   family_outcome = "binomial",
++   pop_size = sum(weights(jvs_svy))
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{classes-and-s3methods}{%
+\section{Classes and S3methods}\label{classes-and-s3methods}}
+
+\hypertarget{summary-and-future-work}{%
+\section{Summary and future work}\label{summary-and-future-work}}
+
+The \texttt{nonprobsvy} package is an R tool developed to address
+challenges associated with making inferences from non-probability
+samples. As non-probability data sources such as administrative data,
+voluntary online panels, and social media data become increasingly
+available, statisticians are faced with the problem of how to integrate
+these sources with traditional probability samples to produce reliable
+population estimates. This package provides a suite of methods
+specifically designed to handle the unique characteristics of
+non-probability samples, where selection mechanisms are often unknown or
+biased.
+
+\texttt{nonprobsvy} supports a range of estimation techniques including
+mass imputation, inverse probability weighting (IPW), and doubly robust
+(DR) methods. Each of these methods allows researchers to correct for
+selection bias in non-probability samples by leveraging auxiliary data
+from probability samples or known population totals. The mass imputation
+approach imputes values for the outcome variable in the probability
+sample using models trained on the non-probability sample. The IPW
+estimator uses estimated propensity scores to weight non-probability
+samples in a way that aligns them more closely with the population. The
+DR estimator combines both approaches, resulting in an estimator that
+remains consistent if either the outcome model or the propensity score
+model is correctly specified, thus providing a level of robustness
+against model misspecification.
+
+Designed to integrate with the widely used \texttt{survey} package in R,
+\texttt{nonprobsvy} enables researchers to define survey designs,
+specify selection and outcome models, and estimate population parameters
+using both probability and non-probability samples. The package supports
+advanced modeling options, including generalized linear models, nearest
+neighbor algorithms, and predictive mean matching, and allows for
+customization of tuning parameters, variable selection, and variance
+estimation methods (e.g., bootstrap).
+
+Overall, \texttt{nonprobsvy} is a comprehensive toolkit for researchers
+and practitioners working with mixed data sources. It simplifies the
+implementation of complex statistical methods for non-probability
+samples, making it easier to produce robust, reliable estimates even
+when working with non-representative data. By providing a unified
+framework for inference with non-probability samples,
+\texttt{nonprobsvy} contributes to the growing field of data integration
+and enhances the ability of statisticians to make informed decisions
+from diverse data sources.
+
+A natural extension of this study is that consistency can be maintained
+when the design weights \(d_i\) are replaced by calibration weights,
+which is often the case when working with survey sample datasets. In
+addition, other methods of estimating propensity scores proposed in the
+literature can be considered, such as estimation using the empirical
+likelihood approach. It is also worth exploring the situation where the
+two probability and non-probability samples overlap, i.e.~there are
+units present in both datasets. This type of problem will be the focus
+of the author's future work on non--probability sampling, in particular
+its integration with other statistical data sources.
+
 \bibliography{references.bib}
 
 
