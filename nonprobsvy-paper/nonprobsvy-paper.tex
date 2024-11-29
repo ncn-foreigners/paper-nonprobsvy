@@ -115,11 +115,24 @@ structural character.
 It should be noted that there are several packages that allow the
 correction of selection bias in nonprobability samples, such as:
 
-\begin{itemize}
-\item @GJRM supports generalized joint regression modeling, enabling users to fit complex joint models for multivariate outcomes often needed in handling selection bias in nonprobability samples.
-\item @NonProbEst provides methods specifically designed for estimating population parameters from nonprobability samples, employing approaches like propensity score adjustment and calibration weighting to correct for sample selection bias.
-\item @sampling offers tools for implementing various sampling designs, including stratified, cluster, and unequal probability sampling, which are essential for creating representative samples and reducing selection bias in survey data analysis.
-\end{itemize}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \citet{GJRM} supports generalized joint regression modeling, enabling
+  users to fit complex joint models for multivariate outcomes often
+  needed in handling selection bias in nonprobability samples.
+\item
+  \citet{NonProbEst} provides methods specifically designed for
+  estimating population parameters from nonprobability samples,
+  employing approaches like propensity score adjustment and calibration
+  weighting to correct for sample selection bias.
+\item
+  \citet{sampling} offers tools for implementing various sampling
+  designs, including stratified, cluster, and unequal probability
+  sampling, which are essential for creating representative samples and
+  reducing selection bias in survey data analysis.
+\end{enumerate}
 
 However, these packages do not implement state-of-the-art approaches
 recently proposed in the literature: \citet{chen2020doubly},
@@ -213,7 +226,7 @@ $Y$
 \end{tabular}
 & 
 \begin{tabular}{c} % Changed from {l} to {c}
-Design $(d)$ or \\ Calibration $(w)$ \\ Weights
+Design $(d)$ Weights
 \end{tabular}
 \\
 \hline 
@@ -261,7 +274,7 @@ variable. \citet{kim_combining_2021}, \citet{yang2021integration},
 \citet{Beres} propose the following imputation strategies as:
 
 \begin{itemize}
-    \item Model based apprach (GLM),
+    \item Model based approach (GLM),
     \item Nearest neigbour imputation (NN),
     \item Predictive mean mathing (PMM).
 \end{itemize}
@@ -285,8 +298,8 @@ We can obtain an estimate of the population mean based on known design
 weights and an imputation model for units from the probability sample:
 
 \begin{equation}
-\hat{\mu}_{M I}=\frac{1}{\hat{N}^{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
-\end{equation} \(\hat{N}^{\mathrm{B}} = \sum_{i \in S_B} d_i^B\) and
+\hat{\mu}_{M I}=\frac{1}{\hat{N}_{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
+\end{equation} \(\hat{N}_{\mathrm{B}} = \sum_{i \in S_B} d_i^B\) and
 \(\hat{y}\) is the estimated value of \(y\) for units from probability
 samples based on mass imputation model.
 
@@ -409,12 +422,11 @@ statistical offices for compiling a country's official population
 statistics. It is a version of the k-nearest neighbour algorithm, but
 instead of looking at the distances between the vectors of the auxiliary
 variables, it looks at the distance between the functions of the mean
-vectors. Examples of such functions are described in Subsection
-\ref{sec1.3.1}. This helps to reduce the curse of multidimensionality
-and, at the same time, allows the observed values of the explanatory
-variable or their mean to be calculated. Let us therefore present two
-algorithms that describe the steps to follow to perform a mass
-imputation using the mean matching method.
+vectors. This helps to reduce the curse of multidimensionality and, at
+the same time, allows the observed values of the explanatory variable or
+their mean to be calculated. Let us therefore present two algorithms
+that describe the steps to follow to perform a mass imputation using the
+mean matching method.
 
 \begin{algorithm}[H]
 \caption{$\hat{y}-\hat{y}$ Imputation:}
@@ -1333,6 +1345,21 @@ Weights:
   1.169   2.673   4.333   5.661   7.178  49.951 
 -------------------------
 
+Covariate balance:
+ (Intercept)     region04     region06     region08     region10     region12 
+  1028.12621  -2134.53715    674.22292   -567.99552   2183.91092   2625.05778 
+    region14     region16     region18     region20     region22     region24 
+  5591.76507 -10057.99095    485.50485   -575.81701   3046.75848   3556.72624 
+    region26     region28     region30     region32      private      naceD.E 
+ -6137.08004    579.81140   4063.88117  -3833.66622  46302.39060 -46796.28976 
+       naceF        naceG        naceH        naceI        naceJ      naceK.L 
+   200.06842  13948.81746  -5572.84664 -11450.33115  -2455.39528  -1200.06938 
+       naceM        naceN        naceO        naceP        naceQ      naceR.S 
+  1727.57310     29.82868  -1121.28241   -131.62619    580.73294    575.02916 
+       sizeM        sizeS 
+ 11575.60069  29388.14082 
+-------------------------
+
 Residuals:
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 -0.8552 -0.2308  0.5393  0.3080  0.7987  0.9800 
@@ -1371,12 +1398,9 @@ R> est3_logit <- nonprob(
 +   data = admin,
 +   method_selection = "logit",
 +   control_inference = controlInf(var_method = "bootstrap", num_boot = 50),
-+   verbose = T,
++   verbose = F,
 + )
 \end{CodeInput}
-\begin{CodeOutput}
-  |                                                                              |                                                                      |   0%  |                                                                              |=                                                                     |   2%  |                                                                              |===                                                                   |   4%  |                                                                              |====                                                                  |   6%  |                                                                              |======                                                                |   8%  |                                                                              |=======                                                               |  10%  |                                                                              |========                                                              |  12%  |                                                                              |==========                                                            |  14%  |                                                                              |===========                                                           |  16%  |                                                                              |=============                                                         |  18%  |                                                                              |==============                                                        |  20%  |                                                                              |===============                                                       |  22%  |                                                                              |=================                                                     |  24%  |                                                                              |==================                                                    |  26%  |                                                                              |====================                                                  |  28%  |                                                                              |=====================                                                 |  30%  |                                                                              |======================                                                |  32%  |                                                                              |========================                                              |  34%  |                                                                              |=========================                                             |  36%  |                                                                              |===========================                                           |  38%  |                                                                              |============================                                          |  40%  |                                                                              |=============================                                         |  42%  |                                                                              |===============================                                       |  44%  |                                                                              |================================                                      |  46%  |                                                                              |==================================                                    |  48%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================                                  |  52%  |                                                                              |======================================                                |  54%  |                                                                              |=======================================                               |  56%  |                                                                              |=========================================                             |  58%  |                                                                              |==========================================                            |  60%  |                                                                              |===========================================                           |  62%  |                                                                              |=============================================                         |  64%  |                                                                              |==============================================                        |  66%  |                                                                              |================================================                      |  68%  |                                                                              |=================================================                     |  70%  |                                                                              |==================================================                    |  72%  |                                                                              |====================================================                  |  74%  |                                                                              |=====================================================                 |  76%  |                                                                              |=======================================================               |  78%  |                                                                              |========================================================              |  80%  |                                                                              |=========================================================             |  82%  |                                                                              |===========================================================           |  84%  |                                                                              |============================================================          |  86%  |                                                                              |==============================================================        |  88%  |                                                                              |===============================================================       |  90%  |                                                                              |================================================================      |  92%  |                                                                              |==================================================================    |  94%  |                                                                              |===================================================================   |  96%  |                                                                              |===================================================================== |  98%  |                                                                              |======================================================================| 100%
-\end{CodeOutput}
 \end{CodeChunk}
 
 \hypertarget{mi}{%

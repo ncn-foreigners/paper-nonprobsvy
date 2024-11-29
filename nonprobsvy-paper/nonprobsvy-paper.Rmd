@@ -132,11 +132,11 @@ Several inference approaches have been proposed in the literature with respect t
 Although probability samples are still the most popular standard among statisticians, the cost of obtaining them, in terms of time or capital, motivates the use of non-probability samples, which have to overcome other challenges. The first is that such samples generally do not represent the whole population, as can be said of probability samples. Another problem is the lack, or rather the ignorance, of the mechanism for selecting individuals for this type of sample, which does not allow the substantial use of existing statistical methods. For this reason, many different techniques have been proposed in the literature for integrating data in order to infer from available sources of different structural character. 
 
 It should be noted that there are several packages that allow the correction of selection bias in nonprobability samples, such as:
-\begin{itemize}
-\item @GJRM supports generalized joint regression modeling, enabling users to fit complex joint models for multivariate outcomes often needed in handling selection bias in nonprobability samples.
-\item @NonProbEst provides methods specifically designed for estimating population parameters from nonprobability samples, employing approaches like propensity score adjustment and calibration weighting to correct for sample selection bias.
-\item @sampling offers tools for implementing various sampling designs, including stratified, cluster, and unequal probability sampling, which are essential for creating representative samples and reducing selection bias in survey data analysis.
-\end{itemize}
+
+1. @GJRM supports generalized joint regression modeling, enabling users to fit complex joint models for multivariate outcomes often needed in handling selection bias in nonprobability samples.
+2. @NonProbEst provides methods specifically designed for estimating population parameters from nonprobability samples, employing approaches like propensity score adjustment and calibration weighting to correct for sample selection bias.
+3. @sampling offers tools for implementing various sampling designs, including stratified, cluster, and unequal probability sampling, which are essential for creating representative samples and reducing selection bias in survey data analysis.
+
 However, these packages do not implement state-of-the-art approaches recently proposed in the literature: @chen2020doubly, @yang_doubly_2020, @wu2022statistical nor do they use the survey package @lumley2004 for inference.
 
 This paper describes the nonprobsvy package for inference with non--probability samples, available from the Comprehensive R Archive Network (CRAN) at [CRAN.R-project](https://CRAN.R-project.org/package=nonprobsvy). Development version of the package can be also found at [github](https://github.com/ncn-foreigners/nonprobsvy). 
@@ -194,7 +194,7 @@ $Y$
 \end{tabular}
 & 
 \begin{tabular}{c} % Changed from {l} to {c}
-Design $(d)$ or \\ Calibration $(w)$ \\ Weights
+Design $(d)$ Weights
 \end{tabular}
 \\
 \hline 
@@ -229,7 +229,7 @@ Imputation helps prevent data bias and maintains dataset size, ensuring that mis
 
 Mass imputation is the application of imputation techniques to entire datasets where many observations have missing values for the given variable. @kim_combining_2021, @yang2021integration, @Beres propose the following imputation strategies as:
 \begin{itemize}
-    \item Model based apprach (GLM),
+    \item Model based approach (GLM),
     \item Nearest neigbour imputation (NN),
     \item Predictive mean mathing (PMM).
 \end{itemize}
@@ -241,9 +241,9 @@ By assumptions (Table \ref{tab:tabela1_1}), we do not know the value of the depe
 We can obtain an estimate of the population mean based on known design weights and an imputation model for units from the probability sample:
 
 \begin{equation}
-\hat{\mu}_{M I}=\frac{1}{\hat{N}^{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
+\hat{\mu}_{M I}=\frac{1}{\hat{N}_{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
 \end{equation}
- $\hat{N}^{\mathrm{B}} = \sum_{i \in S_B} d_i^B$ and $\hat{y}$ is the estimated value of $y$ for units from probability samples based on mass imputation model.
+ $\hat{N}_{\mathrm{B}} = \sum_{i \in S_B} d_i^B$ and $\hat{y}$ is the estimated value of $y$ for units from probability samples based on mass imputation model.
  
   This estimator can be understood as a version of the Horvitz--Thompson estimator, which are used to estimate mean or total values in the population (based on probability sampling and inclusion probabilities). The only difference is that in our case, instead of the known values of the $Y$ variable, we use its estimated equivalents.
   
@@ -873,7 +873,7 @@ It includes information about NACE (The Nomenclature of Economic Activities) (19
 library(nonprobsvy)
 ```
 
-```{r}
+```{r, out.width="80%"}
 jvs <- read.csv("data-raw/jvs.csv",
                   colClasses = c("character", "numeric",
                                  rep("character", 3), "numeric"))
@@ -937,7 +937,7 @@ est3_logit <- nonprob(
   data = admin,
   method_selection = "logit",
   control_inference = controlInf(var_method = "bootstrap", num_boot = 50),
-  verbose = T,
+  verbose = F,
 )
 ```
 
