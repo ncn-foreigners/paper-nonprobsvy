@@ -884,8 +884,8 @@ R> est1_logit <- nonprob(
 To do this, we define the formulation of the independent variables
 included in the estimation of the probability of inclusion in the
 selection argument, as well as the name of the variable for which we are
-estimating the population mean (target argument). In addition, we apply
-the svydesign object containing the probability sample and
+estimating the population mean (\texttt{target} argument). In addition,
+we apply the svydesign object containing the probability sample and
 non-probability data (data). We estimate the probability using a logit
 linking function.
 
@@ -986,12 +986,24 @@ Log-Likelihood: -21915.41 on 15835 Degrees of freedom
 \end{CodeChunk}
 
 By calling the summary method on an object of class nonprobsvy, we can
-approach, among other things \ldots{}
+approach, among other things the value of the estimated mean, standard
+deviation or its 95\% confidence interval. In addition, we display
+information on the sets used for estimation (probability and
+non-probability sample). The estimated regression coefficients are also
+shown, in this case for the logit model for propensity score estimation.
+In addition, for diagnostic purposes, we have access to the distribution
+of the weights calculated from the inclusion probabilities, an
+assessment of the level of calibration of the variables from the two
+samples (covariate balance), i.e.~the difference in their totals after
+adjusting for the weights from the non-probability sample, the
+distribution of the residuals from the model, as well as the values of
+the AIC, BIC statistics in the case of models based on MLE.
 
-To call the calibration method, we define a controlSel function in the
-control\_selection argument with the est\_method\_sel argument equal to
-`gee' (default `mle') and set the value of h (corresponding to the
-h-function with \ref{}).
+To call the calibration method, we define a \texttt{controlSel} function
+in the \texttt{control\_selection} argument with the
+\texttt{est\_method\_sel} argument equal to `gee' (default \texttt{mle})
+and set the value of \texttt{h} (corresponding to the h-function with
+\ref{}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1009,10 +1021,11 @@ R> est2_logit <- nonprob(
 Another family of estimators (Mass Imputation) requires a slightly
 different function call. As you might have noticed, the definition of
 which estimation method we want to use is not defined in the argument of
-the nonprob function, but in the result of the combination of arguments
-we have defined (specifically formulas). Now the argument in which we
-define the formula is outcome, which mirrors the definition of formulas
-for models in functions from the glm family (for example).
+the \texttt{nonprob} function, but in the result of the combination of
+arguments we have defined (specifically formulas). Now the argument in
+which we define the formula is outcome, which mirrors the definition of
+formulas for models in functions from the \texttt{glm} family (for
+example).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1025,6 +1038,10 @@ R> est5_glm <- nonprob(
 + )
 \end{CodeInput}
 \end{CodeChunk}
+
+In order to induce doubly robust estimation by the joint randomisation
+approach, we need to combine, so to speak, the way the formulas and
+arguments of the two previous approaches are defined, as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1040,9 +1057,83 @@ R> est8_dr1 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
+\hypertarget{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}{%
+\subsection{Predictive Mean Matching and Nearest Neighbours for Mass
+Imputation
+problem}\label{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est6_glm_nn <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "nn",
++   control_outcome = controlOut(k=5)
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est6_glm_pmm1 <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "pmm",
++   control_outcome = controlOut(k=5, predictive_match=1),
++   verbose = TRUE
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+\hypertarget{doubly-robust-with-bias-minimization-application}{%
+\subsection{Doubly Robust with bias minimization
+application}\label{doubly-robust-with-bias-minimization-application}}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est9_dr2 <- nonprob(
++   selection = ~ region + private + nace + size,
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_selection = "logit",
++   method_outcome = "glm",
++   family_outcome = "binomial",
++   control_inference = controlInf(bias_correction = TRUE)
++ )
+\end{CodeInput}
+\end{CodeChunk}
+
+Previous versions assumed an analytical way of calculating the variance,
+based on the Taylor method of approximating functions. More details can
+be found in papers such as \cite{chen2020doubly},
+\cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition,
+the package allows estimation by the popular bootstrap methods, which
+are based on the creation of \texttt{l} artificial samples drawn from
+the original samples using a method with return with a specified
+probability. In our setup, these will be the inverse of the design
+weights in the case of a probability sample, and the simple return in
+the case of a non-probability sample, unless the weights for that sample
+have also been entered in the \texttt{weights} argument of
+\texttt{nonprob} function.
+
 \hypertarget{bootstrap-approach-for-variance-estimation}{%
 \subsection{Bootstrap Approach for Variance
 Estimation}\label{bootstrap-approach-for-variance-estimation}}
+
+In each variant, we first draw bootstrap samples based on probability
+and non-probability data, and then we perform the appropriate
+calculations related to the given estimator to obtain the mean of the
+population of the \texttt{l}-th iteration. Finally, we use the usual
+formula for the bootstrap variance, and in this way we obtain the
+estimate of interest.
+
+The boostrap method is called if its type is defined in the control
+argument \texttt{var\_method}, which defaults to \texttt{analytical}.
+The number of iterations is set in the \texttt{num\_boot} argument
+(default 100).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1061,6 +1152,70 @@ R> est3_logit <- nonprob(
 \hypertarget{variable-selection-algorithms}{%
 \subsection{Variable Selection
 Algorithms}\label{variable-selection-algorithms}}
+
+When dealing with multivariate data with a large number of features, it
+is recommended to select variables for estimation that are statistically
+significant for the model under consideration.
+\citet{yang_asymptotic_2020} point that using variable selection
+techniques during estimation is crucial, especially when dealing with
+high-dimensional data. Variable selection not only improves model
+stability and computational feasibility, but also reduces variance,
+which can increase when irrelevant auxiliary variables are included.
+Including irrelevant variables increases the complexity of the model and
+makes the estimation process more error-prone and unstable. Therefore,
+variable selection is key to ensure robust and efficient estimation.
+Very popular in the statistical literature are variable selection
+methods such as \textit{Least Absolute Shrinkage and Selection Operator}
+\textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation}
+\textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which,
+thanks to appropriate loss functions, degenerate the coefficients in
+variables that have no significant effect on the dependent variable. In
+this way, the result obtained, for example, a linear regression
+equation, is based only on the features selected by the model. The
+selection procedure works in a similar way for non-probability methods
+using external data sources such as sample or population totals or
+averages. In particular, the technique is divided into two steps. In the
+first, we select the relevant variables using an appropriately
+constructed loss function and the estimating equations used. In the
+second case, we construct the equations on the basis of the derived
+biases of the relevant estimator, whose value we calculate only on the
+basis of the selected characteristics.
+
+In the case of data integration based on probability and nonprobability
+samples, the selection of variables is part of a two-step process
+leading to the estimation of the mean, where in the first step
+statistically significant variables are selected and in the second step
+the model is rebuilt. For the first step, a penalized logistic
+regression model has been proposed to estimate propensity scores
+(\citet{yang_doubly_2020}), but this approach can be extended to other
+linking models such as clog-log and probit functions. For a parametric
+model-based mass imputation, penalized OLS
+(\textit{Ordinary Least Squared}) is considered. It is worth mentioning
+that \citet{yang_asymptotic_2020}, in their article on this topic, used
+the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we
+extend it on other selection techniques such as LASSO and MCP.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est7_glm_sel <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "glm",
++   family_outcome = "binomial",
++   control_outcome = controlOut(nfolds = 5, nlambda = 10),
++   control_inference = controlInf(vars_selection = TRUE),
++   verbose = TRUE
++ )
+\end{CodeInput}
+\begin{CodeOutput}
+Starting CV fold #1
+Starting CV fold #2
+Starting CV fold #3
+Starting CV fold #4
+Starting CV fold #5
+\end{CodeOutput}
+\end{CodeChunk}
 
 \hypertarget{classes-and-s3methods}{%
 \section{Classes and S3methods}\label{classes-and-s3methods}}

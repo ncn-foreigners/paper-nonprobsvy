@@ -235,7 +235,7 @@ Jeżeli estymowanie kwantyli jest dodane to warto zaznaczyć że też można.
 A jak nie to można napisać że jest w planach bo maciej tego nie odpuści
 -->
 
-The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. In this paper we do not consider modifications for the possibly occurring overlap. The above description of the data is presented in a more concise form in Table \ref{tab:tabela1_1}.
+The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. In this paper we do not consider modifications for the possibly occurring overlap. The above description of the data is presented in a more concise form in Table \ref{tab-two-sources}.
 
 \begin{table}[H]
     \centering
@@ -278,7 +278,7 @@ Mass imputation is the application of imputation techniques to an entire dataset
 
 Mass imputation is particularly useful in large datasets where missing data can be widespread, and it seeks to preserve the relationships between variables, thus improving the overall integrity of the data.
 
-As presented in (Table \ref{tab:tabela1_1}), we do not know the value of the dependent variable $Y$ for the units in the probability sample. In this case, the method will be to impute the values of the explanatory variable for all units in the probability sample. We therefore treat the non-probability sample as a training set that is used to build the imputation model. In this subsection, we distinguish three main methods of mass imputation based on linear models and the k-nearest neighbours algorithm. Other popular methods for estimating the variable $Y$ from the variable $\bX$ can also be considered, e.g. machine learning models such as random forests or neural networks. 
+As presented in (Table \ref{tab-two-sources}), we do not know the value of the dependent variable $Y$ for the units in the probability sample. In this case, the method will be to impute the values of the explanatory variable for all units in the probability sample. We therefore treat the non-probability sample as a training set that is used to build the imputation model. In this subsection, we distinguish three main methods of mass imputation based on linear models and the k-nearest neighbours algorithm. Other popular methods for estimating the variable $Y$ from the variable $\bX$ can also be considered, e.g. machine learning models such as random forests or neural networks. 
 
 We can obtain an estimate of the population mean based on known design weights and an imputation model for units from the probability sample:
 
@@ -589,7 +589,6 @@ Pozatym trzeba cytować dosłownie każdy pakie którego używamy?
 All of the methods described in this paper have been implemented in the R package \pkg{nonprobsvy} \cite{nonprobsvy}. In this chapter, we will show you how to use the main \code{nonprob} function of the package and what its main features are. The package has been written to be as compatible as possible with the survey package for.inference for probability samples. Namely, the first step to use the nonprobsvy package is to define an object using the svydesign function that stores the probability sample \code{data.frame} and other objects, such as design weights. This is a negligible step if, instead of the probability sample, we have access to the values of the vector of sums of variables in the population. It is also worth mentioning that in order to speed up the calculations in the case of variable selection, part of the package, or more precisely the whole variable selection algorithm, was written in \proglang{C++} using the \pkg{Rcpp} (\cite{Rcpp}) package, which allows the C++ code to be called in the R environment. Moreover, the package is supported by other R packages such as \pkg{foreach} \cite{foreach} (looping construct), \pkg{maxLik} \cite{maxLik} (maximum likelihood estimation), \pkg{Matrix} \cite{Matrix} (matrix operations), \pkg{MASS} @MASS (statistical functions and datasets), \pkg{ncvreg} \cite{ncvreg} (regularization methods), \pkg{mathjaxr} \cite{mathjaxr} (rendering equations in documentation), \pkg{nleqslv} \cite{nleqslv} (solving nonlinear equations), and \pkg{doParallel} \cite{doParallel} (parallel computing).
 
 ## Arguments
-
 Below is the definition of most of the arguments we can pass to the function. These are described in more detail in the documentation on the [CRAN](https://CRAN.R-project.org/package=nonprobsvy) platform.
 
 \begin{table}[H]
@@ -682,15 +681,15 @@ est1_logit <- nonprob(
 )
 ```
 
-To do this, we define the formulation of the independent variables included in the estimation of the probability of inclusion in the selection argument, as well as the name of the variable for which we are estimating the population mean (target argument). In addition, we apply the svydesign object containing the probability sample and non-probability data (data). We estimate the probability using a logit linking function. 
+To do this, we define the formulation of the independent variables included in the estimation of the probability of inclusion in the selection argument, as well as the name of the variable for which we are estimating the population mean (`target` argument). In addition, we apply the svydesign object containing the probability sample and non-probability data (data). We estimate the probability using a logit linking function. 
 
 ```{r}
 summary(est1_logit)
 ```
 
-By calling the summary method on an object of class nonprobsvy, we can approach, among other things ... 
+By calling the summary method on an object of class nonprobsvy, we can approach, among other things the value of the estimated mean, standard deviation or its 95% confidence interval. In addition, we display information on the sets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score estimation. In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities, an assessment of the level of calibration of the variables from the two samples (covariate balance), i.e. the difference in their totals after adjusting for the weights from the non-probability sample, the distribution of the residuals from the model, as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
 
- To call the calibration method, we define a controlSel function in the control_selection argument with the est_method_sel argument equal to ‘gee’ (default ‘mle’) and set the value of h (corresponding to the h-function with \ref{}).
+To call the calibration method, we define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to ‘gee’ (default `mle`) and set the value of `h` (corresponding to the h-function with \ref{}).
 ```{r}
 est2_logit <- nonprob(
   selection = ~ region + private + nace + size,
@@ -703,7 +702,7 @@ est2_logit <- nonprob(
 ```
 
  <!-- Mass Imputation  -->
- Another family of estimators (Mass Imputation) requires a slightly different function call. As you might have noticed, the definition of which estimation method we want to use is not defined in the argument of the nonprob function, but in the result of the combination of arguments we have defined (specifically formulas). Now the argument in which we define the formula is outcome, which mirrors the definition of formulas for models in functions from the glm family (for example). 
+Another family of estimators (Mass Imputation) requires a slightly different function call. As you might have noticed, the definition of which estimation method we want to use is not defined in the argument of the `nonprob` function, but in the result of the combination of arguments we have defined (specifically formulas). Now the argument in which we define the formula is outcome, which mirrors the definition of formulas for models in functions from the `glm` family (for example). 
 
 ```{r}
 est5_glm <- nonprob(
@@ -715,6 +714,7 @@ est5_glm <- nonprob(
 )
 ```
 
+In order to induce doubly robust estimation by the joint randomisation approach, we need to combine, so to speak, the way the formulas and arguments of the two previous approaches are defined, as follows.
  <!-- DR -->
 ```{r}
 est8_dr1 <- nonprob(
@@ -728,13 +728,57 @@ est8_dr1 <- nonprob(
 )
 ```
 
+## Predictive Mean Matching and Nearest Neighbours for Mass Imputation problem
+
+```{r}
+est6_glm_nn <- nonprob(
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_outcome = "nn",
+  control_outcome = controlOut(k=5)
+)
+```
+
+```{r}
+est6_glm_pmm1 <- nonprob(
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_outcome = "pmm",
+  control_outcome = controlOut(k=5, predictive_match=1),
+  verbose = TRUE
+)
+```
+
+## Doubly Robust with bias minimization application
+
+```{r}
+est9_dr2 <- nonprob(
+  selection = ~ region + private + nace + size,
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_selection = "logit",
+  method_outcome = "glm",
+  family_outcome = "binomial",
+  control_inference = controlInf(bias_correction = TRUE)
+)
+```
+
 <!--- Piotrek 17.11.2024
 Pawnie to jest i tak w planach ale dobrze byłoby porównać estymacje na postawie tych różnych estymatorów.
 -->
+Previous versions assumed an analytical way of calculating the variance, based on the Taylor method of approximating functions. More details can be found in papers such as \cite{chen2020doubly}, \cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition, the package allows estimation by the popular bootstrap methods, which are based on the creation of `l` artificial samples drawn from the original samples using a method with return with a specified probability. In our setup, these will be the inverse of the design weights in the case of a probability sample, and the simple return in the case of a non-probability sample, unless the weights for that sample have also been entered in the `weights` argument of `nonprob` function.
 
 ## Bootstrap Approach for Variance Estimation
+In each variant, we first draw bootstrap samples based on probability and non-probability
+data, and then we perform the appropriate calculations related to the given estimator to obtain
+the mean of the population of the `l`-th iteration. Finally, we use the usual formula for the
+bootstrap variance, and in this way we obtain the estimate of interest.
 
-<!-- IPW bootstrap -->
+The boostrap method is called if its type is defined in the control argument `var_method`, which defaults to `analytical`. The number of iterations is set in the `num_boot` argument (default 100).
+
 ```{r}
 est3_logit <- nonprob(
   selection = ~ region + private + nace + size,
@@ -748,9 +792,38 @@ est3_logit <- nonprob(
 ```
 
 ## Variable Selection Algorithms
+When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} \textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation} \textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
+
+In the case of data integration based on probability and nonprobability samples, the selection of variables is part of a two-step process leading to the estimation of the mean, where in the first step statistically significant variables are selected and in the second step the model is rebuilt. For the first step, a penalized logistic regression model has been proposed to estimate propensity scores (\citet{yang_doubly_2020}), but this approach can be extended to other linking models such as clog-log and probit functions. For a parametric model-based mass imputation, penalized OLS (\textit{Ordinary Least Squared}) is considered. It is worth mentioning that \citet{yang_asymptotic_2020}, in their article on this topic, used the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we extend it on other selection techniques such as LASSO and MCP.
+
+```{r}
+est7_glm_sel <- nonprob(
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_outcome = "glm",
+  family_outcome = "binomial",
+  control_outcome = controlOut(nfolds = 5, nlambda = 10),
+  control_inference = controlInf(vars_selection = TRUE),
+  verbose = TRUE
+)
+```
 
 # Classes and S3methods
 
+<!--- TODO
+nobs
+pop.size
+residuals
+cooks.distance
+hatvalues
+loglik
+AIC
+BIC
+confint
+vcov
+deviance
+-->
 
 # Summary and future work
 
