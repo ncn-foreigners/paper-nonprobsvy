@@ -23,13 +23,27 @@ non-probability surveys}
 
 
 \Abstract{
-The abstract of the article.
+The paper presents \pkg{nonprobsvy} package which implements the
+state-of-the-art statistical inference methods for non-probability
+samples. The package implements various approaches that can be
+categorized into three groups: prediction-based approach, inverse
+probability weighting and doubly robust. On the contrary to the existing
+packages \pkg{nonprobsvy} assumes existance of either full population or
+probability-based population information and laverage the \pkg{survey}
+package for the inference. The package implements both analytical and
+bootstrap variance estimation for all of the proposed estimators. In the
+paper we present the theory behind the package, its functionalities and
+case study that showcases the usage of the package. The package is aimed
+at official statisticans, public opinion or market researchers who
+whould like to use non-probability samples to accurately estimate
+popualtion characteristics.
 }
 
 \Keywords{data integration, doubly robust estimation, propensity score
-estimation, mass imputation, \proglang{R}}
+estimation, mass
+imputation, \proglang{R}, \proglang{Python}, \pkg{survey}}
 \Plainkeywords{data integration, doubly robust estimation, propensity
-score estimation, mass imputation, R}
+score estimation, mass imputation, R, Python, survey}
 
 %% publication information
 %% \Volume{50}
@@ -80,58 +94,154 @@ ul. Wojska Polskiego 27/29\\
 
 
 
-\usepackage{amsmath} \usepackage{amssymb} \usepackage[T1]{fontenc} \usepackage{lmodern} \usepackage{physics} \usepackage{amsfonts} \usepackage{graphicx} \usepackage{enumitem} \usepackage{float} \usepackage{tabularx} \usepackage{amsthm} \usepackage{geometry} \usepackage{xcolor}
-
-\pagestyle{headings}
-
-\usepackage{fancyhdr}  \usepackage{color}  \usepackage{multirow} \usepackage{booktabs} \usepackage{url} \usepackage{array} \usepackage{graphicx} \usepackage[mathcal]{eucal} \usepackage{algorithm} \usepackage{algpseudocode} \usepackage{listings} \usepackage{makecell} \usepackage{inconsolata} \usepackage{lscape} \usepackage{pdflscape} \usepackage{makecell} \usepackage{enumitem} \usepackage{siunitx} \usepackage{multirow} \usepackage{caption} \usepackage{booktabs} \newcommand{\argmin}{\operatornamewithlimits{arg\,min}} \newcommand{\argmax}{\operatornamewithlimits{arg\,max}} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
+\usepackage{amsmath, amsthm, amssymb} \usepackage{calc, ragged2e} \usepackage[ruled]{algorithm2e} \usepackage{algpseudocode} \newcommand{\argmin}{\operatornamewithlimits{arg\,min}} \newcommand{\argmax}{\operatornamewithlimits{arg\,max}} \newcommand{\bX}{\boldsymbol{X}} \newcommand{\bx}{\boldsymbol{x}} \newcommand{\bY}{\boldsymbol{Y}} \newcommand{\by}{\boldsymbol{y}} \newcommand{\bh}{\boldsymbol{h}} \newcommand{\bH}{\boldsymbol{H}} \newcommand{\ba}{\boldsymbol{a}} \newcommand{\bp}{\boldsymbol{p}} \newcommand{\bA}{\boldsymbol{A}} \newcommand{\bw}{\boldsymbol{w}} \newcommand{\bd}{\boldsymbol{d}} \newcommand{\bZ}{\boldsymbol{Z}} \newcommand{\bz}{\boldsymbol{z}} \newcommand{\bv}{\boldsymbol{v}} \newcommand{\bu}{\boldsymbol{u}} \newcommand{\bU}{\boldsymbol{U}} \newcommand{\bQ}{\boldsymbol{Q}} \newcommand{\bG}{\boldsymbol{G}} \newcommand{\HT}{\text{\rm HT}} \newcommand{\bbeta}{\boldsymbol{\beta}} \newcommand{\balpha}{\boldsymbol{\alpha}} \newcommand{\btau}{\boldsymbol{\tau}} \newcommand{\bgamma}{\boldsymbol{\gamma}} \newcommand{\btheta}{\boldsymbol{\theta}} \newcommand{\blambda}{\boldsymbol{\lambda}} \newcommand{\bPhi}{\boldsymbol{\Phi}} \newcommand{\bEta}{\boldsymbol{\eta}} \newcommand{\bZero}{\boldsymbol{0}} \newcommand{\colvec}{\operatorname{colvec}} \newcommand{\logit}{\operatorname{logit}} \newcommand{\Exp}{\operatorname{Exp}} \newcommand{\Ber}{\operatorname{Bernoulli}} \newcommand{\Uni}{\operatorname{Uniform}}
 
 \begin{document}
 
 
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{sec-introduction}
 
-With the availability of large sets of administrative data, voluntary
-internet panels, social media and big data, inference with
-non-probability samples is being heavily studied in the statistical
-literature \cite{beaumont2020probability},
-\cite{elliott_inference_2017}, \cite{berkesewicz2017two},
-\cite{citro2014multiple}. Because of their non-statistical character and
-unknown sampling mechanism, these sources cannot be used directly for
-estimating population characteristics.
+In official statistics, information about the target population and its
+characteristics is mainly collected through probability surveys, census
+or is obtained from administrative registers, which covers all (or
+nearly all) units of the population. However, owing to increasing
+non-response rates, particularly unit non-response and non-contact
+(resulting from the growing respondent burden), as well as rising costs
+of surveys conducted by National Statistical Institutes (NSIs),
+non-probability data sources are becoming more popular
+\citep{berkesewicz2017two, beaumont2020probability}. Non-probability
+surveys, such as opt-in web panels, social media, scanner data, mobile
+phone data or voluntary register data, are currently being explored for
+use in the production of official statistics
+\citep{citro2014multiple,daas2015big}, public opinion studies or market
+research. Since the selection mechanism in these sources is unknown,
+standard design-based inference methods cannot be directly applied.
 
-Several inference approaches have been proposed in the literature with
-respect to data from non-probability samples, which either involve data
-integration with population level data or probability samples from the
-same population (for recent review see \cite{wu2022statistical}).
+To make it clear what we are dealing with we prepared Table
+\ref{tab-comparison-characteristics} that compares the basic
+characteristics of probability and non-probability samples. In
+particular, what are the advantages and disadvantages of each type of
+sample with respect to population coverage, bias, variance, costs, and
+the selection mechanism for observations into the samples. In general,
+non-probability samples suffers from unknown selection mechanism
+(i.e.~unknown probabilities of inclusion into sample) and under-coverage
+of certain groups from the population. As a result direct estimation
+based on these samples are characterised with bias and, in most cases,
+small variance (for large non-probability surveys) which leads to so
+called big data paradox. Certainly, cost and timeliness of these surveys
+is significantly smaller than for non-probability samples.
 
-Although probability samples are still the most popular standard among
-statisticians, the cost of obtaining them, in terms of time or capital,
-motivates the use of non-probability samples, which have to overcome
-other challenges. The first is that such samples generally do not
-represent the whole population, as can be said of probability samples.
-Another problem is the lack, or rather the ignorance, of the mechanism
-for selecting individuals for this type of sample, which does not allow
-the substantial use of existing statistical methods. For this reason,
-many different techniques have been proposed in the literature for
-integrating data in order to infer from available sources of different
-structural character.
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{lll}
+    \hline
+    \textbf{Factor}   &  \textbf{Probability sample} & \textbf{Non-probability sample}\\
+    \hline
+    Selection & Known probabilities & Unknown self-selection \\
+    Coverage & Complete & Incomplete \\
+    Estimation bias & Unbiased under design & Potential systematic bias \\
+    Variance of estimates & Typically high & Typically low \\
+    Cost & High & Low \\
+    Availability & Long & Rapid \\
+    \hline
+    \end{tabular}
+    \caption{Comparison of probability and non-probability samples and its characteristics}
+    \label{tab-comparison-characteristics}
+\end{table}
 
-It should be noted that there are several packages that allow the
-correction of selection bias in nonprobability samples, such as:
+To address this problem, several approaches based on inverse probability
+weighting (IPW), model-based prediction / mass imputation (MI) and
+doubly robust (DR) estimators have been proposed for two main scenarios:
+1) population-level data are available, either in the form of unit-level
+data (e.g.~from a\textasciitilde register covering the whole population)
+or known population totals/means, and 2) only survey data are available
+as a\textasciitilde source of information about the target population
+\citep[cf.][]{elliott_inference_2017}. \citet{wu2022statistical}
+classified these approaches into three groups that require
+a\textasciitilde joint randomization framework involving \(p\)
+(probability sampling design) and one of the outcome regression model
+\(\xi\) or propensity score model \(q\). In this approach the IPW
+estimator is under the \(qp\) framework, the MI estimator is under the
+\(\xi p\) framework, DR is under the \(qp\) or \(\xi p\) framework.
 
-\begin{itemize}
-\item \pkg{GJRM} (\cite{GJRM}) supports generalized joint regression modeling, enabling users to fit complex joint models for multivariate outcomes often needed in handling selection bias in nonprobability samples.
-\item \pkg{NonProbEst} (\cite{NonProbEst}) provides methods specifically designed for estimating population parameters from nonprobability samples, employing approaches like propensity score adjustment and calibration weighting to correct for sample selection bias.
-\item \pkg{sampling} (\cite{sampling}) offers tools for implementing various sampling designs, including stratified, cluster, and unequal probability sampling, which are essential for creating representative samples and reducing selection bias in survey data analysis.
-\end{itemize}
+Most approaches assume that population data are used to reduce the bias
+of non-probability sampling by a\textasciitilde proper reweighting to
+reproduce known population totals/means, by modelling
+\(E(Y|\boldsymbol{X})\) using various techniques or combining both
+approaches (for instance doubly robust estimators,
+cf.~\citet{chen2020doubly}; Multilevel Regression and
+Post-stratification -- MRP also called \textit{Mister-P},
+cf.~\citet{gelman1997poststratification}). Majority of these methods
+rely on a limited number of moments of continuous or count data, with
+some exceptions. For example, non-parametric approaches based on nearest
+neighbours (NN), such as those discussed by Yang, Kim and Hwang
+(\citeyear{yang2021integration}) or kernel density estimation (KDE)
+described by Chen, Yang and Kim (\citeyear{chen_nonparametric_2022})
+have also been proposed. It should be highlighted that, on contrary to
+probability samples, there is no single method that can be used for
+non-probability samples. Literature, and thus statistical software,
+offers various methods as presented in the next section.
 
-However, these packages do not implement state-of-the-art approaches
-recently proposed in the literature: \cite{chen2020doubly},
-\cite{yang_doubly_2020}, \cite{wu2022statistical} nor do they use the
-survey package \cite{lumley2004} for inference.
+\subsection{Software for non-probability samples}\label{sec-software}
+
+Table \ref{tab-comparisons} presents comparison of availability of
+various inference methods and functionalities of selected packages. We
+focused on packages available through CRAN or PyPI (for non-CRAN
+packages see \citet{cobo2024software}). In the comparison we included
+four packages that focuses on non-probability samples: \pkg{NonProbEst}
+\citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage},
+\pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy} as well as
+two packages that implements specific, popular, methods: \pkg{rstanarm}
+(Bayesian approach; MRP; \citet{rstanarm}) and \pkg{GJRM} (sample
+selection models from econometrics; \citet{GJRM}). The \pkg{NonProbEst}
+implements IPW under logistic regression as well as machine learning
+approaches (e.g.~CART, GBM or Neural Networks) however does not provide
+theoretical justification of using the ML approaches. The \pkg{balance}
+focuses solely on the IPW and uses stand
+
+\begin{table}[ht!]
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}{p{4cm}cccccc}
+\hline
+\textbf{Methods \& functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
+\hline
+IPW  & $\checkmark$ & -- & ? & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
+MI (population)   & $\checkmark$ & -- & -- & --& --& $\checkmark$ \\
+MI (sample) & -- & -- & -- & -- & -- & $\checkmark$\\
+DR & -- & -- & -- & -- & $\checkmark$ & $\checkmark$\\
+MRP & -- & $\checkmark$ & -- & --  &--  & -- \\
+Joint modelling / sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
+Variable selection & & & & & & $\checkmark$\\
+Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
+Bootstrap variance & -- & -- & -- & & & $\checkmark$\\
+Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\checkmark$\\
+\hline
+\end{tabular}
+}
+\caption{Comparison of inference methods an of different packages}
+\label{tab-comparisons}
+\end{table}
+
+It should be however noted that implementation of specific approaches
+may vary significantly as the documentation of specific modules is
+limited. For instance, \pkg{NonProbEst} allows for calibration of IPW
+weights \textit{after} they are estimated, while \pkg{nonprobsvy} does
+this in one step. On the other hand \pkg{NonProbEst} implements various
+weights based on the estimated propensity scores while \pkg{nonprobsvy}
+supports only two types of IPW weights. Furthermore, it should be noted
+that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements survey
+calibration for non-probability sample but it is not theoretically
+justified as the inclusion probabilities are unknown (on the contrary to
+probability samples).
+
+In should be noted that only \pkg{nonprobsvy} leveraged the use of the
+\pkg{survey} package to estimate analytic as well as bootstrap variance
+of the non-probability estimators. Furtheremore, none of the packages
+focusing on frequentist approach to statistical inference implements
+correct
 
 This paper describes the nonprobsvy package for inference with
 non--probability samples, available from the Comprehensive R Archive
@@ -140,35 +250,10 @@ Network (CRAN) at
 Development version of the package can be also found at
 \href{https://github.com/ncn-foreigners/nonprobsvy}{github}.
 
-Table \ref{tab:tabela1} shows the basic characteristics of each of the
-samples described. In particular, what are the advantages and
-disadvantages of each type of sample with respect to population
-coverage, bias, variance, costs, and the selection mechanism for
-observations into the samples.
-
-\begin{table}
-    \centering
-    \caption{Probability and non-probability samples}
-    \begin{tabular}{lll}
-    \hline
-    \textbf{Factor}     &  \textbf{Probability sample} & \textbf{Non-probability sample}\\
-    \hline
-    Selection     &  Sampling design & Auto-selection \\
-    Coverage     &  Typically good & Certain groups are excluded \\
-    Bias & Typically smaller & Large or very large \\
-    Variance & Typically larger & Small, or very small \\
-    Cost & Large or very large & Typically small \\
-    \hline
-    \end{tabular}
-    \label{tab:tabela1}
-\end{table}
-
-\hypertarget{methods-for-non-probability-samples}{%
 \section{Methods for non-probability
-samples}\label{methods-for-non-probability-samples}}
+samples}\label{methods-for-non-probability-samples}
 
-\hypertarget{basic-setup}{%
-\subsection{Basic setup}\label{basic-setup}}
+\subsection{Basic setup}\label{basic-setup}
 
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
 labelled units. Each unit \(i\) has an associated vector of auxiliary
@@ -193,9 +278,9 @@ Instead, one could try combining the non-probability and probability
 samples to estimate \(\mu_{y}\). In this paper we do not consider
 modifications for the possibly occurring overlap. The above description
 of the data is presented in a more concise form in Table
-\ref{tab:tabela1_1}.
+\ref{tab-two-sources}.
 
-\begin{table}[H]
+\begin{table}[ht!]
     \centering
     \begin{tabular}{llccc} 
     \hline
@@ -213,9 +298,8 @@ of the data is presented in a more concise form in Table
     \label{tab-two-sources}
 \end{table}
 
-\hypertarget{mass-imputation-estimators}{%
 \subsection{Mass Imputation
-estimators}\label{mass-imputation-estimators}}
+estimators}\label{mass-imputation-estimators}
 
 Imputation refers to the process of replacing missing or incomplete data
 with substituted values. The goal of imputation is to allow for more
@@ -235,9 +319,9 @@ Mass imputation is particularly useful in large datasets where missing
 data can be widespread, and it seeks to preserve the relationships
 between variables, thus improving the overall integrity of the data.
 
-As presented in (Table \ref{tab:tabela1_1}), we do not know the value of
-the dependent variable \(Y\) for the units in the probability sample. In
-this case, the method will be to impute the values of the explanatory
+As presented in (Table \ref{tab-two-sources}), we do not know the value
+of the dependent variable \(Y\) for the units in the probability sample.
+In this case, the method will be to impute the values of the explanatory
 variable for all units in the probability sample. We therefore treat the
 non-probability sample as a training set that is used to build the
 imputation model. In this subsection, we distinguish three main methods
@@ -261,9 +345,8 @@ population (based on probability sampling and inclusion probabilities).
 The only difference is that in our case, instead of the known values of
 the \(Y\) variable, we use its estimated equivalents.
 
-\hypertarget{generalized-linear-models}{%
 \subsubsection{Generalized Linear
-Models}\label{generalized-linear-models}}
+Models}\label{generalized-linear-models}
 
 Let us assume the following parametric model for the sample \(S_A\)
 based on the conditional expected value of the variable \(Y\). Let
@@ -294,21 +377,8 @@ for some \(p\)-dimensional vector of function
 might be used for certain applications. The mass imputation process is
 described in Algorithm \ref{algo-1}.
 
-\begin{algorithm}[H]
-\caption{Mass imputation based on a generalized linear model}
-\label{algo-1}
-\begin{algorithmic}[1]
- \State Estimate the regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$\ basing on units from $S_A$ sample.
- \State For each $i \in S_B$, calculate the imputed value as
- $$
- \hat{y}_i = m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right).
- $$
-\end{algorithmic}
-\end{algorithm}
-
-\hypertarget{nearest-neighbour-algorithm}{%
 \subsection{Nearest Neighbour
-Algorithm}\label{nearest-neighbour-algorithm}}
+Algorithm}\label{nearest-neighbour-algorithm}
 
 On the other hand, it is also possible to consider a non-parametric
 model for the problem described, i.e.~for each individual from sample
@@ -318,24 +388,6 @@ corresponding metric. Then, the missing values of the variable \(Y\)
 from sample \(S_B\) are replaced by the values (or their mean if more
 than one neighbour is considered) of this variable for the corresponding
 neighbours from sample \(S_A\). The algorithm is as follows
-
-\begin{algorithm}[H]
-\caption{Mass imputation using the k-nearest-neighbour algorithm}
-\label{algo-2}
-\begin{algorithmic}[1]
-\State If $k=1$, then for each $i \in S_B$ match $\hat{\nu}(i)$ such that
-$\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\boldsymbol{x}_i,\boldsymbol{x}_j\right)$.
-\State If $k>1$, then
-$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
-\{\hat{\nu}(i, t)\}} d\left(\boldsymbol{x}_i, \boldsymbol{x}_j\right)$$
-i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample.\;
-\State For each $i \in S_B$, calculate the imputed value as
-$$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
-$$
-\end{algorithmic}
-\end{algorithm}
 
 Note that the algorithm differs depending on the number of nearest
 neighbours chosen. In case \(k=1\) the nearest neighbour value is
@@ -347,8 +399,7 @@ explanatory variables, imputation can lead to a large variance in the
 estimator. On the other hand, the algorithm is easy to interpret and
 simple to implement.
 
-\hypertarget{predictive-mean-matching}{%
-\subsection{Predictive Mean Matching}\label{predictive-mean-matching}}
+\subsection{Predictive Mean Matching}\label{predictive-mean-matching}
 
 Predictive mean-matching imputation is a particularly well-known way of
 dealing with non-response among respondents, and is favoured by
@@ -362,55 +413,6 @@ their mean to be calculated. Let us therefore present two algorithms
 that describe the steps to follow to perform a mass imputation using the
 mean matching method.
 
-\begin{algorithm}[H]
-\caption{$\hat{y}-\hat{y}$ Imputation:}
-\label{algo-3}
-\begin{algorithmic}[1]
-\State Estimate regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
-\State Impute $$\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right), 
-\hat{y}_{j}=m\left(\boldsymbol{x}_{j},\hat{\boldsymbol{\beta}}\right)$$
-for $i\in S_{B}, j\in S_{A}$ and assign each 
-$i\in S_{B}$ to $\hat{\nu}(i)$, where
-$$\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j\in S_{A}}\lVert \hat{y}_{i}-\hat{y}_{j}\rVert$$ or
-$$\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right)$$ if $d$ is not induced by the norm.\;
-
-\State If $k>1$, then:
-$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
-\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)$$
-e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbor from a sample.\;
-\State For $i \in S_B$, calculate imputation value as 
-$$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
-$$
-\end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[H]
-\caption{$\hat{y}-y$ Imputation:}
-\label{algo-4}
-\begin{algorithmic}[1]
-\State Estimate regression $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
-\State Impute $\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right)$ 
-for $i \in S_{B}$ and assign each 
-$i \in S_{B}$ do $\hat{\nu}(i)$, where
-$\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j \in S_{A}}\lVert \hat{y}_{i}-y_{j}\rVert$ or
-$\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right)$ 
-if $d$ not induced by the norm.\;
-\State If $k>1$, then:
-$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
-\{\hat{\nu}(i, t)\}}
-d\left(\hat{y}_{i},y_{j}\right).$$
-\State For each $i \in S_B$ calculate imputation value as
-$$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
-$$
-\end{algorithmic}
-\end{algorithm}
-
 As can be seen, the difference between the two algorithms is due to step
 2. In the first approach, we compare \(\hat{y}\) from samples \(S_A\)
 and \(S_B\). The second, on the other hand, compares \(\hat{y}\) from
@@ -418,9 +420,8 @@ sample \(S_B\) with the known \(y\) from sample \(S_A\). It is worth
 noting that proof of the consistency of these estimators can be found in
 \citet{Beres}.
 
-\hypertarget{inverse-probability-weighting-estimators}{%
 \subsection{Inverse Probability Weighting
-estimators}\label{inverse-probability-weighting-estimators}}
+estimators}\label{inverse-probability-weighting-estimators}
 
 The main disadvantage of non-probability sampling is the unknown
 selection mechanism for a unit to be included in the sample. This is why
@@ -457,9 +458,8 @@ probability weighting estimator of the population mean of the form
 \end{equation} where
 \(\hat{N}^A = \sum_{i \in S_A} \hat{d}_i^A = \sum_{i \in S_A} \frac{1}{\hat{\pi}_i^A}\).
 
-\hypertarget{maximum-likelihood-estimation}{%
 \subsubsection{Maximum Likelihood
-Estimation}\label{maximum-likelihood-estimation}}
+Estimation}\label{maximum-likelihood-estimation}
 
 Consider the following likelihood function \begin{align}
     \begin{split}
@@ -477,9 +477,8 @@ units in the sample \(S_B\). We then have \begin{equation}
 such that \(\hat{\boldsymbol{\theta}}\) maximises the function defined
 above.
 
-\hypertarget{generalized-estimating-equations}{%
 \subsubsection{Generalized Estimating
-Equations}\label{generalized-estimating-equations}}
+Equations}\label{generalized-estimating-equations}
 
 Equations of the type
 \(\operatorname{U}(\boldsymbol{\theta}) = \boldsymbol{0}\), where
@@ -529,14 +528,14 @@ around the values 1 and 0. Compared to the sigmoidal function and the
 distribution, the cloglog function is more asymmetric towards the value
 0.5.
 
-\begin{table}[H]
+\begin{table}[ht!]
 \small
 \caption{MLE Functions and Gradients for Different Link Functions}
 \centering
 \begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
-\toprule
-Link & MLE Function & Gradient \\ \midrule
-
+\hline
+Link & MLE Function & Gradient \\ 
+\hline
 \code{logit} & 
 $\displaystyle
 \begin{aligned}
@@ -549,7 +548,7 @@ $\displaystyle
 & \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
 & {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
 \end{aligned}
-$ \\ \midrule
+$ \\ \hline
 
 \code{probit} & 
 $\displaystyle
@@ -563,7 +562,7 @@ $\displaystyle
 & \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
 & {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
 \end{aligned}
-$ \\ \midrule
+$ \\ \hline
 
 \code{cloglog} & 
 $\displaystyle
@@ -577,13 +576,12 @@ $\displaystyle
 & \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
 & {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
 \end{aligned}
-$ \\ \bottomrule
+$ \\ \hline
 
 \end{tabular}
 \end{table}
 
-\hypertarget{doubly-robust-estimators}{%
-\subsection{Doubly Robust estimators}\label{doubly-robust-estimators}}
+\subsection{Doubly Robust estimators}\label{doubly-robust-estimators}
 
 The inverse probability weighting and mass imputation estimators are
 sensible on misspecified models for propensity score and outcome
@@ -608,9 +606,8 @@ robust method incorporates a prediction model for the response variable.
 Moreover, even if one of the models is misspecified, the DR estimator
 remains consistent, showcasing the ``double robustness'\,' property.
 
-\hypertarget{joint-randomization-approach}{%
 \subsubsection{Joint Randomization
-Approach}\label{joint-randomization-approach}}
+Approach}\label{joint-randomization-approach}
 
 The joint randomization approach combines two processes: the selection
 mechanism of a non-probability sample, modelled by propensity scores,
@@ -637,9 +634,8 @@ randomness in both the non-probability sample through
 \(\pi(\boldsymbol{x}_i, \boldsymbol{\theta})\) and the probability
 sample through design-based inference.
 
-\hypertarget{minimization-of-the-bias-for-doubly-robust-methods}{%
 \subsubsection{Minimization of the bias for doubly robust
-methods}\label{minimization-of-the-bias-for-doubly-robust-methods}}
+methods}\label{minimization-of-the-bias-for-doubly-robust-methods}
 
 By reducing the variance of the estimators, for example by variable
 selection, we cannot control the bias of the estimator, which may
@@ -685,9 +681,8 @@ system of equations \begin{equation}
 \end{equation} which can be solved using Newton--Raphson optimization
 method.
 
-\hypertarget{package-contents-and-implementation}{%
 \section{Package contents and
-implementation}\label{package-contents-and-implementation}}
+implementation}\label{package-contents-and-implementation}
 
 All of the methods described in this paper have been implemented in the
 R package \pkg{nonprobsvy} \cite{nonprobsvy}. In this chapter, we will
@@ -713,14 +708,13 @@ estimation), \pkg{Matrix} \cite{Matrix} (matrix operations), \pkg{MASS}
 (solving nonlinear equations), and \pkg{doParallel} \cite{doParallel}
 (parallel computing).
 
-\hypertarget{arguments}{%
-\subsection{Arguments}\label{arguments}}
+\subsection{Arguments}\label{arguments}
 
 Below is the definition of most of the arguments we can pass to the
 function. These are described in more detail in the documentation on the
 \href{https://CRAN.R-project.org/package=nonprobsvy}{CRAN} platform.
 
-\begin{table}[H]
+\begin{table}[ht!]
 \centering
 \caption{\code{nonprob} function arguments description}
 \begin{tabular}{p{3cm}p{8cm}p{3cm}}
@@ -774,8 +768,7 @@ will focus on the three main estimators, as function calls for other
 functionalities such as variable selection, other linking functions or
 mass imputation methods.
 
-\hypertarget{package-usage}{%
-\section{Package Usage}\label{package-usage}}
+\section{Package Usage}\label{package-usage}
 
 We apply our methods to integrate administrative and survey data about
 job vacancies in Poland. The goal is to estimate the percentage of
@@ -797,6 +790,12 @@ includes information about NACE (The Nomenclature of Economic
 Activities) (19 levels), region (16 levels), sector (2 levels), size (3
 levels) and the number of employees according to administrative data
 integrated by Statistics Poland (RE).
+
+\begin{CodeChunk}
+\begin{CodeOutput}
+Warning: package 'survival' was built under R version 4.3.3
+\end{CodeOutput}
+\end{CodeChunk}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -862,8 +861,7 @@ R> head(admin)
 \end{CodeOutput}
 \end{CodeChunk}
 
-\hypertarget{standard-estimation}{%
-\subsection{Standard Estimation}\label{standard-estimation}}
+\subsection{Standard Estimation}\label{standard-estimation}
 
 We will begin by showing how to use the package for estimation with the
 standard methods described in Chapter 2. We will start by calling the
@@ -961,18 +959,18 @@ Weights:
 -------------------------
 
 Covariate balance:
- (Intercept)     region04     region06     region08     region10     region12 
-  1028.12621  -2134.53715    674.22292   -567.99552   2183.91092   2625.05778 
-    region14     region16     region18     region20     region22     region24 
-  5591.76507 -10057.99095    485.50485   -575.81701   3046.75848   3556.72624 
-    region26     region28     region30     region32      private      naceD.E 
- -6137.08004    579.81140   4063.88117  -3833.66622  46302.39060 -46796.28976 
-       naceF        naceG        naceH        naceI        naceJ      naceK.L 
-   200.06842  13948.81746  -5572.84664 -11450.33115  -2455.39528  -1200.06938 
-       naceM        naceN        naceO        naceP        naceQ      naceR.S 
-  1727.57310     29.82868  -1121.28241   -131.62619    580.73294    575.02916 
-       sizeM        sizeS 
- 11575.60069  29388.14082 
+(Intercept)    region04    region06    region08    region10    region12 
+  1028.1277  -2134.5371    674.2230   -567.9955   2183.9110   2625.0580 
+   region14    region16    region18    region20    region22    region24 
+  5591.7654 -10057.9909    485.5049   -575.8170   3046.7586   3556.7265 
+   region26    region28    region30    region32     private     naceD.E 
+ -6137.0800    579.8114   4063.8814  -3833.6662  46302.3921 -46796.2897 
+      naceF       naceG       naceH       naceI       naceJ     naceK.L 
+   200.0687  13948.8179  -5572.8465 -11450.3311  -2455.3952  -1200.0693 
+      naceM       naceN       naceO       naceP       naceQ     naceR.S 
+  1727.5732     29.8287  -1121.2824   -131.6262    580.7330    575.0292 
+      sizeM       sizeS 
+ 11575.6010  29388.1418 
 -------------------------
 
 Residuals:
@@ -1057,10 +1055,9 @@ R> est8_dr1 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\hypertarget{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}{%
 \subsection{Predictive Mean Matching and Nearest Neighbours for Mass
 Imputation
-problem}\label{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}}
+problem}\label{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1087,9 +1084,8 @@ R> est6_glm_pmm1 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\hypertarget{doubly-robust-with-bias-minimization-application}{%
 \subsection{Doubly Robust with bias minimization
-application}\label{doubly-robust-with-bias-minimization-application}}
+application}\label{doubly-robust-with-bias-minimization-application}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1119,9 +1115,8 @@ the case of a non-probability sample, unless the weights for that sample
 have also been entered in the \texttt{weights} argument of
 \texttt{nonprob} function.
 
-\hypertarget{bootstrap-approach-for-variance-estimation}{%
 \subsection{Bootstrap Approach for Variance
-Estimation}\label{bootstrap-approach-for-variance-estimation}}
+Estimation}\label{bootstrap-approach-for-variance-estimation}
 
 In each variant, we first draw bootstrap samples based on probability
 and non-probability data, and then we perform the appropriate
@@ -1149,9 +1144,8 @@ R> est3_logit <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\hypertarget{variable-selection-algorithms}{%
 \subsection{Variable Selection
-Algorithms}\label{variable-selection-algorithms}}
+Algorithms}\label{variable-selection-algorithms}
 
 When dealing with multivariate data with a large number of features, it
 is recommended to select variables for estimation that are statistically
@@ -1217,11 +1211,9 @@ Starting CV fold #5
 \end{CodeOutput}
 \end{CodeChunk}
 
-\hypertarget{classes-and-s3methods}{%
-\section{Classes and S3methods}\label{classes-and-s3methods}}
+\section{Classes and S3methods}\label{classes-and-s3methods}
 
-\hypertarget{summary-and-future-work}{%
-\section{Summary and future work}\label{summary-and-future-work}}
+\section{Summary and future work}\label{summary-and-future-work}
 
 The \pkg{nonprobsvy} package is an R tool developed to address
 challenges associated with making inferences from non-probability
@@ -1278,6 +1270,92 @@ units present in both datasets. This type of problem will be the focus
 of the author's future work on non--probability sampling, in particular
 its integration with other statistical data sources.
 
+\appendix
+
+\section{Algorithms}\label{sec-details}
+
+\begin{algorithm}
+\caption{Mass imputation based on a generalized linear model}
+\label{algo-1}
+\begin{algorithmic}[1]
+ \State Estimate the regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$\ basing on units from $S_A$ sample.
+ \State For each $i \in S_B$, calculate the imputed value as
+ $$
+ \hat{y}_i = m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right).
+ $$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Mass imputation using the k-nearest-neighbour algorithm}
+\label{algo-2}
+\begin{algorithmic}[1]
+\State If $k=1$, then for each $i \in S_B$ match $\hat{\nu}(i)$ such that
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\boldsymbol{x}_i,\boldsymbol{x}_j\right)$.
+\State If $k>1$, then
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\boldsymbol{x}_i, \boldsymbol{x}_j\right)$$
+i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample.\;
+\State For each $i \in S_B$, calculate the imputed value as
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\hat{y}-\hat{y}$ Imputation:}
+\label{algo-3}
+\begin{algorithmic}[1]
+\State Estimate regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
+\State Impute $$\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right), 
+\hat{y}_{j}=m\left(\boldsymbol{x}_{j},\hat{\boldsymbol{\beta}}\right)$$
+for $i\in S_{B}, j\in S_{A}$ and assign each 
+$i\in S_{B}$ to $\hat{\nu}(i)$, where
+$$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}\lVert \hat{y}_{i}-\hat{y}_{j}\rVert$$ or
+$$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right)$$ if $d$ is not induced by the norm.\;
+
+\State If $k>1$, then:
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)$$
+e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbor from a sample.\;
+\State For $i \in S_B$, calculate imputation value as 
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$\hat{y}-y$ Imputation:}
+\label{algo-4}
+\begin{algorithmic}[1]
+\State Estimate regression $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
+\State Impute $\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right)$ 
+for $i \in S_{B}$ and assign each 
+$i \in S_{B}$ do $\hat{\nu}(i)$, where
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j \in S_{A}}\lVert \hat{y}_{i}-y_{j}\rVert$ or
+$\displaystyle \hat{\nu}(i)=
+\operatornamewithlimits{arg\,min}_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right)$ 
+if $d$ not induced by the norm.\;
+\State If $k>1$, then:
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}}
+d\left(\hat{y}_{i},y_{j}\right).$$
+\State For each $i \in S_B$ calculate imputation value as
+$$
+\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+$$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Example codes for specific methods}\label{sec-examples}
+
+\renewcommand\refname{Detailed derivations}
 \bibliography{references.bib}
 
 
