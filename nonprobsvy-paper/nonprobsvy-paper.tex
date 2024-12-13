@@ -198,14 +198,15 @@ selection models from econometrics; \citet{GJRM}). The \pkg{NonProbEst}
 implements IPW under logistic regression as well as machine learning
 approaches (e.g.~CART, GBM or Neural Networks) however does not provide
 theoretical justification of using the ML approaches. The \pkg{balance}
-focuses solely on the IPW and uses stand
+focuses solely on the IPW and uses standard and covariate balancing
+propensity score.
 
 \begin{table}[ht!]
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabular}{p{4cm}cccccc}
 \hline
-\textbf{Methods \& functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
+\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
 \hline
 IPW  & $\checkmark$ & -- & ? & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
@@ -239,7 +240,7 @@ probability samples).
 
 In should be noted that only \pkg{nonprobsvy} leveraged the use of the
 \pkg{survey} package to estimate analytic as well as bootstrap variance
-of the non-probability estimators. Furtheremore, none of the packages
+of the non-probability estimators. Furthermore, none of the packages
 focusing on frequentist approach to statistical inference implements
 correct
 
@@ -282,6 +283,7 @@ of the data is presented in a more concise form in Table
 
 \begin{table}[ht!]
     \centering
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{llccc} 
     \hline
     Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\boldsymbol{x}$ & Study variable $y$ \\
@@ -294,19 +296,23 @@ of the data is presented in a more concise form in Table
     & $n_B$ & $\checkmark$ & $\checkmark$ & ? \\                                     
     \hline     
     \end{tabular}
+    }
     \caption{Two sample setting.}
     \label{tab-two-sources}
 \end{table}
 
-\subsection{Mass Imputation
-estimators}\label{mass-imputation-estimators}
+\subsection{Prediction-based approach}\label{prediction-based-approach}
+
+\subsubsection{Mass imputation}\label{mass-imputation}
 
 Imputation refers to the process of replacing missing or incomplete data
 with substituted values. The goal of imputation is to allow for more
 complete data analysis, as many statistical methods require complete
-datasets. Mass imputation is the application of imputation techniques to
-an entire dataset where many observations have missing values for the
-given variable. \cite{kim_combining_2021}, \cite{yang2021integration},
+datasets.
+
+Mass imputation is the application of imputation techniques to an entire
+dataset where many observations have missing values for the given
+variable. \cite{kim_combining_2021}, \cite{yang2021integration},
 \cite{Beres} propose the following imputation strategies as:
 
 \begin{itemize}
@@ -377,7 +383,7 @@ for some \(p\)-dimensional vector of function
 might be used for certain applications. The mass imputation process is
 described in Algorithm \ref{algo-1}.
 
-\subsection{Nearest Neighbour
+\subsubsection{Nearest Neighbour
 Algorithm}\label{nearest-neighbour-algorithm}
 
 On the other hand, it is also possible to consider a non-parametric
@@ -399,7 +405,7 @@ explanatory variables, imputation can lead to a large variance in the
 estimator. On the other hand, the algorithm is easy to interpret and
 simple to implement.
 
-\subsection{Predictive Mean Matching}\label{predictive-mean-matching}
+\subsubsection{Predictive Mean Matching}\label{predictive-mean-matching}
 
 Predictive mean-matching imputation is a particularly well-known way of
 dealing with non-response among respondents, and is favoured by
@@ -420,8 +426,8 @@ sample \(S_B\) with the known \(y\) from sample \(S_A\). It is worth
 noting that proof of the consistency of these estimators can be found in
 \citet{Beres}.
 
-\subsection{Inverse Probability Weighting
-estimators}\label{inverse-probability-weighting-estimators}
+\subsection{Inverse Probability
+Weighting}\label{inverse-probability-weighting}
 
 The main disadvantage of non-probability sampling is the unknown
 selection mechanism for a unit to be included in the sample. This is why
@@ -512,76 +518,24 @@ estimated sums of the \(\boldsymbol{x}\) variables. On the other hand,
 empirical studies suggest that the process of solving this type of
 equation may be less stable than the maximum likelihood method. In other
 words, the iterative algorithm for finding zeros that satisfy equation
-(\ref{gee}) may not converge. In the \texttt{nonprobsvy} package the
-propensity scores can modelled using three different link functions:
-logistic, complementary log-log and probit. The logistic regression is
-the most commonly used for modelling probabilities. This method is based
-on the so-called sigmoidal function and for our settign it has the form
-It satisfies certain properties to model the probability. For our
-scheme, this will be the probability of belonging to the non-probability
-sample. Another approach to modelling binary variables and also
-probabilities is probit regression. It is based on the standard normal
-distribution and as logit is also symmetric around \(p = 0.5\). On the
-other hand regression with the cloglog model is particularly useful if
-we are modelling rare phenomena, i.e.~the probabilities will oscillate
-around the values 1 and 0. Compared to the sigmoidal function and the
-distribution, the cloglog function is more asymmetric towards the value
-0.5.
+(\ref{gee}) may not converge.
 
-\begin{table}[ht!]
-\small
-\caption{MLE Functions and Gradients for Different Link Functions}
-\centering
-\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
-\hline
-Link & MLE Function & Gradient \\ 
-\hline
-\code{logit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
-& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
+In the \texttt{nonprobsvy} package the propensity scores can modelled
+using three different link functions: logistic, complementary log-log
+and probit. The logistic regression is the most commonly used for
+modelling probabilities. This method is based on the so-called sigmoidal
+function and for our settign it has the form It satisfies certain
+properties to model the probability. For our scheme, this will be the
+probability of belonging to the non-probability sample. Another approach
+to modelling binary variables and also probabilities is probit
+regression. It is based on the standard normal distribution and as logit
+is also symmetric around \(p = 0.5\). On the other hand regression with
+the cloglog model is particularly useful if we are modelling rare
+phenomena, i.e.~the probabilities will oscillate around the values 1 and
+0. Compared to the sigmoidal function and the distribution, the cloglog
+function is more asymmetric towards the value 0.5.
 
-\code{probit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
-& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
-& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
-\end{aligned}
-$ \\ \hline
-
-\code{cloglog} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
-& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\end{tabular}
-\end{table}
-
-\subsection{Doubly Robust estimators}\label{doubly-robust-estimators}
+\subsection{Doubly Robust approach}\label{doubly-robust-approach}
 
 The inverse probability weighting and mass imputation estimators are
 sensible on misspecified models for propensity score and outcome
@@ -681,6 +635,51 @@ system of equations \begin{equation}
 \end{equation} which can be solved using Newton--Raphson optimization
 method.
 
+\subsection{Variable selection
+algorithms}\label{variable-selection-algorithms}
+
+When dealing with multivariate data with a large number of features, it
+is recommended to select variables for estimation that are statistically
+significant for the model under consideration.
+\citet{yang_asymptotic_2020} point that using variable selection
+techniques during estimation is crucial, especially when dealing with
+high-dimensional data. Variable selection not only improves model
+stability and computational feasibility, but also reduces variance,
+which can increase when irrelevant auxiliary variables are included.
+Including irrelevant variables increases the complexity of the model and
+makes the estimation process more error-prone and unstable. Therefore,
+variable selection is key to ensure robust and efficient estimation.
+Very popular in the statistical literature are variable selection
+methods such as \textit{Least Absolute Shrinkage and Selection Operator}
+\textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation}
+\textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which,
+thanks to appropriate loss functions, degenerate the coefficients in
+variables that have no significant effect on the dependent variable. In
+this way, the result obtained, for example, a linear regression
+equation, is based only on the features selected by the model. The
+selection procedure works in a similar way for non-probability methods
+using external data sources such as sample or population totals or
+averages. In particular, the technique is divided into two steps. In the
+first, we select the relevant variables using an appropriately
+constructed loss function and the estimating equations used. In the
+second case, we construct the equations on the basis of the derived
+biases of the relevant estimator, whose value we calculate only on the
+basis of the selected characteristics.
+
+In the case of data integration based on probability and nonprobability
+samples, the selection of variables is part of a two-step process
+leading to the estimation of the mean, where in the first step
+statistically significant variables are selected and in the second step
+the model is rebuilt. For the first step, a penalized logistic
+regression model has been proposed to estimate propensity scores
+(\citet{yang_doubly_2020}), but this approach can be extended to other
+linking models such as clog-log and probit functions. For a parametric
+model-based mass imputation, penalized OLS
+(\textit{Ordinary Least Squared}) is considered. It is worth mentioning
+that \citet{yang_asymptotic_2020}, in their article on this topic, used
+the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we
+extend it on other selection techniques such as LASSO and MCP.
+
 \section{Package contents and
 implementation}\label{package-contents-and-implementation}
 
@@ -716,7 +715,7 @@ function. These are described in more detail in the documentation on the
 
 \begin{table}[ht!]
 \centering
-\caption{\code{nonprob} function arguments description}
+\resizebox{\linewidth}{!}{
 \begin{tabular}{p{3cm}p{8cm}p{3cm}}
 \hline
 Argument & Description & Default \\
@@ -748,6 +747,8 @@ Argument & Description & Default \\
     \code{...} & Additional optional arguments. & \\
 \hline
 \end{tabular}
+}
+\caption{\code{nonprob} function arguments description}
 \label{tab-arguments-nonprob}
 \end{table}
 
@@ -1145,49 +1146,7 @@ R> est3_logit <- nonprob(
 \end{CodeChunk}
 
 \subsection{Variable Selection
-Algorithms}\label{variable-selection-algorithms}
-
-When dealing with multivariate data with a large number of features, it
-is recommended to select variables for estimation that are statistically
-significant for the model under consideration.
-\citet{yang_asymptotic_2020} point that using variable selection
-techniques during estimation is crucial, especially when dealing with
-high-dimensional data. Variable selection not only improves model
-stability and computational feasibility, but also reduces variance,
-which can increase when irrelevant auxiliary variables are included.
-Including irrelevant variables increases the complexity of the model and
-makes the estimation process more error-prone and unstable. Therefore,
-variable selection is key to ensure robust and efficient estimation.
-Very popular in the statistical literature are variable selection
-methods such as \textit{Least Absolute Shrinkage and Selection Operator}
-\textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation}
-\textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which,
-thanks to appropriate loss functions, degenerate the coefficients in
-variables that have no significant effect on the dependent variable. In
-this way, the result obtained, for example, a linear regression
-equation, is based only on the features selected by the model. The
-selection procedure works in a similar way for non-probability methods
-using external data sources such as sample or population totals or
-averages. In particular, the technique is divided into two steps. In the
-first, we select the relevant variables using an appropriately
-constructed loss function and the estimating equations used. In the
-second case, we construct the equations on the basis of the derived
-biases of the relevant estimator, whose value we calculate only on the
-basis of the selected characteristics.
-
-In the case of data integration based on probability and nonprobability
-samples, the selection of variables is part of a two-step process
-leading to the estimation of the mean, where in the first step
-statistically significant variables are selected and in the second step
-the model is rebuilt. For the first step, a penalized logistic
-regression model has been proposed to estimate propensity scores
-(\citet{yang_doubly_2020}), but this approach can be extended to other
-linking models such as clog-log and probit functions. For a parametric
-model-based mass imputation, penalized OLS
-(\textit{Ordinary Least Squared}) is considered. It is worth mentioning
-that \citet{yang_asymptotic_2020}, in their article on this topic, used
-the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we
-extend it on other selection techniques such as LASSO and MCP.
+Algorithms}\label{variable-selection-algorithms-1}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1272,6 +1231,10 @@ its integration with other statistical data sources.
 
 \appendix
 
+\section{List of symbols}\label{list-of-symbols}
+
+\section{Example codes for specific methods}\label{sec-examples}
+
 \section{Algorithms}\label{sec-details}
 
 \begin{algorithm}
@@ -1353,9 +1316,61 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\section{Example codes for specific methods}\label{sec-examples}
+\section{Detailed derivations}\label{sec-derivations}
 
-\renewcommand\refname{Detailed derivations}
+\begin{table}[ht!]
+\small
+\caption{MLE Functions and Gradients for Different Link Functions}
+\centering
+\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
+\hline
+Link & MLE Function & Gradient \\ 
+\hline
+\code{logit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
+& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \hline
+
+\code{probit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
+& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
+& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
+\end{aligned}
+$ \\ \hline
+
+\code{cloglog} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
+& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \hline
+
+\end{tabular}
+\end{table}
+
 \bibliography{references.bib}
 
 

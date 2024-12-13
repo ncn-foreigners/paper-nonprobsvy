@@ -137,14 +137,14 @@ Most approaches assume that population data are used to reduce the bias of non-p
 
 ## Software for non-probability samples {#sec-software}
 
-Table \ref{tab-comparisons} presents comparison of availability of various inference methods and functionalities of selected packages. We focused on packages available through CRAN or PyPI (for non-CRAN packages see \citet{cobo2024software}). In the comparison we included four packages that focuses on non-probability samples: \pkg{NonProbEst} \citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy} as well as two packages that implements specific, popular, methods: \pkg{rstanarm} (Bayesian approach; MRP; \citet{rstanarm}) and \pkg{GJRM} (sample selection models from econometrics; \citet{GJRM}). The \pkg{NonProbEst} implements IPW under logistic regression as well as machine learning approaches (e.g. CART, GBM or Neural Networks) however does not provide theoretical justification of using the ML approaches. The \pkg{balance} focuses solely on the IPW and uses stand  
+Table \ref{tab-comparisons} presents comparison of availability of various inference methods and functionalities of selected packages. We focused on packages available through CRAN or PyPI (for non-CRAN packages see \citet{cobo2024software}). In the comparison we included four packages that focuses on non-probability samples: \pkg{NonProbEst} \citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy} as well as two packages that implements specific, popular, methods: \pkg{rstanarm} (Bayesian approach; MRP; \citet{rstanarm}) and \pkg{GJRM} (sample selection models from econometrics; \citet{GJRM}). The \pkg{NonProbEst} implements IPW under logistic regression as well as machine learning approaches (e.g. CART, GBM or Neural Networks) however does not provide theoretical justification of using the ML approaches. The \pkg{balance} focuses solely on the IPW and uses standard and covariate balancing propensity score.
 
 \begin{table}[ht!]
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabular}{p{4cm}cccccc}
 \hline
-\textbf{Methods \& functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
+\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
 \hline
 IPW  & $\checkmark$ & -- & ? & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
@@ -164,9 +164,10 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \label{tab-comparisons}
 \end{table}
 
+
 It should be however noted that implementation of specific approaches may vary significantly as the documentation of specific modules is limited. For instance, \pkg{NonProbEst} allows for calibration of IPW weights \textit{after} they are estimated, while \pkg{nonprobsvy} does this in one step. On the other hand \pkg{NonProbEst} implements various weights based on the estimated propensity scores while  \pkg{nonprobsvy} supports only two types of IPW weights. Furthermore, it should be noted that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements survey calibration for non-probability sample but it is not theoretically justified as the inclusion probabilities are unknown (on the contrary to probability samples).
 
-In should be noted that only \pkg{nonprobsvy} leveraged the use of the \pkg{survey} package to estimate analytic as well as bootstrap variance of the non-probability estimators. Furtheremore, none of the packages focusing on frequentist approach to statistical inference implements correct 
+In should be noted that only \pkg{nonprobsvy} leveraged the use of the \pkg{survey} package to estimate analytic as well as bootstrap variance of the non-probability estimators. Furthermore, none of the packages focusing on frequentist approach to statistical inference implements correct 
 
 This paper describes the nonprobsvy package for inference with non--probability samples, available from the Comprehensive R Archive Network (CRAN) at [CRAN.R-project](https://CRAN.R-project.org/package=nonprobsvy). Development version of the package can be also found at [github](https://github.com/ncn-foreigners/nonprobsvy). 
 
@@ -232,7 +233,6 @@ Może lepiej napisać że narazie opisujemy tylko przypadek gdy wagi nie są ska
 i potem pokażemy że to jest też uwzględnione w pakiecie albo coś podobnego?
 -->
 
-
 Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ (a realisation of the random vector $\bX_{i}$ in the super-population) and the study variable $y_{i}$ (a realisation of the random variable $Y_{i}$ in the super-population). Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}\right), i \in S_B\}$ be a dataset of a probability sample of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi$ (which in the super population model are also considered to be random variables) are available. Let $R_i$ be an indicator of inclusion into non-probability sample. Each unit in the sample $S_B$ has been assigned a design-based weight given by $d_i = 1/\pi_i$.
 
 <!--- Piotrek, 17.11.2024:
@@ -245,6 +245,7 @@ The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{
 
 \begin{table}[ht!]
     \centering
+    \resizebox{\linewidth}{!}{
     \begin{tabular}{llccc} 
     \hline
     Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\bx$ & Study variable $y$ \\
@@ -257,12 +258,17 @@ The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{
     & $n_B$ & $\checkmark$ & $\checkmark$ & ? \\                                     
     \hline     
     \end{tabular}
+    }
     \caption{Two sample setting.}
     \label{tab-two-sources}
 \end{table}
 
-## Mass Imputation estimators
+
+## Prediction-based approach
+
+### Mass imputation 
 Imputation refers to the process of replacing missing or incomplete data with substituted values. The goal of imputation is to allow for more complete data analysis, as many statistical methods require complete datasets.
+
 <!--- Piotrek, 17.11.2024:
 Zacytować tu co nieco?
 -->
@@ -316,7 +322,7 @@ U(\boldsymbol{\beta})=\frac{1}{n_A} \sum_{i \in S_A}\left\{y_i-m\left(\bx_i ; \b
 for some $p$-dimensional vector of function $h\left(\bx_i ; \boldsymbol{\beta}\right)$, where $h\left(\bx_i ; \boldsymbol{\beta}\right) = \bx_i$ might be used for certain applications. The mass imputation process is described in Algorithm \ref{algo-1}.
 
 
-## Nearest Neighbour Algorithm
+### Nearest Neighbour Algorithm
 
 On the other hand, it is also possible to consider a non-parametric model for the problem described, i.e. for each individual from sample $S_B$, the k-nearest neighbours from sample $S_A$ are found based on the values of the auxiliary vector $\bX$ and the corresponding metric. Then, the missing values of the variable $Y$ from sample $S_B$ are replaced by the values (or their mean if more than one neighbour is considered) of this variable for the corresponding neighbours from sample $S_A$. The algorithm is as follows
 
@@ -324,7 +330,7 @@ On the other hand, it is also possible to consider a non-parametric model for th
 
 Note that the algorithm differs depending on the number of nearest neighbours chosen. In case $k=1$ the nearest neighbour value is imputed according to the chosen metric, for example the Euclidean metric. In case $k>2$ the average of the nearest neighbours values is imputed. The literature indicates that this method suffers from the so-called curse of multidimensionality, i.e. for samples with several explanatory variables, imputation can lead to a large variance in the estimator. On the other hand, the algorithm is easy to interpret and simple to implement. 
 
-## Predictive Mean Matching
+### Predictive Mean Matching
 
 Predictive mean-matching imputation is a particularly well-known way of dealing with non-response among respondents, and is favoured by statistical offices for compiling a country's official population statistics. It is a version of the k-nearest neighbour algorithm, but instead of looking at the distances between the vectors of the auxiliary variables, it looks at the distance between the functions of the mean vectors. This helps to reduce the curse of multidimensionality and, at the same time, allows the observed values of the explanatory variable or their mean to be calculated.
 Let us therefore present two algorithms that describe the steps to follow to perform a mass imputation using the mean matching method.
@@ -335,7 +341,7 @@ Tutaj właśnie najlepiej tylko rozbudować to co jest poniżej i wywalić te al
 -->
 As can be seen, the difference between the two algorithms is due to step 2. In the first approach, we compare $\hat{y}$ from samples $S_A$ and $S_B$. The second, on the other hand, compares $\hat{y}$ from sample $S_B$ with the known $y$ from sample $S_A$. It is worth noting that proof of the consistency of these estimators can be found in \citet{Beres}.
 
-## Inverse Probability Weighting estimators
+## Inverse Probability Weighting
 
 The main disadvantage of non-probability sampling is the unknown selection mechanism for a unit to be included in the sample. This is why we talk about the so-called biased sample problem. The inverse probability approach is based on the assumption that a reference probability sample is available and therefore we can estimate the propensity score of the selection mechanism. In recent years, a number of articles have addressed this issue. \cite{chen2020doubly} propose maximum likelihood estimation approach for estimating propensity scores for selection mechanism. \cite{wu2022statistical} present the approach based on generalized estimating equations, this method is also mentioned in \cite{yang_doubly_2020}. On the other hand calibration approach for quantiles was explained \cite{beresewicz2024inference} and \cite{santanna_covariate_2022} present the approach based on maximize the covariate distribution balance among different treatment groups.
 
@@ -356,6 +362,7 @@ The estimated propensity score is used to construct an inverse probability weigh
 where $\hat{N}^A = \sum_{i \in S_A} \hat{d}_i^A = \sum_{i \in S_A} \frac{1}{\hat{\pi}_i^A}$.
 
 ### Maximum Likelihood Estimation
+
 Consider the following likelihood function
 \begin{align}
     \begin{split}
@@ -388,68 +395,18 @@ $$
 $$
 
 The advantage of this method is the ability to estimate with global values of the variables (e.g. from external sources) instead of a probability sample. Note that this is allowed by the second form of the $\mathbf{G}$ function. Its second term is nothing more than the estimated sums of the $\bx$ variables. On the other hand, empirical studies suggest that the process of solving this type of equation may be less stable than the maximum likelihood method. In other words, the iterative algorithm for finding zeros that satisfy equation (\ref{gee}) may not converge. 
+
 <!--- Piotrek, 17.11.2024:
 Imo nie trzeba tłumaczyć czym jest logit, probit, cloglog. To można nawet na wikipedi znaleźć.
 Jak się logit, probit, cloglog tłumaczy na statystyke? Który lepiej wybrać w jakiej sytuacji?
 Są jakieś heurystyki czy nikt o tym nie pisał? To jest bardziej istotne.
 -->
+
 In the `nonprobsvy` package the propensity scores can modelled using three different link functions: logistic, complementary log-log and probit. The logistic regression is the most commonly used for modelling probabilities. This method is based on the so-called sigmoidal function and for our settign it has the form
 It satisfies certain properties to model the probability. For our scheme, this will be the probability of belonging to the non-probability sample. Another approach to modelling binary variables and also probabilities is probit regression. It is based on the standard normal distribution and as logit is also symmetric around $p = 0.5$. On the other hand regression with the cloglog model is particularly useful if we are modelling rare phenomena, i.e. the probabilities will oscillate around the values 1 and 0. Compared to the sigmoidal function and the distribution, the cloglog function is more asymmetric towards the value 0.5.
 
-\begin{table}[ht!]
-\small
-\caption{MLE Functions and Gradients for Different Link Functions}
-\centering
-\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
-\hline
-Link & MLE Function & Gradient \\ 
-\hline
-\code{logit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
-& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
 
-\code{probit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
-& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
-& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
-\end{aligned}
-$ \\ \hline
-
-\code{cloglog} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
-& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\end{tabular}
-\end{table}
-
-## Doubly Robust estimators
+## Doubly Robust approach
 
 The inverse probability weighting and mass imputation estimators are sensible on misspecified models for propensity score and outcome variable respectively. For this purpose so called doubly-robust methods, which take into account these problems, are presented.
 
@@ -510,7 +467,15 @@ which leads to the problem of solving the following system of equations
 \end{equation}
 which can be solved using Newton--Raphson optimization method.
 
+## Variable selection algorithms
+
+When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} \textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation} \textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
+
+In the case of data integration based on probability and nonprobability samples, the selection of variables is part of a two-step process leading to the estimation of the mean, where in the first step statistically significant variables are selected and in the second step the model is rebuilt. For the first step, a penalized logistic regression model has been proposed to estimate propensity scores (\citet{yang_doubly_2020}), but this approach can be extended to other linking models such as clog-log and probit functions. For a parametric model-based mass imputation, penalized OLS (\textit{Ordinary Least Squared}) is considered. It is worth mentioning that \citet{yang_asymptotic_2020}, in their article on this topic, used the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we extend it on other selection techniques such as LASSO and MCP.
+
+
 # Package contents and implementation
+
 <!--- Piotrek 17.11.2024:
 Jeżeli mam być tutja współ autorem to w pakiecie też powinienem być czy nie? 
 Edytor może się przyczepić do tego że to jest nie spójne.
@@ -519,14 +484,16 @@ Också jak cytujemy pakiet po nazwie to ma być w nawiasach czy bez nawiasów?
 
 Pozatym trzeba cytować dosłownie każdy pakie którego używamy?
 -->
+
 All of the methods described in this paper have been implemented in the R package \pkg{nonprobsvy} \cite{nonprobsvy}. In this chapter, we will show you how to use the main \code{nonprob} function of the package and what its main features are. The package has been written to be as compatible as possible with the survey package for.inference for probability samples. Namely, the first step to use the nonprobsvy package is to define an object using the svydesign function that stores the probability sample \code{data.frame} and other objects, such as design weights. This is a negligible step if, instead of the probability sample, we have access to the values of the vector of sums of variables in the population. It is also worth mentioning that in order to speed up the calculations in the case of variable selection, part of the package, or more precisely the whole variable selection algorithm, was written in \proglang{C++} using the \pkg{Rcpp} (\cite{Rcpp}) package, which allows the C++ code to be called in the R environment. Moreover, the package is supported by other R packages such as \pkg{foreach} \cite{foreach} (looping construct), \pkg{maxLik} \cite{maxLik} (maximum likelihood estimation), \pkg{Matrix} \cite{Matrix} (matrix operations), \pkg{MASS} @MASS (statistical functions and datasets), \pkg{ncvreg} \cite{ncvreg} (regularization methods), \pkg{mathjaxr} \cite{mathjaxr} (rendering equations in documentation), \pkg{nleqslv} \cite{nleqslv} (solving nonlinear equations), and \pkg{doParallel} \cite{doParallel} (parallel computing).
 
 ## Arguments
+
 Below is the definition of most of the arguments we can pass to the function. These are described in more detail in the documentation on the [CRAN](https://CRAN.R-project.org/package=nonprobsvy) platform.
 
 \begin{table}[ht!]
 \centering
-\caption{\code{nonprob} function arguments description}
+\resizebox{\linewidth}{!}{
 \begin{tabular}{p{3cm}p{8cm}p{3cm}}
 \hline
 Argument & Description & Default \\
@@ -558,6 +525,8 @@ Argument & Description & Default \\
     \code{...} & Additional optional arguments. & \\
 \hline
 \end{tabular}
+}
+\caption{\code{nonprob} function arguments description}
 \label{tab-arguments-nonprob}
 \end{table}
 
@@ -565,7 +534,8 @@ In addition to using the survey package for design-based inference when probabil
 
 After this neat description of the main functionality of the package, we will move on to some examples of its use. We will show how to define the given arguments in order to obtain estimates of interest as a result. We will be less interested in the results than in the way they are presented. There will be room in the following chapters for an analysis of simulations and applications of the package to the real world. We will focus on the three main estimators, as function calls for other functionalities such as variable selection, other linking functions or mass imputation methods.
 
-# Package Usage
+# A case study
+
 We apply our methods to integrate administrative and survey data about job vacancies in Poland. The goal is to estimate the percentage of single shift job vacancies according to available data sources. We defined our outcome variable $Y$ as follows: \textit{whether the vacancy notice was for single-shift work}. Now we present the description of data used.
 
 The first source is the Job Vacancy Survey (JVS, also known as the Labour Demand Survey) with a sample of 6523 units. The data include "the number of employed persons, as well as the number and structure of job vacancies, including newly created and vacant positions reported to employment offices. Information on newly created and eliminated jobs" (Central Statistical Office of Poland). The survey is conducted using a representative method. The sample is drawn separately for units employing more than 9 people and for units employing up to 9 people. The sampling frame for this survey is the Statistical Units Database.
@@ -601,7 +571,10 @@ admin <- read.csv("data-raw/admin.csv",
 head(admin)
 ```
 
+As the goal of this paper is not to provide a tutorial on using non-probability samples for statistical inference we skipped the part of aligning variables to meet the same definitions, assessing how strong is the relation between auxiliary variables, target variable and selection mechanism and distribution mis-matches between both samples. In the examples below we assume that there is no overlap between two sources.
+
 ## Standard Estimation
+
 We will begin by showing how to use the package for estimation with the standard methods described in Chapter 2. We will start by calling the nonprob function, in the case of analysis with the IPW method.
 
 ```{r}
@@ -623,6 +596,7 @@ summary(est1_logit)
 By calling the summary method on an object of class nonprobsvy, we can approach, among other things the value of the estimated mean, standard deviation or its 95% confidence interval. In addition, we display information on the sets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score estimation. In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities, an assessment of the level of calibration of the variables from the two samples (covariate balance), i.e. the difference in their totals after adjusting for the weights from the non-probability sample, the distribution of the residuals from the model, as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
 
 To call the calibration method, we define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to ‘gee’ (default `mle`) and set the value of `h` (corresponding to the h-function with \ref{}).
+
 ```{r}
 est2_logit <- nonprob(
   selection = ~ region + private + nace + size,
@@ -635,6 +609,7 @@ est2_logit <- nonprob(
 ```
 
  <!-- Mass Imputation  -->
+ 
 Another family of estimators (Mass Imputation) requires a slightly different function call. As you might have noticed, the definition of which estimation method we want to use is not defined in the argument of the `nonprob` function, but in the result of the combination of arguments we have defined (specifically formulas). Now the argument in which we define the formula is outcome, which mirrors the definition of formulas for models in functions from the `glm` family (for example). 
 
 ```{r}
@@ -648,7 +623,8 @@ est5_glm <- nonprob(
 ```
 
 In order to induce doubly robust estimation by the joint randomisation approach, we need to combine, so to speak, the way the formulas and arguments of the two previous approaches are defined, as follows.
- <!-- DR -->
+ 
+<!-- DR -->
 ```{r}
 est8_dr1 <- nonprob(
   selection = ~ region + private + nace + size,
@@ -702,9 +678,11 @@ est9_dr2 <- nonprob(
 <!--- Piotrek 17.11.2024
 Pawnie to jest i tak w planach ale dobrze byłoby porównać estymacje na postawie tych różnych estymatorów.
 -->
+
 Previous versions assumed an analytical way of calculating the variance, based on the Taylor method of approximating functions. More details can be found in papers such as \cite{chen2020doubly}, \cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition, the package allows estimation by the popular bootstrap methods, which are based on the creation of `l` artificial samples drawn from the original samples using a method with return with a specified probability. In our setup, these will be the inverse of the design weights in the case of a probability sample, and the simple return in the case of a non-probability sample, unless the weights for that sample have also been entered in the `weights` argument of `nonprob` function.
 
 ## Bootstrap Approach for Variance Estimation
+
 In each variant, we first draw bootstrap samples based on probability and non-probability
 data, and then we perform the appropriate calculations related to the given estimator to obtain
 the mean of the population of the `l`-th iteration. Finally, we use the usual formula for the
@@ -725,10 +703,6 @@ est3_logit <- nonprob(
 ```
 
 ## Variable Selection Algorithms
-
-When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} \textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation} \textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
-
-In the case of data integration based on probability and nonprobability samples, the selection of variables is part of a two-step process leading to the estimation of the mean, where in the first step statistically significant variables are selected and in the second step the model is rebuilt. For the first step, a penalized logistic regression model has been proposed to estimate propensity scores (\citet{yang_doubly_2020}), but this approach can be extended to other linking models such as clog-log and probit functions. For a parametric model-based mass imputation, penalized OLS (\textit{Ordinary Least Squared}) is considered. It is worth mentioning that \citet{yang_asymptotic_2020}, in their article on this topic, used the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we extend it on other selection techniques such as LASSO and MCP.
 
 ```{r}
 est7_glm_sel <- nonprob(
@@ -783,8 +757,11 @@ A natural extension of this study is that consistency can be maintained when the
 
 \appendix
 
-# Algorithms {#sec-details}
+# List of symbols
 
+# Example codes for specific methods {#sec-examples}
+
+# Algorithms {#sec-details}
 
 \begin{algorithm}
 \caption{Mass imputation based on a generalized linear model}
@@ -867,7 +844,59 @@ $$
 \end{algorithm}
 
 
-# Example codes for specific methods {#sec-examples}
 
 
 # Detailed derivations {#sec-derivations}
+
+\begin{table}[ht!]
+\small
+\caption{MLE Functions and Gradients for Different Link Functions}
+\centering
+\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
+\hline
+Link & MLE Function & Gradient \\ 
+\hline
+\code{logit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
+& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \hline
+
+\code{probit} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
+& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
+& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
+\end{aligned}
+$ \\ \hline
+
+\code{cloglog} & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
+& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
+\end{aligned}
+$ & 
+$\displaystyle
+\begin{aligned}
+& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
+& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
+\end{aligned}
+$ \\ \hline
+
+\end{tabular}
+\end{table}
