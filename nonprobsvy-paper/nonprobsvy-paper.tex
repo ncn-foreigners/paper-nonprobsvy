@@ -166,11 +166,10 @@ estimator is under the \(qp\) framework, the MI estimator is under the
 \(\xi p\) framework, DR is under the \(qp\) or \(\xi p\) framework.
 
 Most approaches assume that population data are used to reduce the bias
-of non-probability sampling by a\textasciitilde proper reweighting to
-reproduce known population totals/means, by modelling
-\(E(Y|\boldsymbol{X})\) using various techniques or combining both
-approaches (for instance doubly robust estimators,
-cf.~\citet{chen2020doubly}; Multilevel Regression and
+of non-probability sampling by a proper reweighting to reproduce known
+population totals/means, by modelling \(E(Y|\boldsymbol{X})\) using
+various techniques or combining both approaches (for instance doubly
+robust estimators, cf.~\citet{chen2020doubly}; Multilevel Regression and
 Post-stratification -- MRP also called \textit{Mister-P},
 cf.~\citet{gelman1997poststratification}). Majority of these methods
 rely on a limited number of moments of continuous or count data, with
@@ -208,16 +207,16 @@ propensity score.
 \hline
 \textbf{Functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
 \hline
-IPW  & $\checkmark$ & -- & ? & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+IPW  & $\checkmark$ & -- & +/- & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
 MI (population)   & $\checkmark$ & -- & -- & --& --& $\checkmark$ \\
 MI (sample) & -- & -- & -- & -- & -- & $\checkmark$\\
 DR & -- & -- & -- & -- & $\checkmark$ & $\checkmark$\\
 MRP & -- & $\checkmark$ & -- & --  &--  & -- \\
-Joint modelling / sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
-Variable selection & & & & & & $\checkmark$\\
+Sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
+Variable selection & -- & -- & -- & -- & -- & $\checkmark$\\
 Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
-Bootstrap variance & -- & -- & -- & & & $\checkmark$\\
+Bootstrap variance & +/- & -- & -- & & & $\checkmark$\\
 Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\checkmark$\\
 \hline
 \end{tabular}
@@ -651,11 +650,11 @@ makes the estimation process more error-prone and unstable. Therefore,
 variable selection is key to ensure robust and efficient estimation.
 Very popular in the statistical literature are variable selection
 methods such as \textit{Least Absolute Shrinkage and Selection Operator}
-\textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation}
-\textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which,
-thanks to appropriate loss functions, degenerate the coefficients in
-variables that have no significant effect on the dependent variable. In
-this way, the result obtained, for example, a linear regression
+(\textbf{LASSO}), \textit{Smoothly Clipped Absolute Deviation}
+(\textbf{SCAD}) or \textit{Minimax Concave Penalty} (\textbf{MCP}),
+which, thanks to appropriate loss functions, degenerate the coefficients
+in variables that have no significant effect on the dependent variable.
+In this way, the result obtained, for example, a linear regression
 equation, is based only on the features selected by the model. The
 selection procedure works in a similar way for non-probability methods
 using external data sources such as sample or population totals or
@@ -684,28 +683,29 @@ extend it on other selection techniques such as LASSO and MCP.
 implementation}\label{package-contents-and-implementation}
 
 All of the methods described in this paper have been implemented in the
-R package \pkg{nonprobsvy} \cite{nonprobsvy}. In this chapter, we will
+R package \pkg{nonprobsvy} \citep{nonprobsvy}. In this chapter, we will
 show you how to use the main \code{nonprob} function of the package and
 what its main features are. The package has been written to be as
 compatible as possible with the survey package for.inference for
 probability samples. Namely, the first step to use the nonprobsvy
-package is to define an object using the svydesign function that stores
-the probability sample \code{data.frame} and other objects, such as
-design weights. This is a negligible step if, instead of the probability
-sample, we have access to the values of the vector of sums of variables
-in the population. It is also worth mentioning that in order to speed up
-the calculations in the case of variable selection, part of the package,
-or more precisely the whole variable selection algorithm, was written in
-\proglang{C++} using the \pkg{Rcpp} (\cite{Rcpp}) package, which allows
-the C++ code to be called in the R environment. Moreover, the package is
-supported by other R packages such as \pkg{foreach} \cite{foreach}
-(looping construct), \pkg{maxLik} \cite{maxLik} (maximum likelihood
-estimation), \pkg{Matrix} \cite{Matrix} (matrix operations), \pkg{MASS}
-\citet{MASS} (statistical functions and datasets), \pkg{ncvreg}
-\cite{ncvreg} (regularization methods), \pkg{mathjaxr} \cite{mathjaxr}
-(rendering equations in documentation), \pkg{nleqslv} \cite{nleqslv}
-(solving nonlinear equations), and \pkg{doParallel} \cite{doParallel}
-(parallel computing).
+package is to define an object using the \code{svydesign} function that
+stores the probability sample \code{data.frame} and other objects, such
+as design weights. This is a negligible step if, instead of the
+probability sample, we have access to the values of the vector of sums
+of variables in the population. It is also worth mentioning that in
+order to speed up the calculations in the case of variable selection,
+part of the package, or more precisely the whole variable selection
+algorithm, was written in \proglang{C++} using the \pkg{Rcpp}
+\citep{Rcpp} package, which allows the C++ code to be called in the R
+environment. Moreover, the package is supported by other R packages such
+as \pkg{foreach} \citep{foreach} (looping construct), \pkg{maxLik}
+\citep{maxLik} (maximum likelihood estimation), \pkg{Matrix}
+\citep{Matrix} (matrix operations), \pkg{MASS} \citet{MASS} (statistical
+functions and datasets), \pkg{ncvreg} \citep{ncvreg} (regularization
+methods), \pkg{mathjaxr} \citep{mathjaxr} (rendering equations in
+documentation), \pkg{nleqslv} \textbackslash cite{[}\{nleqslv\} (solving
+non-linear equations), and \pkg{doParallel} \citep{doParallel} (parallel
+computing).
 
 \subsection{Arguments}\label{arguments}
 
@@ -769,28 +769,9 @@ will focus on the three main estimators, as function calls for other
 functionalities such as variable selection, other linking functions or
 mass imputation methods.
 
-\section{Package Usage}\label{package-usage}
+\section{A case study}\label{a-case-study}
 
-We apply our methods to integrate administrative and survey data about
-job vacancies in Poland. The goal is to estimate the percentage of
-single shift job vacancies according to available data sources. We
-defined our outcome variable \(Y\) as follows:
-\textit{whether the vacancy notice was for single-shift work}. Now we
-present the description of data used.
-
-The first source is the Job Vacancy Survey (JVS, also known as the
-Labour Demand Survey) with a sample of 6523 units. The data include
-``the number of employed persons, as well as the number and structure of
-job vacancies, including newly created and vacant positions reported to
-employment offices. Information on newly created and eliminated jobs''
-(Central Statistical Office of Poland). The survey is conducted using a
-representative method. The sample is drawn separately for units
-employing more than 9 people and for units employing up to 9 people. The
-sampling frame for this survey is the Statistical Units Database. It
-includes information about NACE (The Nomenclature of Economic
-Activities) (19 levels), region (16 levels), sector (2 levels), size (3
-levels) and the number of employees according to administrative data
-integrated by Statistics Poland (RE).
+Before we explain the case study let's first read the package.
 
 \begin{CodeChunk}
 \begin{CodeOutput}
@@ -798,23 +779,35 @@ Warning: package 'survival' was built under R version 4.3.3
 \end{CodeOutput}
 \end{CodeChunk}
 
+We apply our methods to integrate administrative (\code{admin}) and
+survey (\code{jvs}) data about job vacancies in Poland. The first source
+is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey
+is based on a probability sample drawn according to proportional-to-size
+stratified sampling design. The details regarding ghe survey can be
+found in \ldots{} The dataset we have included in the package
+information about NACE (The Nomenclature of Economic Activities) (14
+levels), region (16 levels), sector (2 levels), size (3 levels) and the
+final weight (i.e.~design weight corrected for non-contact and
+non-response).
+
 \begin{CodeChunk}
 \begin{CodeInput}
-R> jvs <- read.csv("data-raw/jvs.csv",
-+                   colClasses = c("character", "numeric",
-+                                  rep("character", 3), "numeric"))
+R> data(jvs)
 R> head(jvs)
 \end{CodeInput}
 \begin{CodeOutput}
-                                        id private size nace region weight
-1 a9cc990df6a99ab215a1bc13f51d4825c7d52d18       0    L    O     14      1
-2 c9dbaf50890165ebe810aa770de0e9df903dc35b       0    L    O     24      6
-3 718e0bba42bcec6ed98f9690db6d26cb7b93c880       0    L  R.S     14      1
-4 532a1879a692b9d7bbb7282ba757d028156ef341       0    L  R.S     14      1
-5 0b6b623fa45e257284a3049d097af322841337e3       0    L  R.S     22      1
-6 c855a825e80866c00c7513721d5fcb38929f3cd6       0    M  R.S     26      1
+   id private size nace region weight
+1 j_1       0    L    O     14      1
+2 j_2       0    L    O     24      6
+3 j_3       0    L  R.S     14      1
+4 j_4       0    L  R.S     14      1
+5 j_5       0    L  R.S     22      1
+6 j_6       0    M  R.S     26      1
 \end{CodeOutput}
 \end{CodeChunk}
+
+For the purpose of the study we define the the sample in a simplified
+way as provided below using \code{svydesign} function.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -827,40 +820,42 @@ R> jvs_svy <- svydesign(ids = ~ 1,
 
 The second source is the Central Job Offers Database (CBOP), which is a
 register of all vacancies submitted to Public Employment Offices and can
-be accessed via CBOP API. It contains job offers submitted by employers
-looking for new employees. If an employer is seeking new workers for
-their business, they can approach the County Employment Office (PUP) and
-submit the appropriate application. CBOP also contains information about
-unit identifiers (REGON and NIP), so we were able to link units to the
-sampling frame to obtain auxiliary variables with the same definitions
-as those used in the survey. Beyond that it contains
-\code{single\_shift} outcome variable.
+be accessed via the CBOP API. We treat this as the
+\textit{non-probability sample} as this admin data is voluntary and
+inclusion mechanism is unknown. This dataset was prepared in such way
+that the records out of scope (either by the definition of vacancy or
+population of entities) were excluded. This dataset contains the same
+variables as JVS with one additional \code{single\_shift}. This is our
+target variable defined as:
+\texttt{whether a company seeks at least one employee for a single-shift job}.
+The goal of this case study is to estimate
+\textit{the share of companies that seeks employees for a single-shift job}
+in Poland in a given quarter.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> admin <- read.csv("data-raw/admin.csv",
-+                  colClasses = c("character", "numeric",
-+                                 rep("character", 3), "logical")
-+                  )
+R> data(admin)
 R> head(admin)
 \end{CodeInput}
 \begin{CodeOutput}
-                                        id private size nace region
-1 7fddce081cbb1dd5da072e1683e9bfd20acab593       0    L    P     30
-2 3d40ca689a4dca7d774981dc7db408301bf7f192       0    L    O     14
-3 2b5a57b0c2f03c2b252e559bcd77d52789d33d9c       0    L    O     04
-4 f2b18f5ef4386e70206d64810b5d3b7e0654918b       0    L    O     24
-5 bf17263f8fa3a9ff12d7ff60c10c4e426aeeb36e       0    L    O     04
-6 10fe847b7d19284e9e310105c5acfaf8f1ccbc37       1    L    C     28
-  single_shift
-1        FALSE
-2         TRUE
-3         TRUE
-4         TRUE
-5         TRUE
-6        FALSE
+   id private size nace region single_shift
+1 j_1       0    L    P     30        FALSE
+2 j_2       0    L    O     14         TRUE
+3 j_3       0    L    O     04         TRUE
+4 j_4       0    L    O     24         TRUE
+5 j_5       0    L    O     04         TRUE
+6 j_6       1    L    C     28        FALSE
 \end{CodeOutput}
 \end{CodeChunk}
+
+As the goal of this paper is not to provide a tutorial on using
+non-probability samples for statistical inference we skipped the part of
+aligning variables to meet the same definitions, assessing how strong is
+the relation between auxiliary variables, target variable and selection
+mechanism and distribution mis-matches between both samples. In the
+examples below we assume that there is no overlap between two sources
+and the nai''ve, reference estimate, given by a simple mean of the
+\texttt{single\_shift} column of \texttt{admin} equals to 66.1\%.
 
 \subsection{Standard Estimation}\label{standard-estimation}
 
@@ -1228,6 +1223,17 @@ two probability and non-probability samples overlap, i.e.~there are
 units present in both datasets. This type of problem will be the focus
 of the author's future work on non--probability sampling, in particular
 its integration with other statistical data sources.
+
+\section{Acknowledgements}\label{Acknowledgements}
+
+The authors' work has been financed by the National Science Centre in
+Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
+
+Łukasz Chrostowski is the main author of the package and for the first
+draft of the paper. Piotr Chlebicki contributed to the package and
+implemented PMM methods. Maciej Beręsewicz was responsible for the
+design of the package, small contributions and prepared the final
+manuscript.
 
 \appendix
 

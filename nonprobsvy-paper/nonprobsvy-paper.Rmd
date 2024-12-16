@@ -133,7 +133,7 @@ big data paradox
 
 To address this problem, several approaches based on inverse probability weighting (IPW), model-based prediction / mass imputation (MI) and doubly robust (DR) estimators have been proposed for two main scenarios: 1) population-level data are available, either in the form of unit-level data (e.g. from a~register covering the whole population) or known population totals/means, and 2) only survey data are available as a~source of information about the target population \citep[cf.][]{elliott_inference_2017}. \citet{wu2022statistical} classified these approaches into three groups that require a~joint randomization framework involving $p$ (probability sampling design) and one of the outcome regression model $\xi$ or propensity score model $q$. In this approach the IPW estimator is under the $qp$ framework, the MI estimator is under the $\xi p$ framework, DR is under the $qp$ or $\xi p$ framework.
 
-Most approaches assume that population data are used to reduce the bias of non-probability sampling by a~proper reweighting to reproduce known population totals/means, by modelling $E(Y|\bX)$ using various techniques or combining both approaches (for instance doubly robust estimators, cf. \citet{chen2020doubly}; Multilevel Regression and Post-stratification -- MRP also called \textit{Mister-P}, cf. \citet{gelman1997poststratification}). Majority of these methods rely on a limited number of moments of continuous or count data, with some exceptions. For example, non-parametric approaches based on nearest neighbours (NN), such as those discussed by Yang, Kim and Hwang (\citeyear{yang2021integration}) or kernel density estimation (KDE) described by Chen, Yang and Kim (\citeyear{chen_nonparametric_2022}) have also been proposed. It should be highlighted that, on contrary to probability samples, there is no single method that can be used for non-probability samples. Literature, and thus statistical software, offers various methods as presented in the next section.
+Most approaches assume that population data are used to reduce the bias of non-probability sampling by a proper reweighting to reproduce known population totals/means, by modelling $E(Y|\bX)$ using various techniques or combining both approaches (for instance doubly robust estimators, cf. \citet{chen2020doubly}; Multilevel Regression and Post-stratification -- MRP also called \textit{Mister-P}, cf. \citet{gelman1997poststratification}). Majority of these methods rely on a limited number of moments of continuous or count data, with some exceptions. For example, non-parametric approaches based on nearest neighbours (NN), such as those discussed by Yang, Kim and Hwang (\citeyear{yang2021integration}) or kernel density estimation (KDE) described by Chen, Yang and Kim (\citeyear{chen_nonparametric_2022}) have also been proposed. It should be highlighted that, on contrary to probability samples, there is no single method that can be used for non-probability samples. Literature, and thus statistical software, offers various methods as presented in the next section.
 
 ## Software for non-probability samples {#sec-software}
 
@@ -146,16 +146,16 @@ Table \ref{tab-comparisons} presents comparison of availability of various infer
 \hline
 \textbf{Functionalities} & \pkg{NonProbEst} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{balance} & \pkg{inps} & \pkg{nonprobsvy} \\
 \hline
-IPW  & $\checkmark$ & -- & ? & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+IPW  & $\checkmark$ & -- & +/- & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
 MI (population)   & $\checkmark$ & -- & -- & --& --& $\checkmark$ \\
 MI (sample) & -- & -- & -- & -- & -- & $\checkmark$\\
 DR & -- & -- & -- & -- & $\checkmark$ & $\checkmark$\\
 MRP & -- & $\checkmark$ & -- & --  &--  & -- \\
-Joint modelling / sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
-Variable selection & & & & & & $\checkmark$\\
+Sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
+Variable selection & -- & -- & -- & -- & -- & $\checkmark$\\
 Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
-Bootstrap variance & -- & -- & -- & & & $\checkmark$\\
+Bootstrap variance & +/- & -- & -- & & & $\checkmark$\\
 Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\checkmark$\\
 \hline
 \end{tabular}
@@ -469,7 +469,7 @@ which can be solved using Newton--Raphson optimization method.
 
 ## Variable selection algorithms
 
-When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} \textbf{LASSO}, \textit{Smoothly Clipped Absolute Deviation} \textbf{SCAD} or \textit{Minimax Concave Penalty} \textbf{MCP}, which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
+When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} (\textbf{LASSO}), \textit{Smoothly Clipped Absolute Deviation} (\textbf{SCAD}) or \textit{Minimax Concave Penalty} (\textbf{MCP}), which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
 
 In the case of data integration based on probability and nonprobability samples, the selection of variables is part of a two-step process leading to the estimation of the mean, where in the first step statistically significant variables are selected and in the second step the model is rebuilt. For the first step, a penalized logistic regression model has been proposed to estimate propensity scores (\citet{yang_doubly_2020}), but this approach can be extended to other linking models such as clog-log and probit functions. For a parametric model-based mass imputation, penalized OLS (\textit{Ordinary Least Squared}) is considered. It is worth mentioning that \citet{yang_asymptotic_2020}, in their article on this topic, used the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we extend it on other selection techniques such as LASSO and MCP.
 
@@ -485,7 +485,7 @@ Också jak cytujemy pakiet po nazwie to ma być w nawiasach czy bez nawiasów?
 Pozatym trzeba cytować dosłownie każdy pakie którego używamy?
 -->
 
-All of the methods described in this paper have been implemented in the R package \pkg{nonprobsvy} \cite{nonprobsvy}. In this chapter, we will show you how to use the main \code{nonprob} function of the package and what its main features are. The package has been written to be as compatible as possible with the survey package for.inference for probability samples. Namely, the first step to use the nonprobsvy package is to define an object using the svydesign function that stores the probability sample \code{data.frame} and other objects, such as design weights. This is a negligible step if, instead of the probability sample, we have access to the values of the vector of sums of variables in the population. It is also worth mentioning that in order to speed up the calculations in the case of variable selection, part of the package, or more precisely the whole variable selection algorithm, was written in \proglang{C++} using the \pkg{Rcpp} (\cite{Rcpp}) package, which allows the C++ code to be called in the R environment. Moreover, the package is supported by other R packages such as \pkg{foreach} \cite{foreach} (looping construct), \pkg{maxLik} \cite{maxLik} (maximum likelihood estimation), \pkg{Matrix} \cite{Matrix} (matrix operations), \pkg{MASS} @MASS (statistical functions and datasets), \pkg{ncvreg} \cite{ncvreg} (regularization methods), \pkg{mathjaxr} \cite{mathjaxr} (rendering equations in documentation), \pkg{nleqslv} \cite{nleqslv} (solving nonlinear equations), and \pkg{doParallel} \cite{doParallel} (parallel computing).
+All of the methods described in this paper have been implemented in the R package \pkg{nonprobsvy} \citep{nonprobsvy}. In this chapter, we will show you how to use the main \code{nonprob} function of the package and what its main features are. The package has been written to be as compatible as possible with the survey package for.inference for probability samples. Namely, the first step to use the nonprobsvy package is to define an object using the \code{svydesign} function that stores the probability sample \code{data.frame} and other objects, such as design weights. This is a negligible step if, instead of the probability sample, we have access to the values of the vector of sums of variables in the population. It is also worth mentioning that in order to speed up the calculations in the case of variable selection, part of the package, or more precisely the whole variable selection algorithm, was written in \proglang{C++} using the \pkg{Rcpp} \citep{Rcpp} package, which allows the C++ code to be called in the R environment. Moreover, the package is supported by other R packages such as \pkg{foreach} \citep{foreach} (looping construct), \pkg{maxLik} \citep{maxLik} (maximum likelihood estimation), \pkg{Matrix} \citep{Matrix} (matrix operations), \pkg{MASS} @MASS (statistical functions and datasets), \pkg{ncvreg} \citep{ncvreg} (regularization methods), \pkg{mathjaxr} \citep{mathjaxr} (rendering equations in documentation), \pkg{nleqslv} \cite[{nleqslv} (solving non-linear equations), and \pkg{doParallel} \citep{doParallel} (parallel computing).
 
 ## Arguments
 
@@ -536,21 +536,20 @@ After this neat description of the main functionality of the package, we will mo
 
 # A case study
 
-We apply our methods to integrate administrative and survey data about job vacancies in Poland. The goal is to estimate the percentage of single shift job vacancies according to available data sources. We defined our outcome variable $Y$ as follows: \textit{whether the vacancy notice was for single-shift work}. Now we present the description of data used.
-
-The first source is the Job Vacancy Survey (JVS, also known as the Labour Demand Survey) with a sample of 6523 units. The data include "the number of employed persons, as well as the number and structure of job vacancies, including newly created and vacant positions reported to employment offices. Information on newly created and eliminated jobs" (Central Statistical Office of Poland). The survey is conducted using a representative method. The sample is drawn separately for units employing more than 9 people and for units employing up to 9 people. The sampling frame for this survey is the Statistical Units Database.
-It includes information about NACE (The Nomenclature of Economic Activities) (19 levels), region (16 levels), sector (2 levels), size (3 levels) and the number of employees according to administrative data integrated by Statistics Poland (RE). 
+Before we explain the case study let's first read the package.
 
 ```{r, echo=FALSE, message=FALSE}
-library(nonprobsvy)
+library(nonprobsvy) ## 0.1.2
 ```
 
+We apply our methods to integrate administrative (\code{admin}) and survey (\code{jvs}) data about job vacancies in Poland.  The first source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey is based on a probability sample drawn according to proportional-to-size stratified sampling design. The details regarding ghe survey can be found in ... The dataset we have included in the package information about NACE (The Nomenclature of Economic Activities) (14 levels), region (16 levels), sector (2 levels), size (3 levels) and the final weight (i.e. design weight corrected for non-contact and non-response). 
+
+
 ```{r, out.width="80%"}
-jvs <- read.csv("data-raw/jvs.csv",
-                  colClasses = c("character", "numeric",
-                                 rep("character", 3), "numeric"))
+data(jvs)
 head(jvs)
 ```
+For the purpose of the study we define the the sample in a simplified way as provided below using \code{svydesign} function. 
 
 ```{r}
 jvs_svy <- svydesign(ids = ~ 1, 
@@ -559,19 +558,14 @@ jvs_svy <- svydesign(ids = ~ 1,
                      data = jvs)
 ```
 
-The second source is the Central Job Offers Database (CBOP), which is a register of all vacancies submitted to Public Employment Offices and can be accessed via CBOP API. It contains job offers submitted by employers looking for new employees. If an employer is seeking new workers for their business, they can approach the County Employment Office (PUP) and submit the appropriate application. CBOP also
-contains information about unit identifiers (REGON and NIP), so we were able to link units to the sampling frame to obtain auxiliary variables with the same definitions as those used
-in the survey. Beyond that it contains \code{single\_shift} outcome variable.
+The second source is the Central Job Offers Database (CBOP), which is a register of all vacancies submitted to Public Employment Offices and can be accessed via the CBOP API. We treat this as the \textit{non-probability sample} as this admin data is voluntary and inclusion mechanism is unknown. This dataset was prepared in such way that the records out of scope (either by the definition of vacancy or population of entities) were excluded. This dataset contains the same variables as JVS with one additional \code{single\_shift}. This is our target variable defined as: \texttt{whether a company seeks at least one employee for a single-shift job}. The goal of this case study is to estimate \textit{the share of companies that seeks employees for a single-shift job} in Poland in a given quarter. 
 
 ```{r}
-admin <- read.csv("data-raw/admin.csv",
-                 colClasses = c("character", "numeric",
-                                rep("character", 3), "logical")
-                 )
+data(admin)
 head(admin)
 ```
 
-As the goal of this paper is not to provide a tutorial on using non-probability samples for statistical inference we skipped the part of aligning variables to meet the same definitions, assessing how strong is the relation between auxiliary variables, target variable and selection mechanism and distribution mis-matches between both samples. In the examples below we assume that there is no overlap between two sources.
+As the goal of this paper is not to provide a tutorial on using non-probability samples for statistical inference we skipped the part of aligning variables to meet the same definitions, assessing how strong is the relation between auxiliary variables, target variable and selection mechanism and distribution mis-matches between both samples. In the examples below we assume that there is no overlap between two sources and the nai"ve, reference estimate, given by a simple mean of the `single_shift` column of `admin` equals to `r round(mean(admin$single_shift)*100,1)`%.
 
 ## Standard Estimation
 
@@ -754,6 +748,12 @@ Designed to integrate with the widely used \pkg{survey} package in R, \pkg{nonpr
 Overall, \pkg{nonprobsvy} is a comprehensive toolkit for researchers and practitioners working with mixed data sources. It simplifies the implementation of complex statistical methods for non-probability samples, making it easier to produce robust, reliable estimates even when working with non-representative data. By providing a unified framework for inference with non-probability samples, \pkg{nonprobsvy} contributes to the growing field of data integration and enhances the ability of statisticians to make informed decisions from diverse data sources.
 
 A natural extension of this study is that consistency can be maintained when the design weights $d_i$ are replaced by calibration weights, which is often the case when working with survey sample datasets. In addition, other methods of estimating propensity scores proposed in the literature can be considered, such as estimation using the empirical likelihood approach. It is also worth exploring the situation where the two probability and non-probability samples overlap, i.e. there are units present in both datasets. This type of problem will be the focus of the author's future work on non--probability sampling, in particular its integration with other statistical data sources.
+
+# Acknowledgements {#Acknowledgements}
+
+The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
+
+Łukasz Chrostowski is the main author of the package and for the first draft of the paper. Piotr Chlebicki contributed to the package and implemented PMM methods. Maciej Beręsewicz was responsible for the design of the package, small contributions and prepared the final manuscript.
 
 \appendix
 
