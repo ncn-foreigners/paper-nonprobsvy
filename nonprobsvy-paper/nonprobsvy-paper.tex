@@ -867,7 +867,7 @@ object, dataset and specification of the link function
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est1_logit <- nonprob(
+R> ipw_est1 <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   target = ~ single_shift,
 +   svydesign = jvs_svy,
@@ -884,7 +884,7 @@ mean, standard error (\code{SE}) and 95\% confidence interval
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est1_logit
+R> ipw_est1
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -904,7 +904,7 @@ If we are interested in detailed information about the model we can use
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> summary(est1_logit)
+R> summary(ipw_est1)
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -1019,7 +1019,7 @@ the @ref\{sec-ipw-gee\} section).
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est2_logit <- nonprob(
+R> ipw_est2 <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   target = ~ single_shift,
 +   svydesign = jvs_svy,
@@ -1035,7 +1035,7 @@ significantly improved.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est2_logit
+R> ipw_est2
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -1053,34 +1053,101 @@ single_shift 0.7041796 0.01169878   0.6812504   0.7271088
 
 \subsection{MI estimation}\label{mi-estimation}
 
-Another family of estimators (Mass Imputation) requires a slightly
-different function call. As you might have noticed, the definition of
-which estimation method we want to use is not defined in the argument of
-the \texttt{nonprob} function, but in the result of the combination of
-arguments we have defined (specifically formulas). Now the argument in
-which we define the formula is outcome, which mirrors the definition of
-formulas for models in functions from the \texttt{glm} family (for
-example).
+If a user is interested in a prediction-based approach, in particular MI
+estimator, in the \texttt{nonprob} function should specify the argument
+\texttt{outcome} as a formulae (similarly as in the \texttt{glm}
+function). If the \texttt{outcome} argument is specified then there is
+no need to specify \texttt{target} variable as it is assumed that the
+dependent variable is the variable of interest. By default GLM type of
+the MI estimator is assumed (i.e.~\texttt{method\_outcome="glm"}). In
+the code below we present possible way to declare this type of the MI
+estimator.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est5_glm <- nonprob(
+R> mi_est1 <- nonprob(
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
 +   data = admin,
 +   method_outcome = "glm",
-+   family_outcome = "gaussian"
++   family_outcome = "binomial"
++ )
+R> 
+R> mi_est1
+\end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+nonprob(data = admin, outcome = single_shift ~ region + private + 
+    nace + size, svydesign = jvs_svy, method_outcome = "glm", 
+    family_outcome = "binomial")
+
+Estimated population mean with overall std.err and confidence interval:
+
+                  mean         SE lower_bound upper_bound
+single_shift 0.7032081 0.01120231    0.681252   0.7251642
+\end{CodeOutput}
+\end{CodeChunk}
+
+If a user is interested in the nearest neighbours MI estimator one can
+specify \texttt{method\_outcome\ =\ "nn"} for the nearest neighbours
+search using all variables specified in the \texttt{outcome} argument,
+or \texttt{method\_outcome\ =\ "pmm"} if is interested in predictive
+mean matching. In both cases we are using 5 nearest neighbours
+(i.e.~\texttt{controlOut(k=5)}).
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mi_est2 <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "nn",
++   control_outcome = controlOut(k=5)
++ )
+R> 
+R> mi_est3 <- nonprob(
++   outcome = single_shift ~ region + private + nace + size,
++   svydesign = jvs_svy,
++   data = admin,
++   method_outcome = "pmm",
++   control_outcome = controlOut(k=5)
 + )
 \end{CodeInput}
 \end{CodeChunk}
 
-In order to induce doubly robust estimation by the joint randomisation
-approach, we need to combine, so to speak, the way the formulas and
-arguments of the two previous approaches are defined, as follows.
+Results of both estimators seems to be similar, but it should be noted
+that the NN MI estimator suffers from the curse of dimensionality so one
+should trust more the PMM MI estimator.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est8_dr1 <- nonprob(
+R> mi_est2$output
+\end{CodeInput}
+\begin{CodeOutput}
+                  mean         SE
+single_shift 0.6799537 0.01575574
+\end{CodeOutput}
+\begin{CodeInput}
+R> mi_est3$output
+\end{CodeInput}
+\begin{CodeOutput}
+                  mean         SE
+single_shift 0.6968035 0.01460193
+\end{CodeOutput}
+\end{CodeChunk}
+
+\subsection{DR estimation}\label{dr-estimation}
+
+Finally, if a user is interested in a doubly robust estimation should
+specify both the \texttt{selection} and \texttt{outcome} parameters.
+These parameters can be specified with the same or different number of
+variables. In the following code we specify the non-calibrated IPW and
+the GLM MI estimator
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dr_est1 <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
@@ -1089,39 +1156,26 @@ R> est8_dr1 <- nonprob(
 +   method_outcome = "glm",
 +   family_outcome = "binomial"
 + )
+R> dr_est1
 \end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+nonprob(data = admin, selection = ~region + private + nace + 
+    size, outcome = single_shift ~ region + private + nace + 
+    size, svydesign = jvs_svy, method_selection = "logit", method_outcome = "glm", 
+    family_outcome = "binomial")
+
+Estimated population mean with overall std.err and confidence interval:
+
+                  mean         SE lower_bound upper_bound
+single_shift 0.7034644 0.01131974   0.6812781   0.7256507
+\end{CodeOutput}
 \end{CodeChunk}
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est6_glm_nn <- nonprob(
-+   outcome = single_shift ~ region + private + nace + size,
-+   svydesign = jvs_svy,
-+   data = admin,
-+   method_outcome = "nn",
-+   control_outcome = controlOut(k=5)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> est6_glm_pmm1 <- nonprob(
-+   outcome = single_shift ~ region + private + nace + size,
-+   svydesign = jvs_svy,
-+   data = admin,
-+   method_outcome = "pmm",
-+   control_outcome = controlOut(k=5, predictive_match=1),
-+   verbose = TRUE
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\subsection{DR estimation}\label{dr-estimation}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> est9_dr2 <- nonprob(
+R> dr_est2 <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
@@ -1147,9 +1201,40 @@ the case of a non-probability sample, unless the weights for that sample
 have also been entered in the \texttt{weights} argument of
 \texttt{nonprob} function.
 
-Compare estimates from these estimators\ldots{}
+\subsection{Comparison of estimates}\label{comparison-of-estimates}
 
-\subsection{Bootstrap Approach for Variance
+Finally, we compare the estimates on a single plot
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> library(ggplot2)
+R> 
+R> dr_summary <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
++                     cbind(ipw_est2$output, ipw_est2$confidence_interval),
++                     cbind(mi_est1$output, mi_est1$confidence_interval),
++                     cbind(mi_est2$output, mi_est2$confidence_interval),
++                     cbind(mi_est3$output, mi_est3$confidence_interval),
++                     cbind(dr_est1$output, dr_est1$confidence_interval),
++                     cbind(dr_est2$output, dr_est2$confidence_interval))
+R> rownames(dr_summary) <- NULL
+R> 
+R> dr_summary$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", "MI (PMM)", "DR", "DR (BM)")
+R> 
+R> ggplot(data = dr_summary, aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
++   geom_point() + 
++   geom_vline(xintercept = mean(admin$single_shift), linetype = "dotted", color = "red") + 
++   geom_errorbar() + 
++   labs(x = "Point estimator and confidence interval", y = "Estimators")
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{nonprobsvy-paper_files/figure-latex/comparison of estimates-1} \end{center}
+
+\end{CodeChunk}
+
+\subsection{Advanced usage}\label{advanced-usage}
+
+\subsubsection{Bootstrap Approach for Variance
 Estimation}\label{bootstrap-approach-for-variance-estimation}
 
 In each variant, we first draw bootstrap samples based on probability
@@ -1178,7 +1263,7 @@ R> est3_logit <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\subsection{Variable Selection
+\subsubsection{Variable Selection
 Algorithms}\label{variable-selection-algorithms-1}
 
 \begin{CodeChunk}
@@ -1273,15 +1358,57 @@ implemented PMM methods. Maciej Beręsewicz was responsible for the
 design of the package, small contributions and prepared the final
 manuscript.
 
+\clearpage
+
 \appendix
 
 \section{List of symbols}\label{list-of-symbols}
 
-\section{Example codes for specific methods}\label{sec-examples}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{Symbol} & \textbf{Description} \\
+\hline
+$U$ & Target population of size $N$ \\
+$N$ & Population size \\
+$\boldsymbol{x}_i$ & Vector of auxiliary variables for unit $i$ \\
+$y_i$ & Study variable for unit $i$ \\
+$S_A$ & Non-probability sample \\
+$S_B$ & Probability sample \\
+$n_A$ & Size of non-probability sample \\
+$n_B$ & Size of probability sample \\
+$\pi_i$ & Inclusion probability for unit $i$ in probability sample \\
+$d_i$ & Design weight ($1/\pi_i$) for unit $i$ \\
+$R_i$ & Indicator of inclusion into non-probability sample \\
+$\mu_y$ & Population mean of target variable $Y$ \\
+$\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
+$m(\boldsymbol{x}_i, \boldsymbol{\beta})$ & Regression model for outcome variable \\
+$\hat{\mu}_{IPW}$ & Inverse probability weighting estimator \\
+$\hat{\mu}_{MI}$ & Mass imputation estimator \\
+$\hat{\mu}_{DR}$ & Doubly robust estimator \\
+$\boldsymbol{\theta}$ & Parameter vector for selection model \\
+$\boldsymbol{\beta}$ & Parameter vector for outcome model \\
+$\hat{y}_i$ & Imputed value for unit $i$ \\
+$\hat{N}^A$ & Estimated size based on non-probability sample \\
+$\hat{N}^B$ & Estimated size based on probability sample \\
+\hline
+\end{tabular}
+\caption{List of symbols and their descriptions}
+\label{tab-list-of-sybmols}
+\end{table}
+
+\clearpage
+
+\clearpage
+
+\section{Codes for specific methods}\label{sec-examples}
+
+\clearpage
 
 \section{Algorithms}\label{sec-details}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{Mass imputation based on a generalized linear model}
 \label{algo-1}
 \begin{algorithmic}[1]
@@ -1293,7 +1420,7 @@ manuscript.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}
 \label{algo-2}
 \begin{algorithmic}[1]
@@ -1311,7 +1438,7 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{$\hat{y}-\hat{y}$ Imputation:}
 \label{algo-3}
 \begin{algorithmic}[1]
@@ -1336,7 +1463,7 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{$\hat{y}-y$ Imputation:}
 \label{algo-4}
 \begin{algorithmic}[1]

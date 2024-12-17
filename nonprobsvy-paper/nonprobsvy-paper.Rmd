@@ -572,7 +572,7 @@ Please note that, this paper does not aim to provide full tutorial on using non-
 First, we start with the IPW approach: standard and calibrated. We will start by calling the \code{nonprob} function where we define \code{selection} argument responsible for the formulae for the inclusion variables, the \code{target} argument which specifies the variable of interest \code{single_shift}. The rest refer to the \code{svydesign} object, dataset and specification of the link function (\code{method_selection}).
 
 ```{r}
-est1_logit <- nonprob(
+ipw_est1 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
   svydesign = jvs_svy,
@@ -585,13 +585,13 @@ est1_logit <- nonprob(
 In order to get the basic information about the estimated target quantity we can print the object. It provides the call and the estimated mean, standard error (\code{SE}) and 95\% confidence interval (\code{lower_bound} and \code{upper_bound}).
 
 ```{r}
-est1_logit
+ipw_est1
 ```
 
 If we are interested in detailed information about the model we can use \code{summary} method. 
 
 ```{r}
-summary(est1_logit)
+summary(ipw_est1)
 ```
 
 This displays information on the datasets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score model (section \code{Regression coefficients}). In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities (section \code{Weights}), an assessment of the level of calibration of the variables from the two samples (section \code{Covariate balance}), i.e. the difference in their totals after adjusting for the weights from the non-probability sample, the distribution of the residuals from the model (section \code{Residuals}), as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
@@ -599,7 +599,7 @@ This displays information on the datasets used for estimation (probability and n
 If we are interested in the calibrated IPW, one needs to define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to `gee` (the default is `mle`) and set the value of `h` (as dicussed in the \@ref{sec-ipw-gee} section).
 
 ```{r}
-est2_logit <- nonprob(
+ipw_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
   svydesign = jvs_svy,
@@ -612,29 +612,60 @@ est2_logit <- nonprob(
 Results are comparable to the standard IPW but the covariate balance significantly improved. 
 
 ```{r}
-est2_logit
+ipw_est2
 ```
 
 
 ## MI estimation
 
-Another family of estimators (Mass Imputation) requires a slightly different function call. As you might have noticed, the definition of which estimation method we want to use is not defined in the argument of the `nonprob` function, but in the result of the combination of arguments we have defined (specifically formulas). Now the argument in which we define the formula is outcome, which mirrors the definition of formulas for models in functions from the `glm` family (for example). 
+If a user is interested in a prediction-based approach, in particular MI estimator, in the `nonprob` function should specify the argument `outcome` as a formulae (similarly as in the `glm` function). If the `outcome` argument is specified then there is no need to specify `target` variable as it is assumed that the dependent variable is the variable of interest. By default GLM type of the MI estimator is assumed (i.e. `method_outcome="glm"`). In the code below we present possible way to declare this type of the MI estimator.
 
 ```{r}
-est5_glm <- nonprob(
+mi_est1 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
   data = admin,
   method_outcome = "glm",
-  family_outcome = "gaussian"
+  family_outcome = "binomial"
+)
+
+mi_est1
+```
+
+
+If a user is interested in the nearest neighbours MI estimator one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` if is interested in predictive mean matching. In both cases we are using 5 nearest neighbours (i.e. `controlOut(k=5)`).
+
+```{r}
+mi_est2 <- nonprob(
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_outcome = "nn",
+  control_outcome = controlOut(k=5)
+)
+
+mi_est3 <- nonprob(
+  outcome = single_shift ~ region + private + nace + size,
+  svydesign = jvs_svy,
+  data = admin,
+  method_outcome = "pmm",
+  control_outcome = controlOut(k=5)
 )
 ```
 
-In order to induce doubly robust estimation by the joint randomisation approach, we need to combine, so to speak, the way the formulas and arguments of the two previous approaches are defined, as follows.
- 
-<!-- DR -->
+Results of both estimators seems to be similar, but it should be noted that the NN MI estimator suffers from the curse of dimensionality so one should trust more the PMM MI estimator.
+
 ```{r}
-est8_dr1 <- nonprob(
+mi_est2$output
+mi_est3$output
+```
+
+## DR estimation
+
+Finally, if a user is interested in a doubly robust estimation should specify both the `selection` and `outcome` parameters. These parameters can be specified with the same or different number of variables. In the following code we specify the non-calibrated IPW and the GLM MI estimator 
+
+```{r}
+dr_est1 <- nonprob(
   selection = ~ region + private + nace + size,
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -643,34 +674,11 @@ est8_dr1 <- nonprob(
   method_outcome = "glm",
   family_outcome = "binomial"
 )
-```
-
-
-```{r}
-est6_glm_nn <- nonprob(
-  outcome = single_shift ~ region + private + nace + size,
-  svydesign = jvs_svy,
-  data = admin,
-  method_outcome = "nn",
-  control_outcome = controlOut(k=5)
-)
+dr_est1
 ```
 
 ```{r}
-est6_glm_pmm1 <- nonprob(
-  outcome = single_shift ~ region + private + nace + size,
-  svydesign = jvs_svy,
-  data = admin,
-  method_outcome = "pmm",
-  control_outcome = controlOut(k=5, predictive_match=1),
-  verbose = TRUE
-)
-```
-
-## DR estimation
-
-```{r}
-est9_dr2 <- nonprob(
+dr_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -682,16 +690,38 @@ est9_dr2 <- nonprob(
 )
 ```
 
-<!--- Piotrek 17.11.2024
-Pawnie to jest i tak w planach ale dobrze byłoby porównać estymacje na postawie tych różnych estymatorów.
--->
 
 Previous versions assumed an analytical way of calculating the variance, based on the Taylor method of approximating functions. More details can be found in papers such as \cite{chen2020doubly}, \cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition, the package allows estimation by the popular bootstrap methods, which are based on the creation of `l` artificial samples drawn from the original samples using a method with return with a specified probability. In our setup, these will be the inverse of the design weights in the case of a probability sample, and the simple return in the case of a non-probability sample, unless the weights for that sample have also been entered in the `weights` argument of `nonprob` function.
 
-Compare estimates from these estimators...
+## Comparison of estimates
 
+Finally, we compare the estimates on a single plot
 
-## Bootstrap Approach for Variance Estimation
+```{r comparison of estimates}
+library(ggplot2)
+
+dr_summary <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
+                    cbind(ipw_est2$output, ipw_est2$confidence_interval),
+                    cbind(mi_est1$output, mi_est1$confidence_interval),
+                    cbind(mi_est2$output, mi_est2$confidence_interval),
+                    cbind(mi_est3$output, mi_est3$confidence_interval),
+                    cbind(dr_est1$output, dr_est1$confidence_interval),
+                    cbind(dr_est2$output, dr_est2$confidence_interval))
+rownames(dr_summary) <- NULL
+
+dr_summary$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", "MI (PMM)", "DR", "DR (BM)")
+
+ggplot(data = dr_summary, aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
+  geom_point() + 
+  geom_vline(xintercept = mean(admin$single_shift), linetype = "dotted", color = "red") + 
+  geom_errorbar() + 
+  labs(x = "Point estimator and confidence interval", y = "Estimators")
+
+```
+
+## Advanced usage
+
+### Bootstrap Approach for Variance Estimation
 
 In each variant, we first draw bootstrap samples based on probability and non-probability
 data, and then we perform the appropriate calculations related to the given estimator to obtain
@@ -712,7 +742,7 @@ est3_logit <- nonprob(
 )
 ```
 
-## Variable Selection Algorithms
+### Variable Selection Algorithms
 
 ```{r}
 est7_glm_sel <- nonprob(
@@ -771,15 +801,60 @@ The authors' work has been financed by the National Science Centre in Poland, OP
 
 Łukasz Chrostowski is the main author of the package and for the first draft of the paper. Piotr Chlebicki contributed to the package and implemented PMM methods. Maciej Beręsewicz was responsible for the design of the package, small contributions and prepared the final manuscript.
 
+
+\clearpage
+
 \appendix
 
 # List of symbols
 
-# Example codes for specific methods {#sec-examples}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{ll}
+\hline
+\textbf{Symbol} & \textbf{Description} \\
+\hline
+$U$ & Target population of size $N$ \\
+$N$ & Population size \\
+$\bx_i$ & Vector of auxiliary variables for unit $i$ \\
+$y_i$ & Study variable for unit $i$ \\
+$S_A$ & Non-probability sample \\
+$S_B$ & Probability sample \\
+$n_A$ & Size of non-probability sample \\
+$n_B$ & Size of probability sample \\
+$\pi_i$ & Inclusion probability for unit $i$ in probability sample \\
+$d_i$ & Design weight ($1/\pi_i$) for unit $i$ \\
+$R_i$ & Indicator of inclusion into non-probability sample \\
+$\mu_y$ & Population mean of target variable $Y$ \\
+$\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
+$m(\bx_i, \bbeta)$ & Regression model for outcome variable \\
+$\hat{\mu}_{IPW}$ & Inverse probability weighting estimator \\
+$\hat{\mu}_{MI}$ & Mass imputation estimator \\
+$\hat{\mu}_{DR}$ & Doubly robust estimator \\
+$\btheta$ & Parameter vector for selection model \\
+$\bbeta$ & Parameter vector for outcome model \\
+$\hat{y}_i$ & Imputed value for unit $i$ \\
+$\hat{N}^A$ & Estimated size based on non-probability sample \\
+$\hat{N}^B$ & Estimated size based on probability sample \\
+\hline
+\end{tabular}
+\caption{List of symbols and their descriptions}
+\label{tab-list-of-sybmols}
+\end{table}
+
+\clearpage
+
+
+\clearpage
+
+# Codes for specific methods {#sec-examples}
+
+\clearpage
+
 
 # Algorithms {#sec-details}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{Mass imputation based on a generalized linear model}
 \label{algo-1}
 \begin{algorithmic}[1]
@@ -792,7 +867,7 @@ The authors' work has been financed by the National Science Centre in Poland, OP
 \end{algorithm}
 
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}
 \label{algo-2}
 \begin{algorithmic}[1]
@@ -810,7 +885,7 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{$\hat{y}-\hat{y}$ Imputation:}
 \label{algo-3}
 \begin{algorithmic}[1]
@@ -835,7 +910,7 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm}[ht!]
 \caption{$\hat{y}-y$ Imputation:}
 \label{algo-4}
 \begin{algorithmic}[1]
