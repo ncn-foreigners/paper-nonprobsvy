@@ -341,7 +341,7 @@ Tutaj właśnie najlepiej tylko rozbudować to co jest poniżej i wywalić te al
 -->
 As can be seen, the difference between the two algorithms is due to step 2. In the first approach, we compare $\hat{y}$ from samples $S_A$ and $S_B$. The second, on the other hand, compares $\hat{y}$ from sample $S_B$ with the known $y$ from sample $S_A$. It is worth noting that proof of the consistency of these estimators can be found in \citet{Beres}.
 
-## Inverse Probability Weighting
+## Inverse Probability Weighting {#sec-ipw}
 
 The main disadvantage of non-probability sampling is the unknown selection mechanism for a unit to be included in the sample. This is why we talk about the so-called biased sample problem. The inverse probability approach is based on the assumption that a reference probability sample is available and therefore we can estimate the propensity score of the selection mechanism. In recent years, a number of articles have addressed this issue. \cite{chen2020doubly} propose maximum likelihood estimation approach for estimating propensity scores for selection mechanism. \cite{wu2022statistical} present the approach based on generalized estimating equations, this method is also mentioned in \cite{yang_doubly_2020}. On the other hand calibration approach for quantiles was explained \cite{beresewicz2024inference} and \cite{santanna_covariate_2022} present the approach based on maximize the covariate distribution balance among different treatment groups.
 
@@ -376,7 +376,7 @@ We then have
 \end{equation}
 Our objective is to find the maximum likelihood estimator $\hat{\pi}_{i}^{A} = \pi(\bx_{i}, \hat{\btheta})$, such that $\hat{\btheta}$ maximises the function defined above.
 
-### Generalized Estimating Equations
+### Generalized Estimating Equations {#sec-ipw-gee}
 
 Equations of the type $\operatorname{U}(\btheta) = \bZero$, where $\operatorname{U}(\btheta) = \frac{\partial}{\partial \btheta} l^*(\btheta)$, obtained from the maximum likelihood estimation can be replaced by a system of generalized estimating equations of the form
 \begin{equation}
@@ -542,7 +542,7 @@ Before we explain the case study let's first read the package.
 library(nonprobsvy) ## 0.1.2
 ```
 
-We apply our methods to integrate administrative (\code{admin}) and survey (\code{jvs}) data about job vacancies in Poland.  The first source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey is based on a probability sample drawn according to proportional-to-size stratified sampling design. The details regarding ghe survey can be found in ... The dataset we have included in the package information about NACE (The Nomenclature of Economic Activities) (14 levels), region (16 levels), sector (2 levels), size (3 levels) and the final weight (i.e. design weight corrected for non-contact and non-response). 
+We apply our methods to integrate administrative (\code{admin}) and survey (\code{jvs}) data about job vacancies in Poland.  The first source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey is based on a probability sample drawn according to proportional-to-size stratified sampling design. The details regarding the survey can be found in \cite{jvs2022}. The dataset contains about NACE (The Nomenclature of Economic Activities; 14 levels), region (16 levels), sector (2 levels), size of the entity (3 levels) and the final weight (i.e. design weight corrected for non-contact and non-response).
 
 
 ```{r, out.width="80%"}
@@ -558,18 +558,18 @@ jvs_svy <- svydesign(ids = ~ 1,
                      data = jvs)
 ```
 
-The second source is the Central Job Offers Database (CBOP), which is a register of all vacancies submitted to Public Employment Offices and can be accessed via the CBOP API. We treat this as the \textit{non-probability sample} as this admin data is voluntary and inclusion mechanism is unknown. This dataset was prepared in such way that the records out of scope (either by the definition of vacancy or population of entities) were excluded. This dataset contains the same variables as JVS with one additional \code{single\_shift}. This is our target variable defined as: \texttt{whether a company seeks at least one employee for a single-shift job}. The goal of this case study is to estimate \textit{the share of companies that seeks employees for a single-shift job} in Poland in a given quarter. 
+The second source is the Central Job Offers Database (CBOP), which is a register of all vacancies submitted to Public Employment Offices (see \url{https://oferty.praca.gov.pl}). We treat this as the \textit{non-probability sample} because is voluntary administrative data and inclusion mechanism is unknown. This dataset was prepared in such way that the records out of scope (either by the definition of vacancy or population of entities) were excluded. The dataset contains the same variables as JVS with one additional \code{single\_shift} which is our target variable defined as: \texttt{whether a company seeks at least one employee for a single-shift job}. The goal of this case study is to estimate \textit{the share of companies that seeks employees for a single-shift job} in Poland in a given quarter. 
 
 ```{r}
 data(admin)
 head(admin)
 ```
 
-As the goal of this paper is not to provide a tutorial on using non-probability samples for statistical inference we skipped the part of aligning variables to meet the same definitions, assessing how strong is the relation between auxiliary variables, target variable and selection mechanism and distribution mis-matches between both samples. In the examples below we assume that there is no overlap between two sources and the nai"ve, reference estimate, given by a simple mean of the `single_shift` column of `admin` equals to `r round(mean(admin$single_shift)*100,1)`%.
+Please note that, this paper does not aim to provide full tutorial on using non-probability samples for statistical inference. Thus, we skipped the part of aligning variables to meet the same definitions, assessing how strong is the relation between auxiliary variables, target variable and selection mechanism and distribution mis-matches between both samples. In the examples below we assume that there is no overlap between two sources and the nai"ve, reference estimate, given by a simple mean of the `single_shift` column of `admin` equals to `r round(mean(admin$single_shift)*100,1)`%.
 
-## Standard Estimation
+## IPW estimation
 
-We will begin by showing how to use the package for estimation with the standard methods described in Chapter 2. We will start by calling the nonprob function, in the case of analysis with the IPW method.
+First, we start with the IPW approach: standard and calibrated. We will start by calling the \code{nonprob} function where we define \code{selection} argument responsible for the formulae for the inclusion variables, the \code{target} argument which specifies the variable of interest \code{single_shift}. The rest refer to the \code{svydesign} object, dataset and specification of the link function (\code{method_selection}).
 
 ```{r}
 est1_logit <- nonprob(
@@ -579,17 +579,24 @@ est1_logit <- nonprob(
   data = admin,
   method_selection = "logit"
 )
+
 ```
 
-To do this, we define the formulation of the independent variables included in the estimation of the probability of inclusion in the selection argument, as well as the name of the variable for which we are estimating the population mean (`target` argument). In addition, we apply the svydesign object containing the probability sample and non-probability data (data). We estimate the probability using a logit linking function. 
+In order to get the basic information about the estimated target quantity we can print the object. It provides the call and the estimated mean, standard error (\code{SE}) and 95\% confidence interval (\code{lower_bound} and \code{upper_bound}).
+
+```{r}
+est1_logit
+```
+
+If we are interested in detailed information about the model we can use \code{summary} method. 
 
 ```{r}
 summary(est1_logit)
 ```
 
-By calling the summary method on an object of class nonprobsvy, we can approach, among other things the value of the estimated mean, standard deviation or its 95% confidence interval. In addition, we display information on the sets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score estimation. In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities, an assessment of the level of calibration of the variables from the two samples (covariate balance), i.e. the difference in their totals after adjusting for the weights from the non-probability sample, the distribution of the residuals from the model, as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
+This displays information on the datasets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score model (section \code{Regression coefficients}). In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities (section \code{Weights}), an assessment of the level of calibration of the variables from the two samples (section \code{Covariate balance}), i.e. the difference in their totals after adjusting for the weights from the non-probability sample, the distribution of the residuals from the model (section \code{Residuals}), as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
 
-To call the calibration method, we define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to ‘gee’ (default `mle`) and set the value of `h` (corresponding to the h-function with \ref{}).
+If we are interested in the calibrated IPW, one needs to define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to `gee` (the default is `mle`) and set the value of `h` (as dicussed in the \@ref{sec-ipw-gee} section).
 
 ```{r}
 est2_logit <- nonprob(
@@ -602,8 +609,15 @@ est2_logit <- nonprob(
 )
 ```
 
- <!-- Mass Imputation  -->
- 
+Results are comparable to the standard IPW but the covariate balance significantly improved. 
+
+```{r}
+est2_logit
+```
+
+
+## MI estimation
+
 Another family of estimators (Mass Imputation) requires a slightly different function call. As you might have noticed, the definition of which estimation method we want to use is not defined in the argument of the `nonprob` function, but in the result of the combination of arguments we have defined (specifically formulas). Now the argument in which we define the formula is outcome, which mirrors the definition of formulas for models in functions from the `glm` family (for example). 
 
 ```{r}
@@ -631,7 +645,6 @@ est8_dr1 <- nonprob(
 )
 ```
 
-## Predictive Mean Matching and Nearest Neighbours for Mass Imputation problem
 
 ```{r}
 est6_glm_nn <- nonprob(
@@ -654,7 +667,7 @@ est6_glm_pmm1 <- nonprob(
 )
 ```
 
-## Doubly Robust with bias minimization application
+## DR estimation
 
 ```{r}
 est9_dr2 <- nonprob(
@@ -674,6 +687,9 @@ Pawnie to jest i tak w planach ale dobrze byłoby porównać estymacje na postaw
 -->
 
 Previous versions assumed an analytical way of calculating the variance, based on the Taylor method of approximating functions. More details can be found in papers such as \cite{chen2020doubly}, \cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition, the package allows estimation by the popular bootstrap methods, which are based on the creation of `l` artificial samples drawn from the original samples using a method with return with a specified probability. In our setup, these will be the inverse of the design weights in the case of a probability sample, and the simple return in the case of a non-probability sample, unless the weights for that sample have also been entered in the `weights` argument of `nonprob` function.
+
+Compare estimates from these estimators...
+
 
 ## Bootstrap Approach for Variance Estimation
 

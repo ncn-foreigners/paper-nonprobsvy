@@ -425,8 +425,7 @@ sample \(S_B\) with the known \(y\) from sample \(S_A\). It is worth
 noting that proof of the consistency of these estimators can be found in
 \citet{Beres}.
 
-\subsection{Inverse Probability
-Weighting}\label{inverse-probability-weighting}
+\subsection{Inverse Probability Weighting}\label{sec-ipw}
 
 The main disadvantage of non-probability sampling is the unknown
 selection mechanism for a unit to be included in the sample. This is why
@@ -482,8 +481,7 @@ units in the sample \(S_B\). We then have \begin{equation}
 such that \(\hat{\boldsymbol{\theta}}\) maximises the function defined
 above.
 
-\subsubsection{Generalized Estimating
-Equations}\label{generalized-estimating-equations}
+\subsubsection{Generalized Estimating Equations}\label{sec-ipw-gee}
 
 Equations of the type
 \(\operatorname{U}(\boldsymbol{\theta}) = \boldsymbol{0}\), where
@@ -783,12 +781,11 @@ We apply our methods to integrate administrative (\code{admin}) and
 survey (\code{jvs}) data about job vacancies in Poland. The first source
 is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey
 is based on a probability sample drawn according to proportional-to-size
-stratified sampling design. The details regarding ghe survey can be
-found in \ldots{} The dataset we have included in the package
-information about NACE (The Nomenclature of Economic Activities) (14
-levels), region (16 levels), sector (2 levels), size (3 levels) and the
-final weight (i.e.~design weight corrected for non-contact and
-non-response).
+stratified sampling design. The details regarding the survey can be
+found in \cite{jvs2022}. The dataset contains about NACE (The
+Nomenclature of Economic Activities; 14 levels), region (16 levels),
+sector (2 levels), size of the entity (3 levels) and the final weight
+(i.e.~design weight corrected for non-contact and non-response).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -819,13 +816,13 @@ R> jvs_svy <- svydesign(ids = ~ 1,
 \end{CodeChunk}
 
 The second source is the Central Job Offers Database (CBOP), which is a
-register of all vacancies submitted to Public Employment Offices and can
-be accessed via the CBOP API. We treat this as the
-\textit{non-probability sample} as this admin data is voluntary and
-inclusion mechanism is unknown. This dataset was prepared in such way
-that the records out of scope (either by the definition of vacancy or
-population of entities) were excluded. This dataset contains the same
-variables as JVS with one additional \code{single\_shift}. This is our
+register of all vacancies submitted to Public Employment Offices (see
+\url{https://oferty.praca.gov.pl}). We treat this as the
+\textit{non-probability sample} because is voluntary administrative data
+and inclusion mechanism is unknown. This dataset was prepared in such
+way that the records out of scope (either by the definition of vacancy
+or population of entities) were excluded. The dataset contains the same
+variables as JVS with one additional \code{single\_shift} which is our
 target variable defined as:
 \texttt{whether a company seeks at least one employee for a single-shift job}.
 The goal of this case study is to estimate
@@ -848,20 +845,25 @@ R> head(admin)
 \end{CodeOutput}
 \end{CodeChunk}
 
-As the goal of this paper is not to provide a tutorial on using
-non-probability samples for statistical inference we skipped the part of
-aligning variables to meet the same definitions, assessing how strong is
-the relation between auxiliary variables, target variable and selection
-mechanism and distribution mis-matches between both samples. In the
-examples below we assume that there is no overlap between two sources
-and the nai''ve, reference estimate, given by a simple mean of the
-\texttt{single\_shift} column of \texttt{admin} equals to 66.1\%.
+Please note that, this paper does not aim to provide full tutorial on
+using non-probability samples for statistical inference. Thus, we
+skipped the part of aligning variables to meet the same definitions,
+assessing how strong is the relation between auxiliary variables, target
+variable and selection mechanism and distribution mis-matches between
+both samples. In the examples below we assume that there is no overlap
+between two sources and the nai''ve, reference estimate, given by a
+simple mean of the \texttt{single\_shift} column of \texttt{admin}
+equals to 66.1\%.
 
-\subsection{Standard Estimation}\label{standard-estimation}
+\subsection{IPW estimation}\label{ipw-estimation}
 
-We will begin by showing how to use the package for estimation with the
-standard methods described in Chapter 2. We will start by calling the
-nonprob function, in the case of analysis with the IPW method.
+First, we start with the IPW approach: standard and calibrated. We will
+start by calling the \code{nonprob} function where we define
+\code{selection} argument responsible for the formulae for the inclusion
+variables, the \code{target} argument which specifies the variable of
+interest \code{single_shift}. The rest refer to the \code{svydesign}
+object, dataset and specification of the link function
+(\code{method_selection}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -875,13 +877,30 @@ R> est1_logit <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-To do this, we define the formulation of the independent variables
-included in the estimation of the probability of inclusion in the
-selection argument, as well as the name of the variable for which we are
-estimating the population mean (\texttt{target} argument). In addition,
-we apply the svydesign object containing the probability sample and
-non-probability data (data). We estimate the probability using a logit
-linking function.
+In order to get the basic information about the estimated target
+quantity we can print the object. It provides the call and the estimated
+mean, standard error (\code{SE}) and 95\% confidence interval
+(\code{lower_bound} and \code{upper_bound}).
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est1_logit
+\end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+nonprob(data = admin, selection = ~region + private + nace + 
+    size, target = ~single_shift, svydesign = jvs_svy, method_selection = "logit")
+
+Estimated population mean with overall std.err and confidence interval:
+
+                  mean         SE lower_bound upper_bound
+single_shift 0.7083228 0.01063424   0.6874801   0.7291656
+\end{CodeOutput}
+\end{CodeChunk}
+
+If we are interested in detailed information about the model we can use
+\code{summary} method.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -979,25 +998,24 @@ Log-Likelihood: -21915.41 on 15835 Degrees of freedom
 \end{CodeOutput}
 \end{CodeChunk}
 
-By calling the summary method on an object of class nonprobsvy, we can
-approach, among other things the value of the estimated mean, standard
-deviation or its 95\% confidence interval. In addition, we display
-information on the sets used for estimation (probability and
-non-probability sample). The estimated regression coefficients are also
-shown, in this case for the logit model for propensity score estimation.
-In addition, for diagnostic purposes, we have access to the distribution
-of the weights calculated from the inclusion probabilities, an
-assessment of the level of calibration of the variables from the two
-samples (covariate balance), i.e.~the difference in their totals after
-adjusting for the weights from the non-probability sample, the
-distribution of the residuals from the model, as well as the values of
-the AIC, BIC statistics in the case of models based on MLE.
+This displays information on the datasets used for estimation
+(probability and non-probability sample). The estimated regression
+coefficients are also shown, in this case for the logit model for
+propensity score model (section \code{Regression coefficients}). In
+addition, for diagnostic purposes, we have access to the distribution of
+the weights calculated from the inclusion probabilities (section
+\code{Weights}), an assessment of the level of calibration of the
+variables from the two samples (section \code{Covariate balance}),
+i.e.~the difference in their totals after adjusting for the weights from
+the non-probability sample, the distribution of the residuals from the
+model (section \code{Residuals}), as well as the values of the AIC, BIC
+statistics in the case of models based on MLE.
 
-To call the calibration method, we define a \texttt{controlSel} function
-in the \texttt{control\_selection} argument with the
-\texttt{est\_method\_sel} argument equal to `gee' (default \texttt{mle})
-and set the value of \texttt{h} (corresponding to the h-function with
-\ref{}).
+If we are interested in the calibrated IPW, one needs to define a
+\texttt{controlSel} function in the \texttt{control\_selection} argument
+with the \texttt{est\_method\_sel} argument equal to \texttt{gee} (the
+default is \texttt{mle}) and set the value of \texttt{h} (as dicussed in
+the @ref\{sec-ipw-gee\} section).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1011,6 +1029,29 @@ R> est2_logit <- nonprob(
 + )
 \end{CodeInput}
 \end{CodeChunk}
+
+Results are comparable to the standard IPW but the covariate balance
+significantly improved.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> est2_logit
+\end{CodeInput}
+\begin{CodeOutput}
+
+Call:
+nonprob(data = admin, selection = ~region + private + nace + 
+    size, target = ~single_shift, svydesign = jvs_svy, method_selection = "logit", 
+    control_selection = controlSel(h = 1, est_method_sel = "gee"))
+
+Estimated population mean with overall std.err and confidence interval:
+
+                  mean         SE lower_bound upper_bound
+single_shift 0.7041796 0.01169878   0.6812504   0.7271088
+\end{CodeOutput}
+\end{CodeChunk}
+
+\subsection{MI estimation}\label{mi-estimation}
 
 Another family of estimators (Mass Imputation) requires a slightly
 different function call. As you might have noticed, the definition of
@@ -1051,10 +1092,6 @@ R> est8_dr1 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\subsection{Predictive Mean Matching and Nearest Neighbours for Mass
-Imputation
-problem}\label{predictive-mean-matching-and-nearest-neighbours-for-mass-imputation-problem}
-
 \begin{CodeChunk}
 \begin{CodeInput}
 R> est6_glm_nn <- nonprob(
@@ -1080,8 +1117,7 @@ R> est6_glm_pmm1 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-\subsection{Doubly Robust with bias minimization
-application}\label{doubly-robust-with-bias-minimization-application}
+\subsection{DR estimation}\label{dr-estimation}
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1110,6 +1146,8 @@ weights in the case of a probability sample, and the simple return in
 the case of a non-probability sample, unless the weights for that sample
 have also been entered in the \texttt{weights} argument of
 \texttt{nonprob} function.
+
+Compare estimates from these estimators\ldots{}
 
 \subsection{Bootstrap Approach for Variance
 Estimation}\label{bootstrap-approach-for-variance-estimation}
