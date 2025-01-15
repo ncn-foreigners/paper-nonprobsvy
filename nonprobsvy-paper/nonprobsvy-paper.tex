@@ -822,8 +822,8 @@ as \pkg{foreach} \citep{foreach} (looping construct), \pkg{maxLik}
 \citep{Matrix} (matrix operations), \pkg{MASS} \citet{MASS} (statistical
 functions and datasets), \pkg{ncvreg} \citep{ncvreg} (regularization
 methods), \pkg{mathjaxr} \citep{mathjaxr} (rendering equations in
-documentation), \pkg{nleqslv} \textbackslash cite{[}\{nleqslv\} (solving
-non-linear equations), and \pkg{doParallel} \citep{doParallel} (parallel
+documentation), \pkg{nleqslv} \cite{nleqslv} (solving non-linear
+equations), and \pkg{doParallel} \citep{doParallel} (parallel
 computing).
 
 In the next sections we present a case study on integration of
@@ -932,7 +932,8 @@ equals to 66.1\%.
 
 \subsection{Estimation}\label{estimation}
 
-\subsubsection{the IPW approach}\label{the-ipw-approach}
+\subsubsection{Propensity score
+approach}\label{propensity-score-approach}
 
 First, we start with the IPW approach with to possible estimation
 methods MLE (standard) and GEE (calibrated to the estimated survey
@@ -1116,36 +1117,36 @@ by the \texttt{nonprobsvycheck} function:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> nonprobsvycheck(~size, ipw_est1)$balance
+R> data.frame(ipw_mle=nonprobsvycheck(~size, ipw_est1, 1)$balance,
++            ipw_gee=nonprobsvycheck(~size, ipw_est2, 1)$balance)
 \end{CodeInput}
 \begin{CodeOutput}
-    sizeL     sizeM     sizeS 
--367.6153 -228.3993 1624.1408 
-\end{CodeOutput}
-\begin{CodeInput}
-R> nonprobsvycheck(~size, ipw_est2)$balance
-\end{CodeInput}
-\begin{CodeOutput}
- sizeL  sizeM  sizeS 
- 3e-10  0e+00 -4e-10 
+      ipw_mle ipw_gee
+sizeL  -367.6       0
+sizeM  -228.4       0
+sizeS  1624.1       0
 \end{CodeOutput}
 \end{CodeChunk}
 
-Note that we do not provide a detailed results on the balance as it can
-be done using existing packages, for instance using the \code{bal.code}
-function from the \pkg{cobalt} package \citep{cobalt}.
+Notice that, neither in the package nor this paper we focus a detailed
+description of the post-hoc results, such as covariate balance. This can
+be done via existing CRAN packages, for instance using the
+\code{bal.tab} function from the \pkg{cobalt} package \citep{cobalt}.
 
-\subsubsection{the MI approach}\label{the-mi-approach}
+\subsubsection{Prediction-based
+approach}\label{prediction-based-approach}
 
-If a user is interested in a prediction-based approach, in particular MI
-estimator, in the \texttt{nonprob} function should specify the argument
+If a user is interested in a prediction-based approach, in particular
+mass imputation estimators, then should specify the argument
 \texttt{outcome} as a formulae (similarly as in the \texttt{glm}
-function). If the \texttt{outcome} argument is specified then there is
-no need to specify \texttt{target} variable as it is assumed that the
-dependent variable is the variable of interest. By default GLM type of
-the MI estimator is assumed (i.e.~\texttt{method\_outcome="glm"}). In
-the code below we present possible way to declare this type of the MI
-estimator.
+function). We allow single outcome (specified as
+\texttt{y\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}) or multiple
+outcomes (as
+\texttt{y1\ +\ y2\ +\ y2\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}).
+Note that if the \texttt{outcome} argument is specified then there is no
+need to specify \texttt{target} argument. By default GLM type of the MI
+estimator is assumed (i.e.~\texttt{method\_outcome="glm"}). In the code
+below we present possible way to declare this type of the MI estimator.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1177,8 +1178,11 @@ If a user is interested in the nearest neighbours MI estimator one can
 specify \texttt{method\_outcome\ =\ "nn"} for the nearest neighbours
 search using all variables specified in the \texttt{outcome} argument,
 or \texttt{method\_outcome\ =\ "pmm"} if is interested in predictive
-mean matching. In both cases we are using 5 nearest neighbours
-(i.e.~\texttt{controlOut(k=5)}).
+mean matching. In both cases we are using \(k=5\) nearest neighbours
+(i.e.~\texttt{controlOut(k=5)}). For the NN MI estimator there is no
+need to specify the \texttt{family\_outcome} argument as no model is
+estimated underneath. For both approaches we use the \pkg{RANN} package
+\citep{rann-pkg}.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1195,6 +1199,7 @@ R> mi_est3 <- nonprob(
 +   svydesign = jvs_svy,
 +   data = admin,
 +   method_outcome = "pmm",
++   family_outcome = "binomial", 
 +   control_outcome = controlOut(k=5)
 + )
 \end{CodeInput}
@@ -1217,17 +1222,24 @@ R> mi_est3$output
 \end{CodeInput}
 \begin{CodeOutput}
                   mean         SE
-single_shift 0.6968035 0.01460193
+single_shift 0.7450896 0.01527651
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsubsection{the DR approach}\label{the-dr-approach}
+As discussed in Section \ref{sec-methods} both IPW and MI estimators are
+asymptotically unbiased only when the model and auxiliary variables are
+correctly specified. To overcome this problem we focus now on the doubly
+robust estimators.
 
-Finally, if a user is interested in a doubly robust estimation should
-specify both the \texttt{selection} and \texttt{outcome} parameters.
-These parameters can be specified with the same or different number of
-variables. In the following code we specify the non-calibrated IPW and
-the GLM MI estimator
+\subsubsection{The doubly robust
+approach}\label{the-doubly-robust-approach}
+
+To indicate that the doubly robust estimation should used user needs to
+specify both the \texttt{selection} and \texttt{outcome} arguments.
+These formulas can be specified with the same or varying number of
+aixuliary variables. We also allow, simiarly as in the MI approach,
+multiple outcomes. In the following example code we specified the
+non-calibrated IPW and the GLM MI estimator.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1257,6 +1269,15 @@ single_shift 0.7034644 0.01131974   0.6812781   0.7256507
 \end{CodeOutput}
 \end{CodeChunk}
 
+Detailed results can be obtained by using \texttt{summary} function
+which prints both set of coefficients for the outcome and selection
+models. We omit this output due to limited space of the paper. Finally,
+we can use bias minimisation approach as proposed by
+\citet{yang_doubly_2020} by specifying
+\texttt{control\_inference\ =\ controlInf(bias\_correction\ =\ TRUE)}
+argument. This part is implemented in the \pkg{Rcpp} and
+\pkg{RcppArmadillo} packages for performance.
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> dr_est2 <- nonprob(
@@ -1269,25 +1290,39 @@ R> dr_est2 <- nonprob(
 +   family_outcome = "binomial",
 +   control_inference = controlInf(bias_correction = TRUE)
 + )
+R> dr_est2
 \end{CodeInput}
-\end{CodeChunk}
+\begin{CodeOutput}
 
-Previous versions assumed an analytical way of calculating the variance,
-based on the Taylor method of approximating functions. More details can
-be found in papers such as \cite{chen2020doubly},
-\cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition,
-the package allows estimation by the popular bootstrap methods, which
-are based on the creation of \texttt{l} artificial samples drawn from
-the original samples using a method with return with a specified
-probability. In our setup, these will be the inverse of the design
-weights in the case of a probability sample, and the simple return in
-the case of a non-probability sample, unless the weights for that sample
-have also been entered in the \texttt{weights} argument of
-\texttt{nonprob} function.
+Call:
+nonprob(data = admin, selection = ~region + private + nace + 
+    size, outcome = single_shift ~ region + private + nace + 
+    size, svydesign = jvs_svy, method_selection = "logit", method_outcome = "glm", 
+    family_outcome = "binomial", control_inference = controlInf(bias_correction = TRUE))
+
+Estimated population mean with overall std.err and confidence interval:
+
+                  mean         SE lower_bound upper_bound
+single_shift 0.7043248 0.01128182   0.6822129   0.7264368
+\end{CodeOutput}
+\end{CodeChunk}
 
 \subsection{Comparison of estimates}\label{comparison-of-estimates}
 
-Finally, we compare the estimates on a single plot
+Finally, as there is no single method for non-probability samples we
+suggest to compare results in a single table or a plot. In the Figure
+\ldots{} we presents point estimates along with 95\% confidence
+intervals. The various estimators show interesting patterns compared to
+the naive estimate (red dashed line). MI estimators demonstrate notably
+different behaviours: while PMM produces the highest point estimate with
+the widest confidence interval, NN yields the lowest estimate, close to
+the naive value. The other estimators - MI (GLM), IPW (both MLE and
+GEE), and DR (with and without bias minimization) -- cluster together
+with similar point estimates and confidence interval widths, suggesting
+some consensus in their bias correction. These methods all indicate a
+population parameter higher than the naive estimate, but their relative
+consistency, except for the extreme estimates from MI (PMM) and MI (NN),
+provides some confidence in their bias correction capabilities.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1309,16 +1344,33 @@ R> ggplot(data = dr_summary,
 +   geom_errorbar() + 
 +   labs(x = "Point estimator and confidence interval", y = "Estimators")
 \end{CodeInput}
+\begin{figure}[ht!]
 
+{\centering \includegraphics{nonprobsvy-paper_files/figure-latex/comparison-of-est-1} 
 
-\begin{center}\includegraphics{nonprobsvy-paper_files/figure-latex/comparison of estimates-1} \end{center}
+}
 
+\caption[Comparison of estimates of the share of job vacancies offered on a single-shift]{Comparison of estimates of the share of job vacancies offered on a single-shift}\label{fig:comparison-of-est}
+\end{figure}
 \end{CodeChunk}
 
 \subsection{Advanced usage}\label{advanced-usage}
 
 \subsubsection{Bootstrap Approach for Variance
 Estimation}\label{bootstrap-approach-for-variance-estimation}
+
+Previous versions assumed an analytical way of calculating the variance,
+based on the Taylor method of approximating functions. More details can
+be found in papers such as \cite{chen2020doubly},
+\cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition,
+the package allows estimation by the popular bootstrap methods, which
+are based on the creation of \texttt{l} artificial samples drawn from
+the original samples using a method with return with a specified
+probability. In our setup, these will be the inverse of the design
+weights in the case of a probability sample, and the simple return in
+the case of a non-probability sample, unless the weights for that sample
+have also been entered in the \texttt{weights} argument of
+\texttt{nonprob} function.
 
 In each variant, we first draw bootstrap samples based on probability
 and non-probability data, and then we perform the appropriate
@@ -1334,30 +1386,67 @@ The number of iterations is set in the \texttt{num\_boot} argument
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est3_logit <- nonprob(
+R> ipw_est1_boot <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   target = ~ single_shift,
 +   svydesign = jvs_svy,
 +   data = admin,
 +   method_selection = "logit",
 +   control_inference = controlInf(var_method = "bootstrap", num_boot = 50),
-+   verbose = F,
++   verbose = F
 + )
 \end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> rbind(ipw_est1$output,
++       ipw_est1_boot$output)
+\end{CodeInput}
+\begin{CodeOutput}
+                   mean          SE
+single_shift  0.7083228 0.009436907
+single_shift1 0.7083228 0.010584448
+\end{CodeOutput}
 \end{CodeChunk}
 
 \subsubsection{Variable Selection
 Algorithms}\label{variable-selection-algorithms}
 
+In this section we briefly present how to use variable selection
+algorithms. In order to specify that a variable selection algorithm
+should be used one should specify the
+\texttt{control\_inference\ =\ controlInf(vars\_selection\ =\ TRUE)}
+argument. Then, the user should either leave the default or specify the
+parameters for the outcome via the \code{controlOut} function or
+selection outcome (\code{controlSel}). Both function have the same
+parameters:
+
+\begin{itemize}
+\item \code{penalty} -- The penanlization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")})
+\item \code{nlambda} -- The number of $\lambda$ values. Default is 50.
+\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}. Default is .001.
+\item \code{lambda} -- A user specified vector of lambdas (only for the \code{controlSel} function).
+\item \code{nfolds} -- The number of folds for cross validation. Default is 10.
+\item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for selection model. Default is 3.7 and 3 respectively.
+\end{itemize}
+
+For the MI approach we leverage the \pkg{ncvreg} package \citep{ncvreg}
+as it is solely package that uses the SCAD method in R. While for the
+IPW and DR approaches we developed our own codes in \proglang{C++} via
+the \pkg{Rcpp} package. In the code below we apply variable selection
+for the MI GLM estimator using only 5 folds, 25 possible values of
+\(\lambda\) parameters and apply the LASSO penalty.
+
 \begin{CodeChunk}
 \begin{CodeInput}
-R> est7_glm_sel <- nonprob(
+R> mi_est1_sel <- nonprob(
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
 +   data = admin,
 +   method_outcome = "glm",
-+   family_outcome = "binomial",
-+   control_outcome = controlOut(nfolds = 5, nlambda = 10),
++   family_outcome = "binomial" ,
++   control_outcome = controlOut(nfolds = 5, nlambda = 25, penalty = "lasso"),
 +   control_inference = controlInf(vars_selection = TRUE),
 +   verbose = TRUE
 + )
@@ -1368,6 +1457,22 @@ Starting CV fold #2
 Starting CV fold #3
 Starting CV fold #4
 Starting CV fold #5
+\end{CodeOutput}
+\end{CodeChunk}
+
+In this case study the MI GLM estimator with variable selection yields
+almost the same results as the approach without it. Point estimates and
+standard errors differ at the fourth and third digit.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> rbind("MI without var sel"=mi_est1$output,
++       "MI with var sel"=mi_est1_sel$output)
+\end{CodeInput}
+\begin{CodeOutput}
+                        mean         SE
+MI without var sel 0.7032081 0.01120231
+MI with var sel    0.7022412 0.01112936
 \end{CodeOutput}
 \end{CodeChunk}
 
