@@ -835,7 +835,7 @@ advanced options of the package.
 
 \subsection{Description of the data}\label{description-of-the-data}
 
-Before we explain the case study let's first read the package.
+Before we explain the case study let's first load the package.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -844,15 +844,17 @@ R> library(ggplot2) ## for visualisation
 \end{CodeInput}
 \end{CodeChunk}
 
-We apply our methods to integrate administrative (\code{admin}) and
-survey (\code{jvs}) data about job vacancies in Poland. The first source
-is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey
-is based on a probability sample drawn according to proportional-to-size
-stratified sampling design. The details regarding the survey can be
-found in \cite{jvs2022}. The dataset contains about NACE (The
-Nomenclature of Economic Activities; 14 levels), region (16 levels),
-sector (2 levels), size of the entity (3 levels) and the final weight
-(i.e.~design weight corrected for non-contact and non-response).
+The goal of the case study to integrate administrative (\code{admin})
+and survey (\code{jvs}) data about job vacancies in Poland.\\
+The first source is the Job Vacancy Survey (JVS) with a sample of 6,523
+units. The survey is based on a probability sample drawn according to
+proportional-to-size stratified sampling design. The details regarding
+the survey can be found in \cite{jvs2022}. The dataset contains about
+The Nomenclature of Economic Activities (NACE; 14 levels, \code{nace}
+column), \code{region} (16 levels), sector (2 levels, \code{private}
+column), size of the entity (3 levels: Small, Medium and Large) and the
+final weight (i.e.~design weight corrected for non-contact and
+non-response).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -870,8 +872,14 @@ R> head(jvs)
 \end{CodeOutput}
 \end{CodeChunk}
 
-For the purpose of the study we define the the sample in a simplified
-way as provided below using \code{svydesign} function.
+As the package leverage the \pkg{survey} package functionalities we need
+to define the \code{svydesign2} object via the \code{svydesign} function
+as presented below. The dataset does not contain the true stratification
+variable we use a simplified version by specifying
+\texttt{\textasciitilde{}\ size\ +\ nace\ +\ region} and we do not know
+have information on the non-response and its correction we simply assume
+that the \texttt{weight} is the calibrated weight that sums up to the
+population size.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -926,12 +934,13 @@ equals to 66.1\%.
 
 \subsubsection{the IPW approach}\label{the-ipw-approach}
 
-First, we start with the IPW approach: standard and calibrated. We will
-start by calling the \code{nonprob} function where we define
-\code{selection} argument responsible for the formulae for the inclusion
-variables, the \code{target} argument which specifies the variable of
-interest \code{single_shift}. The rest refer to the \code{svydesign}
-object, dataset and specification of the link function
+First, we start with the IPW approach with to possible estimation
+methods MLE (standard) and GEE (calibrated to the estimated survey
+totals). We start by calling the \code{nonprob} function where we define
+the \code{selection} argument responsible for the formulae for the
+inclusion variables, the \code{target} argument which specifies the
+variable of interest \code{single_shift}. The rest refer to the
+\code{svydesign} object, dataset and specification of the link function
 (\code{method_selection}).
 
 \begin{CodeChunk}
@@ -941,15 +950,15 @@ R> ipw_est1 <- nonprob(
 +   target = ~ single_shift,
 +   svydesign = jvs_svy,
 +   data = admin,
-+   method_selection = "logit"
++   method_selection = "logit" ## this is the default
 + )
 \end{CodeInput}
 \end{CodeChunk}
 
 In order to get the basic information about the estimated target
-quantity we can print the object. It provides the call and the estimated
-mean, standard error (\code{SE}) and 95\% confidence interval
-(\code{lower_bound} and \code{upper_bound}).
+quantity we can use the \code{print} method the object. It provides the
+call and the estimated mean, standard error (\code{SE}) and 95\%
+confidence interval (\code{lower_bound} and \code{upper_bound}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -968,8 +977,8 @@ single_shift 0.7083228 0.009436907   0.6898268   0.7268188
 \end{CodeOutput}
 \end{CodeChunk}
 
-If we are interested in detailed information about the model we can use
-\code{summary} method.
+If we are interested in a detailed information about the model we can
+use the \code{summary} method.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1058,18 +1067,15 @@ coefficients are also shown, in this case for the logit model for
 propensity score model (section \code{Regression coefficients}). In
 addition, for diagnostic purposes, we have access to the distribution of
 the weights calculated from the inclusion probabilities (section
-\code{Weights}), an assessment of the level of calibration of the
-variables from the two samples (section \code{Covariate balance}),
-i.e.~the difference in their totals after adjusting for the weights from
-the non-probability sample, the distribution of the residuals from the
-model (section \code{Residuals}), as well as the values of the AIC, BIC
+\code{Weights}), the distribution of the residuals from the model
+(section \code{Residuals}), as well as the values of the AIC, BIC
 statistics in the case of models based on MLE.
 
 If we are interested in the calibrated IPW, one needs to define a
 \texttt{controlSel} function in the \texttt{control\_selection} argument
 with the \texttt{est\_method\_sel} argument equal to \texttt{gee} (the
 default is \texttt{mle}) and set the value of \texttt{h} (as dicussed in
-the @ref\{sec-ipw-gee\} section).
+the \ref{sec-ipw-gee} section).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1084,8 +1090,8 @@ R> ipw_est2 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-Results are comparable to the standard IPW but the covariate balance
-significantly improved.
+Results are comparable to the standard IPW point estimate (70.4 vs 70.8)
+while the standard error is lower higher.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1104,6 +1110,30 @@ Estimated population mean with overall std.err and confidence interval:
 single_shift 0.7041796 0.01169878   0.6812504   0.7271088
 \end{CodeOutput}
 \end{CodeChunk}
+
+The calibrated IPW signiciantly improves the balance as can be accessed
+by the \texttt{nonprobsvycheck} function:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nonprobsvycheck(~size, ipw_est1)$balance
+\end{CodeInput}
+\begin{CodeOutput}
+    sizeL     sizeM     sizeS 
+-367.6153 -228.3993 1624.1408 
+\end{CodeOutput}
+\begin{CodeInput}
+R> nonprobsvycheck(~size, ipw_est2)$balance
+\end{CodeInput}
+\begin{CodeOutput}
+ sizeL  sizeM  sizeS 
+ 3e-10  0e+00 -4e-10 
+\end{CodeOutput}
+\end{CodeChunk}
+
+Note that we do not provide a detailed results on the balance as it can
+be done using existing packages, for instance using the \code{bal.code}
+function from the \pkg{cobalt} package \citep{cobalt}.
 
 \subsubsection{the MI approach}\label{the-mi-approach}
 
