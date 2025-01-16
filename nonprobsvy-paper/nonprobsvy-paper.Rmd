@@ -747,7 +747,7 @@ In the package we allow user to estimate variance of the mean using analytical (
 
 \begin{itemize}
 \item non-probability -- we currently support only simple random sampling with replacement,
-\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function.
+\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function. Currently we do not support the 
 \end{itemize}
 
 The bootstrap approach is done in the following way: 1) we independently draw the same number of $B$ bootstrap samples from non-probability and probability survey; 2) we estimate population mean based on selected method (e.g. the DR approach); and 3) calculate bootstrap standard error using the following formulae
@@ -756,7 +756,7 @@ The bootstrap approach is done in the following way: 1) we independently draw th
 aaa
 \end{equation}
 
-To specify the bootstrap approach one should use \code{controlInf()} function with `var_method = "bootstrap"`. Controlling the bootstrap method for probability sample is done by `rep_type` argument which passes the method to the `as.svrepdesign` function. The number of iterations is set in the `num_boot` argument (default 100). If the samples are large or the estimation method is complicated (e.g. involves variable selection) one can set `verbose=TRUE` to track the progress. By default results of bootstrap are stored in the `boot_sample` element of the resulting list (to disable this `keep_boot` should be set to `FALSE`). The following code provides an example of using the IPW approach with the bootstrap approach specified by the argument `control_inference` of the `nonprob` function.
+To specify the bootstrap approach one should use \code{controlInf()} function with `var_method = "bootstrap"`. Controlling the bootstrap method for probability sample is done by `rep_type` argument which passes the method to the `as.svrepdesign` function. The number of iterations is set in the `num_boot` argument (default 100). If the samples are large or the estimation method is complicated (e.g. involves variable selection) one can set `verbose=TRUE` to track the progress. By default results of bootstrap are stored in the `boot_sample` element of the resulting list (to disable this `keep_boot` should be set to `FALSE`). The following code provides an example of using the IPW approach with the bootstrap approach specified by the argument `control_inference` of the `nonprob` function. 
 
 
 ```{r}
@@ -811,7 +811,7 @@ mi_est1_sel <- nonprob(
 )
 ```
 
-In this case study the MI GLM estimator with variable selection yields almost the same results as the approach without it. Point estimates and standard errors differ at the fourth and third digit.
+In this case study the MI GLM estimator with variable selection yields almost the same results as the approach without it. Point estimates and standard errors differ at the fourth and third digit respectively.
 
 ```{r}
 rbind("MI without var sel"=mi_est1$output,
@@ -860,8 +860,10 @@ A natural extension of this study is that consistency can be maintained when the
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main author of the package and for the first draft of the paper. Piotr Chlebicki contributed to the package and implemented PMM methods. Maciej Beręsewicz was responsible for the design of the package, small contributions and prepared the final manuscript.
+Łukasz Chrostowski is the main devleoper and maintainer of the package. He was also responsible for the first draft of the paper as it is based on this Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}).
+Piotr Chlebicki contributed to the package and implemented PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and small contributions code and prepared the final manuscript.
 
+We would like to thank ...
 
 \clearpage
 
@@ -902,13 +904,6 @@ $\hat{N}^B$ & Estimated size based on probability sample \\
 \caption{List of symbols and their descriptions}
 \label{tab-list-of-sybmols}
 \end{table}
-
-\clearpage
-
-
-\clearpage
-
-# Codes for specific methods {#sec-examples}
 
 \clearpage
 
@@ -995,6 +990,83 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
+
+\clearpage
+
+
+# Codes for specific methods {#sec-examples}
+
+In this section we provide list of methods along with the appropriate set up of the `nonprob` function. We divide this section into two groups: 1) unit-level data from the reference probability sample is available; 2) only a vector of population totals or means (with population size) is available.
+
+## Unit-level probability sample is available
+
+
+## Only population totals or means are available
+
+Example declarations
+
+\begin{itemize}
+\item Mass imputation based on regression imputation
+
+```{r, eval=F}
+nonprob(
+  outcome = y ~ x1 + x2,
+  data = nonprob,
+  pop_totals = c(`(Intercept)`= N,
+                 x1 = tau_x1,
+                 x2 = tau_x2),
+  method_outcome = "glm",
+  family_outcome = "gaussian"
+)
+```
+
+\item Inverse probability weighting
+
+```{r, eval=F}
+nonprob(
+  selection =  ~ x1 + x2, 
+  target = ~ y, 
+  data = nonprob, 
+  pop_totals = c(`(Intercept)` = N, 
+                 x1 = tau_x1, 
+                 x2 = tau_x2), 
+  method_selection = "logit"
+)
+```
+
+\item Inverse probability weighting with calibration constraint
+
+```{r, eval=F}
+nonprob(
+  selection =  ~ x1 + x2, 
+  target = ~ y, 
+  data = nonprob, 
+  pop_totals = c(`(Intercept)`= N, 
+                 x1 = tau_x1, 
+                 x2 = tau_x2), 
+  method_selection = "logit", 
+  control_selection = controlSel(est_method_sel = "gee", h = 1)
+)
+```
+
+\item Doubly robust estimator
+
+```{r, eval=F}
+nonprob(
+  selection = ~ x1 + x2, 
+  outcome = y ~ x1 + x2, 
+  pop_totals = c(`(Intercept)` = N, 
+                 x1 = tau_x1, 
+                 x2 = tau_x2), 
+  method_outcome = "glm", 
+  family_outcome = "gaussian"
+)
+```
+
+\end{itemize}
+
+
+\clearpage
 
 
 
