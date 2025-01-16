@@ -836,31 +836,18 @@ deviance
 
 # Summary and future work
 
-<!--- 
-what is in the near future:
--- overlapping samples
--- empirical likelihood
--- quantile balancing
--- inference for quantiles
--- non-ignorable selection
--- replicated weights (e.g. svrep package)
--->
 
-The \pkg{nonprobsvy} package is an R tool developed to address challenges associated with making inferences from non-probability samples. As non-probability data sources such as administrative data, voluntary online panels, and social media data become increasingly available, statisticians are faced with the problem of how to integrate these sources with traditional probability samples to produce reliable population estimates. This package provides a suite of methods specifically designed to handle the unique characteristics of non-probability samples, where selection mechanisms are often unknown or biased.
+The \pkg{nonprobsvy} package provides a comprehensive R toolkit for addressing inference challenges with non-probability samples by integrating them with probability samples or known population totals/means. As non-probability data sources like administrative data, voluntary online panels, and social media data become increasingly available, statisticians need robust methods to produce reliable population estimates. The package implements \textit{state-of-the-art} approaches including mass imputation, inverse probability weighting (IPW), and doubly robust (DR) methods, each designed to correct selection bias by leveraging auxiliary data. By providing a unified framework and integration with the \pkg{survey} package, \pkg{nonprobsvy} makes complex statistical methods for non-probability samples more accessible, enabling researchers to produce robust estimates even when working with non-representative data. 
 
-\pkg{nonprobsvy} supports a range of estimation techniques including mass imputation, inverse probability weighting (IPW), and doubly robust (DR) methods. Each of these methods allows researchers to correct for selection bias in non-probability samples by leveraging auxiliary data from probability samples or known population totals. The mass imputation approach imputes values for the outcome variable in the probability sample using models trained on the non-probability sample. The IPW estimator uses estimated propensity scores to weight non-probability samples in a way that aligns them more closely with the population. The DR estimator combines both approaches, resulting in an estimator that remains consistent if either the outcome model or the propensity score model is correctly specified, thus providing a level of robustness against model misspecification.
+There are several avenues for future development of the \pkg{nonprobsvy} package. A key priority is implementing model-based calibration and additional methods for estimating propensity scores and weights. The package currently assumes no overlap between probability and non-probability samples, so accounting for potential overlap (e.g., in big data sources and registers) is another important extension. Additional planned developments include handling non-ignorable sample selection through sample selection models, maintaining consistency with calibration weights, and supporting multiple non-probability samples for data integration from various sources.
 
-Designed to integrate with the widely used \pkg{survey} package in R, \pkg{nonprobsvy} enables researchers to define survey designs, specify selection and outcome models, and estimate population parameters using both probability and non-probability samples. The package supports advanced modeling options, including generalized linear models, nearest neighbor algorithms, and predictive mean matching, and allows for customization of tuning parameters, variable selection, and variance estimation methods (e.g., bootstrap).
-
-Overall, \pkg{nonprobsvy} is a comprehensive toolkit for researchers and practitioners working with mixed data sources. It simplifies the implementation of complex statistical methods for non-probability samples, making it easier to produce robust, reliable estimates even when working with non-representative data. By providing a unified framework for inference with non-probability samples, \pkg{nonprobsvy} contributes to the growing field of data integration and enhances the ability of statisticians to make informed decisions from diverse data sources.
-
-A natural extension of this study is that consistency can be maintained when the design weights $d_i$ are replaced by calibration weights, which is often the case when working with survey sample datasets. In addition, other methods of estimating propensity scores proposed in the literature can be considered, such as estimation using the empirical likelihood approach. It is also worth exploring the situation where the two probability and non-probability samples overlap, i.e. there are units present in both datasets. This type of problem will be the focus of the author's future work on non--probability sampling, in particular its integration with other statistical data sources.
+Further methodological extensions under consideration include empirical likelihood approaches for doubly/multiply robust estimation, integration of machine learning methods like debiased/double machine learning from causal inference, handling measurement error in big data variables, and expanding the bootstrap approach beyond simple random sampling with replacement. The package will also be extended to work with the `svyrep.design` class from the \pkg{survey} package and the \pkg{svrep} package. These developments will enhance \pkg{nonprobsvy}'s capabilities for handling complex survey data structures and modern estimation challenges.
 
 # Acknowledgements {#sec-acknowledgements}
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main devleoper and maintainer of the package. He was also responsible for the first draft of the paper as it is based on this Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}).
+Łukasz Chrostowski is the main developer and maintainer of the package. He was also responsible for the first draft of the paper as it is based on his Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}).
 Piotr Chlebicki contributed to the package and implemented PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and small contributions code and prepared the final manuscript.
 
 We would like to thank ...
