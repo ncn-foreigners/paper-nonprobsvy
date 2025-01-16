@@ -816,6 +816,18 @@ after variable selection was applied (the \code{bias_inf} argument) and
 if the bias correction should be applied (the \code{bias_correction}
 argument).
 
+\subsection{Design of the package}\label{design-of-the-package}
+
+\begin{itemize}
+\tightlist
+\item
+  we do not provide ways to assess the models: this should be done prior
+  the estimation stage and there are plenty of packages to do so
+\item
+  we provide some basic functionalities such as \texttt{hatvalues} or
+  \texttt{cooks.distance} but in a limited form
+\end{itemize}
+
 In the next sections we present a case study on integration of
 non-probability sample with a reference probability sample. We will
 present various estimators and compare them. Finally, we present more
@@ -835,9 +847,9 @@ R> library(ggplot2) ## for visualisation
 \end{CodeChunk}
 
 The goal of the case study to integrate administrative (\code{admin})
-and survey (\code{jvs}) data about job vacancies in Poland.\\
-The first source is the Job Vacancy Survey (JVS) with a sample of 6,523
-units. The survey is based on a probability sample drawn according to
+and survey (\code{jvs}) data about job vacancies in Poland. The first
+source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The
+survey is based on a probability sample drawn according to
 proportional-to-size stratified sampling design. The details regarding
 the survey can be found in \cite{jvs2022}. The dataset contains about
 The Nomenclature of Economic Activities (NACE; 14 levels, \code{nace}
@@ -1102,7 +1114,7 @@ single_shift 0.7041796 0.01169878   0.6812504   0.7271088
 \end{CodeOutput}
 \end{CodeChunk}
 
-The calibrated IPW signiciantly improves the balance as can be accessed
+The calibrated IPW significantly improves the balance as can be accessed
 by the \texttt{nonprobsvycheck} function:
 
 \begin{CodeChunk}
@@ -1410,7 +1422,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010365107
+single_shift1 0.7083228 0.010890218
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1425,9 +1437,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7191282
-[2,]    0.7233464
-[3,]    0.7087409
+[1,]    0.7063183
+[2,]    0.7184122
+[3,]    0.7057586
 \end{CodeOutput}
 \end{CodeChunk}
 

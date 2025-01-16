@@ -542,6 +542,10 @@ The \code{controlOut} to fine-tune various aspects of the estimation process, in
 
 Finally, the \code{controlInf} function configures the parameters for variance estimation in the \code{nonprob} function. It allows user to specify whether the analytical or bootstrap approach should be used (the \code{var_method} argument), whether the variable selection should be applied (the \code{vars_selection} argument) and what type of boostrap should be applied for the probability sample (the \code{rep_type} argument). This function also allow to specify the how the inference for the DR approach should be taken: if a union or a division of variables after variable selection was applied (the \code{bias_inf} argument) and if the bias correction should be applied (the \code{bias_correction} argument).
 
+## Design of the package
+
++ we do not provide ways to assess the models: this should be done prior the estimation stage and there are plenty of packages to do so
++ we provide some basic functionalities such as `hatvalues` or `cooks.distance` but in a limited form
 
 In the next sections we present a case study on integration of non-probability sample with a reference probability sample. We will present various estimators and compare them. Finally, we present more advanced options of the package.
 
@@ -556,8 +560,7 @@ library(nonprobsvy) ## for estimation
 library(ggplot2) ## for visualisation
 ```
 
-The goal of the case study to integrate administrative (\code{admin}) and survey (\code{jvs}) data about job vacancies in Poland.  
-The first source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey is based on a probability sample drawn according to proportional-to-size stratified sampling design. The details regarding the survey can be found in \cite{jvs2022}. The dataset contains about The Nomenclature of Economic Activities (NACE; 14 levels, \code{nace} column), \code{region} (16 levels), sector (2 levels, \code{private} column), size of the entity (3 levels: Small, Medium and Large) and the final weight (i.e. design weight corrected for non-contact and non-response).
+The goal of the case study to integrate administrative (\code{admin}) and survey (\code{jvs}) data about job vacancies in Poland. The first source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The survey is based on a probability sample drawn according to proportional-to-size stratified sampling design. The details regarding the survey can be found in \cite{jvs2022}. The dataset contains about The Nomenclature of Economic Activities (NACE; 14 levels, \code{nace} column), \code{region} (16 levels), sector (2 levels, \code{private} column), size of the entity (3 levels: Small, Medium and Large) and the final weight (i.e. design weight corrected for non-contact and non-response).
 
 
 ```{r, out.width="80%"}
@@ -632,7 +635,7 @@ Results are comparable to the standard IPW point estimate (`r round(ipw_est2$out
 ipw_est2
 ```
 
-The calibrated IPW signiciantly improves the balance as can be accessed by the `nonprobsvycheck` function:
+The calibrated IPW significantly improves the balance as can be accessed by the `nonprobsvycheck` function:
 
 ```{r}
 data.frame(ipw_mle=nonprobsvycheck(~size, ipw_est1, 1)$balance,
