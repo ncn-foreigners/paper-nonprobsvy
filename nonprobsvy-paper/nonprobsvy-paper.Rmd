@@ -743,14 +743,21 @@ ggplot(data = dr_summary,
 
 ### Bootstrap Approach for Variance Estimation
 
-Previous versions assumed an analytical way of calculating the variance, based on the Taylor method of approximating functions. More details can be found in papers such as \cite{chen2020doubly}, \cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition, the package allows estimation by the popular bootstrap methods, which are based on the creation of `l` artificial samples drawn from the original samples using a method with return with a specified probability. In our setup, these will be the inverse of the design weights in the case of a probability sample, and the simple return in the case of a non-probability sample, unless the weights for that sample have also been entered in the `weights` argument of `nonprob` function.
+In the package we allow user to estimate variance of the mean using analytical (default) or bootstrap approach. In case of analytical variance estimators we use the estimators proposed in the papers described in the Section \ref{sec-methods}. Users may disable standard error calculation using \code{nonprob(se=FALSE)}. The bootstrap approach implemented in the package refers to two samples: 
 
-In each variant, we first draw bootstrap samples based on probability and non-probability
-data, and then we perform the appropriate calculations related to the given estimator to obtain
-the mean of the population of the `l`-th iteration. Finally, we use the usual formula for the
-bootstrap variance, and in this way we obtain the estimate of interest.
+\begin{itemize}
+\item non-probability -- we currently support only simple random sampling with replacement,
+\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function.
+\end{itemize}
 
-The boostrap method is called if its type is defined in the control argument `var_method`, which defaults to `analytical`. The number of iterations is set in the `num_boot` argument (default 100).
+The bootstrap approach is done in the following way: 1) we independently draw the same number of $B$ bootstrap samples from non-probability and probability survey; 2) we estimate population mean based on selected method (e.g. the DR approach); and 3) calculate bootstrap standard error using the following formulae
+
+\begin{equation}
+aaa
+\end{equation}
+
+To specify the bootstrap approach one should use \code{controlInf()} function with `var_method = "bootstrap"`. Controlling the bootstrap method for probability sample is done by `rep_type` argument which passes the method to the `as.svrepdesign` function. The number of iterations is set in the `num_boot` argument (default 100). If the samples are large or the estimation method is complicated (e.g. involves variable selection) one can set `verbose=TRUE` to track the progress. By default results of bootstrap are stored in the `boot_sample` element of the resulting list (to disable this `keep_boot` should be set to `FALSE`). The following code provides an example of using the IPW approach with the bootstrap approach specified by the argument `control_inference` of the `nonprob` function.
+
 
 ```{r}
 ipw_est1_boot <- nonprob(
@@ -764,9 +771,16 @@ ipw_est1_boot <- nonprob(
 )
 ```
 
+Next, we compare the estimated standard error with the analytical one below.
+
 ```{r}
 rbind(ipw_est1$output,
       ipw_est1_boot$output)
+```
+To assess the samples one can access the `boot_sample` element of the output list of the `nonprob` function. Note that this is returned as `matrix` because we allow multiple `target` variables.
+
+```{r}
+head(ipw_est1_boot$boot_sample, n=3)
 ```
 
 ### Variable Selection Algorithms

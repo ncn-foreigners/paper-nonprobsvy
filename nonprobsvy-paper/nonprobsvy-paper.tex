@@ -1359,30 +1359,41 @@ R> ggplot(data = dr_summary,
 \subsubsection{Bootstrap Approach for Variance
 Estimation}\label{bootstrap-approach-for-variance-estimation}
 
-Previous versions assumed an analytical way of calculating the variance,
-based on the Taylor method of approximating functions. More details can
-be found in papers such as \cite{chen2020doubly},
-\cite{yang_asymptotic_2020} or \cite{yang2021integration}. In addition,
-the package allows estimation by the popular bootstrap methods, which
-are based on the creation of \texttt{l} artificial samples drawn from
-the original samples using a method with return with a specified
-probability. In our setup, these will be the inverse of the design
-weights in the case of a probability sample, and the simple return in
-the case of a non-probability sample, unless the weights for that sample
-have also been entered in the \texttt{weights} argument of
-\texttt{nonprob} function.
+In the package we allow user to estimate variance of the mean using
+analytical (default) or bootstrap approach. In case of analytical
+variance estimators we use the estimators proposed in the papers
+described in the Section \ref{sec-methods}. Users may disable standard
+error calculation using \code{nonprob(se=FALSE)}. The bootstrap approach
+implemented in the package refers to two samples:
 
-In each variant, we first draw bootstrap samples based on probability
-and non-probability data, and then we perform the appropriate
-calculations related to the given estimator to obtain the mean of the
-population of the \texttt{l}-th iteration. Finally, we use the usual
-formula for the bootstrap variance, and in this way we obtain the
-estimate of interest.
+\begin{itemize}
+\item non-probability -- we currently support only simple random sampling with replacement,
+\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function.
+\end{itemize}
 
-The boostrap method is called if its type is defined in the control
-argument \texttt{var\_method}, which defaults to \texttt{analytical}.
-The number of iterations is set in the \texttt{num\_boot} argument
-(default 100).
+The bootstrap approach is done in the following way: 1) we independently
+draw the same number of \(B\) bootstrap samples from non-probability and
+probability survey; 2) we estimate population mean based on selected
+method (e.g.~the DR approach); and 3) calculate bootstrap standard error
+using the following formulae
+
+\begin{equation}
+aaa
+\end{equation}
+
+To specify the bootstrap approach one should use \code{controlInf()}
+function with \texttt{var\_method\ =\ "bootstrap"}. Controlling the
+bootstrap method for probability sample is done by \texttt{rep\_type}
+argument which passes the method to the \texttt{as.svrepdesign}
+function. The number of iterations is set in the \texttt{num\_boot}
+argument (default 100). If the samples are large or the estimation
+method is complicated (e.g.~involves variable selection) one can set
+\texttt{verbose=TRUE} to track the progress. By default results of
+bootstrap are stored in the \texttt{boot\_sample} element of the
+resulting list (to disable this \texttt{keep\_boot} should be set to
+\texttt{FALSE}). The following code provides an example of using the IPW
+approach with the bootstrap approach specified by the argument
+\texttt{control\_inference} of the \texttt{nonprob} function.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1398,6 +1409,9 @@ R> ipw_est1_boot <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
+Next, we compare the estimated standard error with the analytical one
+below.
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> rbind(ipw_est1$output,
@@ -1406,7 +1420,24 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010584448
+single_shift1 0.7083228 0.009994811
+\end{CodeOutput}
+\end{CodeChunk}
+
+To assess the samples one can access the \texttt{boot\_sample} element
+of the output list of the \texttt{nonprob} function. Note that this is
+returned as \texttt{matrix} because we allow multiple \texttt{target}
+variables.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> head(ipw_est1_boot$boot_sample, n=3)
+\end{CodeInput}
+\begin{CodeOutput}
+     single_shift
+[1,]    0.7097242
+[2,]    0.7104018
+[3,]    0.7198541
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1472,7 +1503,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7022412 0.01112936
+MI with var sel    0.7034021 0.01119051
 \end{CodeOutput}
 \end{CodeChunk}
 
