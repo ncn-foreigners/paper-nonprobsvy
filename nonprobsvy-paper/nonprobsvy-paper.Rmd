@@ -171,37 +171,54 @@ dodać informację, że te możliwa jest kombinacja różnych metod
 
 To our knowledge the \pkg{nonprobsvy} is the solely software (open or close) that implements state-of-the-art methods for non-probability samples.
 
-The remaining part of the paper is as follows. In Section \ref{sec-methods} theory of the statistical inference based on non-probability samples is presented. We provide basic set-up and introduce methods in separate subsections. Section \ref{sec-package} describes the dependencies of the package and the main function with its arguments. Section \ref{sec-data-analysis} presents a case study of integration of the Polish Job Vacancy Survey with a voluntary admin data: Central Job Offers Database with an aim on estimating number of companies with at least vacancy offered on a single shift. Section \ref{sec-s3methods} presents classes and the \code{S3Methods} implemented in the package. Paper finishes with summary and plans for the future works. In the Appendix we present codes for specific approaches discussed in the paper, algorithms and detailed derivations of the implemented methods.
+The remaining part of the paper is as follows. In Section \ref{sec-methods} theory of the statistical inference based on non-probability samples is presented. We provide basic set-up and introduce methods in separate subsections. In the paper we @wu2022statistical notation. Section \ref{sec-package} describes the dependencies of the package and the main function with its arguments. Section \ref{sec-data-analysis} presents a case study of integration of the Polish Job Vacancy Survey with a voluntary admin data: Central Job Offers Database with an aim on estimating number of companies with at least vacancy offered on a single shift. Section \ref{sec-s3methods} presents classes and the \code{S3Methods} implemented in the package. Paper finishes with summary and plans for the future works. In the Appendix we present codes for specific approaches discussed in the paper, algorithms and detailed derivations of the implemented methods.
 
 # Methods for non-probability samples {#sec-methods}
 
 ## Basic setup
 
-Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ (a realisation of the random vector $\bX_{i}$ in the super-population) and the study/target variable $y_{i}$ (a realisation of the random variable $Y_{i}$ in the super-population). Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample $S_A$ of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}\right), i \in S_B\}$ be a dataset of a probability sample $S_B$ of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi$ (which in the super population model are also considered to be random variables) are available. Let $R_i$ be an indicator of inclusion into non-probability sample $S_A$. Each unit in the sample $S_B$ has been assigned a design-based weight given by $d_i = 1/\pi_i$. The above description of the data is presented in a more concise form in Table \ref{tab-two-sources}.
+Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ and the study/target variable $y_{i}$. Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample $S_A$ of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}^B\right), i \in S_B\}$ be a dataset of a probability sample $S_B$ of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi^B$ are known for all units in the population. Each unit in the sample $S_B$ has been assigned a design-based weight given by $d_i^B = 1/\pi_i^B$. 
+
+Let $R_i=I(i \in S_A)$ be an indicator of inclusion into non-probability sample $S_A$ defined for all units in the target population. Let $\pi_i^A=P(R_i=1 \mid \bx_i, y_i)=P(R_i=1 \mid \bx_i)$ be the propensity scores which characterize the sample $S_A$ inclusion and participation mechanisms. On the contrary to $\pi_i^B$,  the $\pi_i^A$ and thus $d_i^A=1/\pi_i^A$ are unknown. This description of the data is presented in a more concise form in Table \ref{tab-two-sources}.
 
 \begin{table}[ht!]
     \centering
     \resizebox{\linewidth}{!}{
-    \begin{tabular}{llccc} 
+    \begin{tabular}{llcccc} 
     \hline
-    Sample & ID & Design weight $d$ & Covariates $\bX$ & Study variable $Y$ \\
+    Sample & ID & Inclusion ($R$) & Design weight ($d$) & Covariates ($\bX$) & Study variable ($Y$) \\
     \hline
-    Non-probability sample ($S_A$) & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
-    & $\vdots$ & ? & $\vdots$ & $\vdots$ \\
-    & $n_A$ & ? & $\checkmark$ & $\checkmark$ \\
-    Probability sample ($S_B$) & 1 & $\checkmark$ & $\checkmark$ & ? \\
-    & $\vdots$ & $\vdots$ & $\vdots$ & ? \\ 
-    & $n_B$ & $\checkmark$ & $\checkmark$ & ? \\                                     
+    Non-probability  & 1 & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
+    sample ($S_A$) & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+    & $n_A$ & 1 & ? & $\checkmark$ & $\checkmark$ \\
+    Probability  & 1 & 0 & $\checkmark$ & $\checkmark$ & ? \\
+    sample ($S_B$) & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\ 
+    & $n_B$ & 0 & $\checkmark$ & $\checkmark$ & ? \\                                     
     \hline     
     \end{tabular}
     }
-    \caption{Two sample setting.}
+    \caption{Two sample setting}
     \label{tab-two-sources}
 \end{table}
 
-The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. Given the absence of a universally accepted methodology for achieving this objective, the assumptions vary considerably, as outlined by @wu2022statistical. However, the main assumptions that apply to all presented in this section methods are: no overlap between samples and no measurement error in $Y_i$ and $\bX_i$ is observed. In addition, this setting may be also extended to calibrated $d_i$ weights (i.e. $d_i$ adjusted for under-coverage, non-contact or non-response; cf. \citet{sarndal2007calibration}) but this requires additional developments in the theory about the consistency of the IPW, MI or DR estimators. In the next sections we briefly present methods that are implemented in the package.  
+The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. Given the absence of a universally accepted methodology for achieving this objective, the assumptions vary considerably, as outlined by @wu2022statistical. However, the main assumptions that apply to all presented in this section methods are: 
+
+\begin{itemize}
+\item[A1] $R_i$ and the study variable $y_i$ are independent given the set of covariates $\bx_i$, i.e., $\left(R_i \perp y_i\right) \mid \bx_i$.
+\item[A2] All the units in the target population have non-zero propensity scores, i.e., $\pi_i^A>0$, $i=1,2, \ldots, N$.
+\item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\bx_1, \bx_2, \ldots, \bx_N\right)$.
+\end{itemize}
+
+In addition, we assume no overlap between $S_A$ and $S_B$, and no measurement error in $Y_i$ and $\bX_i$ is observed. Setting presented in Table \ref{tab-two-sources} may be also extended to calibrated $d_i^B$ weights (i.e. $d_i^B$ adjusted for under-coverage, non-contact or non-response; cf. \citet{sarndal2005estimation}) but this requires additional developments in the theory about the consistency of the IPW, MI or DR estimators. In the next sections we briefly present methods that are implemented in the package.
 
 ## Prediction-based approach {#sec-prediction}
+
+As @wu2022statistical notes there are two commonly used prediction estimators
+
+\begin{equation}
+\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\} .
+\end{equation}
+
 
 Mass imputation is the application of imputation techniques to an entire dataset where many observations have missing values for the given variable. \cite{kim_combining_2021}, \cite{yang2021integration}, \cite{Beres} propose the following imputation strategies as:
 

@@ -252,8 +252,9 @@ samples.
 The remaining part of the paper is as follows. In Section
 \ref{sec-methods} theory of the statistical inference based on
 non-probability samples is presented. We provide basic set-up and
-introduce methods in separate subsections. Section \ref{sec-package}
-describes the dependencies of the package and the main function with its
+introduce methods in separate subsections. In the paper we
+\citet{wu2022statistical} notation. Section \ref{sec-package} describes
+the dependencies of the package and the main function with its
 arguments. Section \ref{sec-data-analysis} presents a case study of
 integration of the Polish Job Vacancy Survey with a voluntary admin
 data: Central Job Offers Database with an aim on estimating number of
@@ -270,38 +271,43 @@ of the implemented methods.
 
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
 labelled units. Each unit \(i\) has an associated vector of auxiliary
-variables \(\boldsymbol{x}_{i}\) (a realisation of the random vector
-\(\boldsymbol{X}_{i}\) in the super-population) and the study/target
-variable \(y_{i}\) (a realisation of the random variable \(Y_{i}\) in
-the super-population). Let \(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\)
-be a dataset of a non-probability sample \(S_A\) of size \(n_A\) and let
-\(\{\left(\boldsymbol{x}_i, \pi_{i}\right), i \in S_B\}\) be a dataset
+variables \(\boldsymbol{x}_{i}\) and the study/target variable
+\(y_{i}\). Let \(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\) be a dataset
+of a non-probability sample \(S_A\) of size \(n_A\) and let
+\(\{\left(\boldsymbol{x}_i, \pi_{i}^B\right), i \in S_B\}\) be a dataset
 of a probability sample \(S_B\) of size \(n_B\), where only information
-about variables \(\boldsymbol{X}\) and inclusion probabilities \(\pi\)
-(which in the super population model are also considered to be random
-variables) are available. Let \(R_i\) be an indicator of inclusion into
-non-probability sample \(S_A\). Each unit in the sample \(S_B\) has been
-assigned a design-based weight given by \(d_i = 1/\pi_i\). The above
-description of the data is presented in a more concise form in Table
+about variables \(\boldsymbol{X}\) and inclusion probabilities \(\pi^B\)
+are known for all units in the population. Each unit in the sample
+\(S_B\) has been assigned a design-based weight given by
+\(d_i^B = 1/\pi_i^B\).
+
+Let \(R_i=I(i \in S_A)\) be an indicator of inclusion into
+non-probability sample \(S_A\) defined for all units in the target
+population. Let
+\(\pi_i^A=P(R_i=1 \mid \boldsymbol{x}_i, y_i)=P(R_i=1 \mid \boldsymbol{x}_i)\)
+be the propensity scores which characterize the sample \(S_A\) inclusion
+and participation mechanisms. On the contrary to \(\pi_i^B\), the
+\(\pi_i^A\) and thus \(d_i^A=1/\pi_i^A\) are unknown. This description
+of the data is presented in a more concise form in Table
 \ref{tab-two-sources}.
 
 \begin{table}[ht!]
     \centering
     \resizebox{\linewidth}{!}{
-    \begin{tabular}{llccc} 
+    \begin{tabular}{llcccc} 
     \hline
-    Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\boldsymbol{X}$ & Study variable $Y$ \\
+    Sample & ID & Inclusion ($R$) & Design weight ($d$) & Covariates ($\boldsymbol{X}$) & Study variable ($Y$) \\
     \hline
-    Non-probability sample ($S_A$) & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
-    & $\vdots$ & ? & $\vdots$ & $\vdots$ \\
-    & $n_A$ & ? & $\checkmark$ & $\checkmark$ \\
-    Probability sample ($S_B$) & 1 & $\checkmark$ & $\checkmark$ & ? \\
-    & $\vdots$ & $\vdots$ & $\vdots$ & ? \\ 
-    & $n_B$ & $\checkmark$ & $\checkmark$ & ? \\                                     
+    Non-probability  & 1 & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
+    sample ($S_A$) & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+    & $n_A$ & 1 & ? & $\checkmark$ & $\checkmark$ \\
+    Probability  & 1 & 0 & $\checkmark$ & $\checkmark$ & ? \\
+    sample ($S_B$) & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\ 
+    & $n_B$ & 0 & $\checkmark$ & $\checkmark$ & ? \\                                     
     \hline     
     \end{tabular}
     }
-    \caption{Two sample setting.}
+    \caption{Two sample setting}
     \label{tab-two-sources}
 \end{table}
 
@@ -314,22 +320,31 @@ samples to estimate \(\mu_{y}\). Given the absence of a universally
 accepted methodology for achieving this objective, the assumptions vary
 considerably, as outlined by \citet{wu2022statistical}. However, the
 main assumptions that apply to all presented in this section methods
-are: no overlap between samples and no measurement error in \(Y_i\) and
-\(\boldsymbol{X}_i\) is observed. In addition, this setting may be also
-extended to calibrated \(d_i\) weights (i.e.~\(d_i\) adjusted for
-non-response; cf.~\citet{sarndal2007calibration}) but this requires
+are:
+
+\begin{itemize}
+\item[A1] $R_i$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$, i.e., $\left(R_i \perp y_i\right) \mid \boldsymbol{x}_i$.
+\item[A2] All the units in the target population have non-zero propensity scores, i.e., $\pi_i^A>0$, $i=1,2, \ldots, N$.
+\item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$.
+\end{itemize}
+
+In addition, we assume no overlap between samples and no measurement
+error in \(Y_i\) and \(\boldsymbol{X}_i\) is observed. Setting presented
+in Table \ref{tab-two-sources} may be also extended to calibrated
+\(d_i\) weights (i.e.~\(d_i\) adjusted for under-coverage, non-contact
+or non-response; cf.~\citet{sarndal2007calibration}) but this requires
 additional developments in the theory about the consistency of the IPW,
 MI or DR estimators. In the next sections we briefly present methods
 that are implemented in the package.
 
 \subsection{Prediction-based approach}\label{sec-prediction}
 
-\subsubsection{Mass imputation}\label{mass-imputation}
+As \citet{wu2022statistical} notes there are two commonly used
+prediction estimators
 
-Imputation refers to the process of replacing missing or incomplete data
-with substituted values. The goal of imputation is to allow for more
-complete data analysis, as many statistical methods require complete
-datasets.
+\begin{equation}
+\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\} .
+\end{equation}
 
 Mass imputation is the application of imputation techniques to an entire
 dataset where many observations have missing values for the given
@@ -346,9 +361,9 @@ Mass imputation is particularly useful in large datasets where missing
 data can be widespread, and it seeks to preserve the relationships
 between variables, thus improving the overall integrity of the data.
 
-As presented in (Table \ref{tab-two-sources}), we do not know the value
-of the dependent variable \(Y\) for the units in the probability sample.
-In this case, the method will be to impute the values of the explanatory
+As presented in Table \ref{tab-two-sources}, we do not know the value of
+the dependent variable \(Y\) for the units in the probability sample. In
+this case, the method will be to impute the values of the explanatory
 variable for all units in the probability sample. We therefore treat the
 non-probability sample as a training set that is used to build the
 imputation model. In this subsection, we distinguish three main methods
@@ -1434,7 +1449,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010938192
+single_shift1 0.7083228 0.010525966
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1449,9 +1464,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7025747
-[2,]    0.7274951
-[3,]    0.7004047
+[1,]    0.7131774
+[2,]    0.7128429
+[3,]    0.7080788
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1517,7 +1532,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7031075 0.01120569
+MI with var sel    0.7022412 0.01112936
 \end{CodeOutput}
 \end{CodeChunk}
 
