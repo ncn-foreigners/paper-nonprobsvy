@@ -104,14 +104,9 @@ options(prompt = 'R> ', continue = '+ ')
 
 # Introduction {#sec-introduction}
 
-In official statistics, information about the target population and its characteristics is mainly collected through probability surveys, census or is obtained from administrative registers, which covers all (or nearly all) units of the population. However, owing to increasing non-response rates, particularly unit non-response and non-contact, resulting from the growing respondent burden, as well as rising costs of surveys conducted by National Statistical Institutes (NSIs), non-probability data sources are becoming more popular \citep{berkesewicz2017two, beaumont2020probability}. Non-probability surveys, such as opt-in web panels, social media, scanner data, mobile phone data or voluntary register data, are currently being explored for use in the production of official statistics \citep{citro2014multiple,daas2015big}, public opinion studies or market research. Since the selection mechanism in these sources is unknown, standard design-based inference methods cannot be directly applied. 
+In official statistics, information about the target population and its characteristics is mainly collected through probability surveys, census or is obtained from administrative registers, which covers all (or nearly all) units of the population. However, owing to increasing non-response rates, particularly unit non-response and non-contact, resulting from the growing respondent burden, as well as rising costs of surveys conducted by National Statistical Institutes (NSIs), non-probability data sources are becoming more popular \citep{berkesewicz2017two, beaumont2020probability, biffignandi2021handbook}. Non-probability surveys, such as opt-in web panels, social media, scanner data, mobile phone data or voluntary register data, are currently being explored for use in the production of official statistics \citep{citro2014multiple,daas2015big}, public opinion studies or market research. Since the selection mechanism in these sources is unknown, standard design-based inference methods cannot be directly applied and in case of large datasets may lead to \textit{big data paradox} as described by \citet{meng2018statistical}.
 
-Table \ref{tab-comparison-characteristics} that compares the basic characteristics of probability and non-probability samples. In particular, what are the advantages and disadvantages of each type of sample with respect to population coverage, bias, variance, costs, and the selection mechanism for observations into the samples. In general, non-probability samples suffers from unknown selection mechanism (i.e. unknown probabilities of inclusion into sample) and under-coverage of certain groups from the population. As a result direct estimation based on these samples are characterised with bias and, in most cases, small variance (for large non-probability surveys) which leads to so called big data paradox. Certainly, cost and timeliness of these surveys is significantly smaller than for non-probability samples.
-
-<!----
-add reference to betlehem and other books on dealing with web surveys etc.
-big data paradox
----->
+Table \ref{tab-comparison-characteristics} compares the basic characteristics of probability and non-probability samples. In particular, what are the advantages and disadvantages of each type of sample with respect to population coverage, bias, variance, costs, and the selection mechanism for observations into the samples. In general, non-probability samples suffers from unknown selection mechanism (i.e. unknown probabilities of inclusion into sample) and under-coverage of certain groups from the population. As a result direct estimation based on these samples are characterised with bias and, in most cases, small variance (for large non-probability surveys) which leads to so called big data paradox. Certainly, cost and timeliness of these surveys is significantly smaller than for non-probability samples.
 
 \begin{table}[ht!]
     \centering
@@ -131,13 +126,15 @@ big data paradox
     \label{tab-comparison-characteristics}
 \end{table}
 
-To address this problem, several approaches based on inverse probability weighting (IPW), model-based prediction / mass imputation (MI) and doubly robust (DR) estimators have been proposed for two main scenarios: 1) population-level data are available, either in the form of unit-level data (e.g. from a~register covering the whole population) or known population totals/means, and 2) only survey data are available as a~source of information about the target population \citep[cf.][]{elliott_inference_2017}. \citet{wu2022statistical} classified these approaches into three groups that require a~joint randomization framework involving $p$ (probability sampling design) and one of the outcome regression model $\xi$ or propensity score model $q$. In this approach the IPW estimator is under the $qp$ framework, the MI estimator is under the $\xi p$ framework, DR is under the $qp$ or $\xi p$ framework.
+To address this problem, several approaches based on inverse probability weighting (IPW; also propensity score weighting/adjustment, \citet{lee2006propensity}), model-based prediction (in particular, mass imputation estimators; MI) and doubly robust (DR) approach have been proposed for two main scenarios: 1) population-level data are available, either in the form of unit-level data (e.g. from a register covering the whole population) or known population totals/means, and 2) only survey data is available as a source of information about the target population \citep[cf.][]{elliott_inference_2017}. \citet{wu2022statistical} classified these approaches into three groups that require a joint randomization framework involving \textit{probability sampling design} (denoted as $p$) and one of the outcome regression model (denoted as $\xi$) or propensity score model (denoted as $q$). In this approach the IPW estimators are under the $qp$ framework, the MI estimators are under the $\xi p$ framework, DR estimators are under the $qp$ or $\xi p$ framework.
 
-Most approaches assume that population data are used to reduce the bias of non-probability sampling by a proper reweighting to reproduce known population totals/means; by modelling $E(Y|\bX)$ using various techniques; or combining both approaches (for instance doubly robust estimators, cf. \citet{chen2020doubly}; Multilevel Regression and Post-stratification (MRP) also called \textit{Mister-P}, cf. \citet{gelman1997poststratification}). Majority of these methods rely on a limited number of moments of continuous or count data, with some exceptions. For example, non-parametric approaches based on nearest neighbours (NN), such as those discussed by \citet{yang2021integration}, kernel density estimation (KDE) described by Chen, Yang and Kim \citet{chen_nonparametric_2022} or quantile balanced IPW by \citet{beresewicz2025} have also been proposed. It should be highlighted that, on contrary to probability samples, there is no single method that can be used for non-probability samples. Literature, and thus statistical software, offers various methods as presented in the next section.
+Most approaches assume that population data are used to reduce the bias of non-probability sampling by a proper reweighting to reproduce known population totals/means (i.e. IPW estimators); by modelling target variable using various techniques (i.e. MI estimators); or combining both approaches (for instance DR estimators, cf. \citet{chen2020doubly}; Multilevel Regression and Post-stratification (MRP) also called \textit{Mister-P}, cf. \citet{gelman1997poststratification}). This topic have became very popular and number of new methods were proposed; for instance non-parametric approaches based on nearest neighbours \citep{yang2021integration}, kernel density estimation \citep{chen_nonparametric_2022}, empirical likelihood \citep{kim2023empirical} or quantile balanced \citep{beresewicz2025} to name few. It should be highlighted that, on contrary to probability samples, there is no single method that can be used for non-probability samples. As shown literature, and thus statistical software, offers various methods as presented in the next section.
 
 ## Software for non-probability samples {#sec-software}
 
-Table \ref{tab-comparisons} presents comparison of availability of various inference methods and functionalities of selected packages. We focused on packages available through CRAN or PyPI (for non-CRAN packages see \citet{cobo2024software}). In the comparison we included four packages that focuses on non-probability samples: \pkg{NonProbEst} \citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy} as well as two packages that implements specific, methods: \pkg{rstanarm} (MRP; \citet{rstanarm}) and \pkg{GJRM} (sample selection models from econometrics; \citet{GJRM}). The \pkg{NonProbEst} implements IPW under logistic regression as well as machine learning approaches (e.g. CART, GBM or Neural Networks) however does not provide theoretical justification of using the ML approaches. The \pkg{balance} focuses solely on the IPW and uses standard and covariate balancing propensity score.
+Table \ref{tab-comparisons} presents comparison of availability of various inference methods and functionalities of selected packages. We focused on packages available through CRAN or PyPI (for non-CRAN or non-PyPI software see \citet{cobo2024software}).
+
+In the comparison we have included four packages that particularly focus on non-probability samples: \pkg{NonProbEst} \citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy}. We have included two packages that implements specific methods: \pkg{rstanarm} (MRP; \citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models; \citet{GJRM}). 
 
 \begin{table}[ht!]
 \centering
@@ -148,11 +145,10 @@ Table \ref{tab-comparisons} presents comparison of availability of various infer
 \hline
 IPW  & $\checkmark$ & -- & +/- & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
-MI (population)   & $\checkmark$ & -- & -- & --& --& $\checkmark$ \\
-MI (sample) & -- & -- & -- & -- & -- & $\checkmark$\\
-DR & -- & -- & -- & -- & $\checkmark$ & $\checkmark$\\
+MI & $\checkmark$ & -- & -- & -- & -- & $\checkmark$ \\
+DR & -- & -- & -- & +/- & $\checkmark$ & $\checkmark$\\
 MRP & -- & $\checkmark$ & -- & --  &--  & -- \\
-Sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
+Sample selection & -- & -- & $\checkmark$ & --  & --  & -- \\
 Variable selection & $\checkmark$ & -- & -- & $\checkmark$ & -- & $\checkmark$\\
 Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
 Bootstrap variance & $\checkmark$ & -- & -- & -- & -- & $\checkmark$\\
@@ -160,87 +156,35 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \hline
 \end{tabular}
 }
-\caption{Comparison of inference methods an of different packages}
+\caption{Comparison of packages and implemented methods}
 \label{tab-comparisons}
 \end{table}
 
-It should be however noted that implementation of specific approaches may vary significantly as the documentation of specific modules is limited. For instance, \pkg{NonProbEst} allows for calibration of IPW weights \textit{after} they are estimated, while \pkg{nonprobsvy} does this in one step. On the other hand \pkg{NonProbEst} implements various weights based on the estimated propensity scores while  \pkg{nonprobsvy} supports only two types of IPW weights. Furthermore, it should be noted that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements survey calibration for non-probability sample but it is not theoretically justified as the inclusion probabilities are unknown (on the contrary to probability samples). Only the \pkg{nonprobsvy} package leveraged the use of the \pkg{survey} package to estimate analytic as well as bootstrap variance of the non-probability estimators. To our knowledge the \pkg{nonprobsvy} is the solely software (open or close) that implements state-of-the-art methods for non-probability samples.
+The \pkg{NonProbEst} implements IPW under logistic regression as well as machine learning approaches (e.g. CART, GBM or Neural Networks) however does not provide theoretical justification of using the ML approaches. The \pkg{balance} focuses solely on the IPW and uses standard and covariate balancing propensity score.
+
+It should be however noted that implementation of specific approaches may vary significantly as the documentation of specific modules is limited. For instance, \pkg{NonProbEst} allows for calibration of IPW weights \textit{after} they are estimated, while \pkg{nonprobsvy} does this in one step. On the other hand \pkg{NonProbEst} implements various weights based on the estimated propensity scores while  \pkg{nonprobsvy} supports only two types of IPW weights. Furthermore, it should be noted that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements survey calibration for non-probability sample but it is not theoretically justified as the inclusion probabilities are unknown (on the contrary to probability samples). Only the \pkg{nonprobsvy} package leveraged the use of the \pkg{survey} package to estimate analytic as well as bootstrap variance of the non-probability estimators. 
+
+<!--- 
+Dodać informację jakie metody są oprogramowane z jakich papierów
+dodać informację, że te możliwa jest kombinacja różnych metod
+--->
+
+To our knowledge the \pkg{nonprobsvy} is the solely software (open or close) that implements state-of-the-art methods for non-probability samples.
 
 The remaining part of the paper is as follows. In Section \ref{sec-methods} theory of the statistical inference based on non-probability samples is presented. We provide basic set-up and introduce methods in separate subsections. Section \ref{sec-package} describes the dependencies of the package and the main function with its arguments. Section \ref{sec-data-analysis} presents a case study of integration of the Polish Job Vacancy Survey with a voluntary admin data: Central Job Offers Database with an aim on estimating number of companies with at least vacancy offered on a single shift. Section \ref{sec-s3methods} presents classes and the \code{S3Methods} implemented in the package. Paper finishes with summary and plans for the future works. In the Appendix we present codes for specific approaches discussed in the paper, algorithms and detailed derivations of the implemented methods.
-
-<!--- Piotrek, 17.11.2024:
-Z tego co widzę co może być tutaj problemem to:
-
-1. W nonprobsvy jest mega dużo rzeczy zrobionych i mega dużo do opisania a 
-ogólnie jest limit 30 stron w JoSS więc nie wchodźmy zbytnio w detale teori 
-tylko bardziej w detale pakietu.
-2. Najlepiej odrazu stosować się do stylu JoSS  https://www.jstatsoft.org/style
-3. Fajnie jest mieć też tę teorie od strony matematycznej typu wyproadzenia
-esytmatorów itp. ale w.g mnie bardziej istotne dla praktyków jest jak
-założenia matematyczne tłumaczą się na założenia odnośnie danych. Szczególnie
-jak sami nie muszą tego liczyć.
-
-Proponowane rozwiązania:
-
-1. Mamy obecnie opisane w pełni algorytmy typu pmm i knn, to chyba nie jest potrzebne,
-myśle że na spokojnie można o dokładne detale odesłać czytelnika do literatury
-a tutaj opisać tylko słownie bo będzie krócej.
-2. Pouzupełniałem troche.
-3. Zamiast teori matematycznej dodać interpretacje
-
-Pozatym to co można poprawić to:
-- nie ma chyba potrzeby dodawać taki abstrakcyjny call do funkcji jak
-R> nonprob(
-+ selection = ~ x1 + x2 + ... + xk,
-+ outcome = y ~ x1 + x2 + ... + xk,
-+ data = nonprob,
-+ svydesign = prob,
-+ method_outcome = "glm",
-+ family_outcome = "gaussian",
-+ method_selection = "logit",
-+ control_selection = controlSel(penalty = "SCAD"),
-+ control_outcome = controlSel(penalty = "MCP"),
-+ control_inference = controlInf(vars_selection = TRUE),
-+ verbose = TRUE
-+ )
-skoro i tak będziemy pokazywać na przykładach danych jak wywołać konkretny estymator.
-- w summary można raczej schować tabele dla współnczynników regresji bo i tak 
-nie będziemy tego jakoś specjalnie analizować, nie? Nie wiem czy to jest w pakiecie
-ale ja bym dodał taką opcje.
-- jest mało detali jeżeli chodzi o implementacje, trzeba bardziej się na tym skupić
-np. wylistować to co jest napisane w Cpp może zrobić nawet benchmark dla porównania
-twojego szybkiego kodu z jakąś naiwną czysto R-ową implementacją?
-- postać jakobianu dla logitu probitu cloglog w IPW jest raczej nie ważna 
-- Mamy dośc dużo opcji kontrolnych w nonprobsvy, mamy też dużo estymatorów,
-myśle że lepiej niż na "sucho" opisywać te opcje i gdzie one są używane to lepiej
-przy każdym przykładnie wywołania funkcji dla konkretnego estymatora wylistować,
-że tutaj można zastosować tę albo inną opcje.
-- Sekcje 3 i 4 mogą być scalone
--->
 
 # Methods for non-probability samples {#sec-methods}
 
 ## Basic setup
 
-<!--- Piotrek, 17.11.2024:
-To jest napisane tak jakbyśmy rozważali tylko ten przypadek z wagami. 
-Może lepiej napisać że narazie opisujemy tylko przypadek gdy wagi nie są skalibrowane
-i potem pokażemy że to jest też uwzględnione w pakiecie albo coś podobnego?
--->
-
-Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ (a realisation of the random vector $\bX_{i}$ in the super-population) and the study variable $y_{i}$ (a realisation of the random variable $Y_{i}$ in the super-population). Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample $S_A$ of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}\right), i \in S_B\}$ be a dataset of a probability sample $S_B$ of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi$ (which in the super population model are also considered to be random variables) are available. Let $R_i$ be an indicator of inclusion into non-probability sample $S_A$. Each unit in the sample $S_B$ has been assigned a design-based weight given by $d_i = 1/\pi_i$.  The above description of the data is presented in a more concise form in Table \ref{tab-two-sources}.
-
-<!--- Piotrek, 17.11.2024:
-Jeżeli estymowanie kwantyli jest dodane to warto zaznaczyć że też można. 
-A jak nie to można napisać że jest w planach bo maciej tego nie odpuści
--->
+Let $U=\{1,..., N\}$ denote the target population consisting of $N$ labelled units. Each unit $i$ has an associated vector of auxiliary variables $\bx_{i}$ (a realisation of the random vector $\bX_{i}$ in the super-population) and the study/target variable $y_{i}$ (a realisation of the random variable $Y_{i}$ in the super-population). Let $\{ (y_i, \bx_i), i \in S_A\}$ be a dataset of a non-probability sample $S_A$ of size $n_A$ and let  $\{\left(\bx_i, \pi_{i}\right), i \in S_B\}$ be a dataset of a probability sample $S_B$ of size $n_B$, where only information about variables $\bX$ and inclusion probabilities $\pi$ (which in the super population model are also considered to be random variables) are available. Let $R_i$ be an indicator of inclusion into non-probability sample $S_A$. Each unit in the sample $S_B$ has been assigned a design-based weight given by $d_i = 1/\pi_i$. The above description of the data is presented in a more concise form in Table \ref{tab-two-sources}.
 
 \begin{table}[ht!]
     \centering
     \resizebox{\linewidth}{!}{
     \begin{tabular}{llccc} 
     \hline
-    Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\bx$ & Study variable $y$ \\
+    Sample & ID & Design weight $d$ & Covariates $\bX$ & Study variable $Y$ \\
     \hline
     Non-probability sample ($S_A$) & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
     & $\vdots$ & ? & $\vdots$ & $\vdots$ \\
@@ -255,29 +199,12 @@ A jak nie to można napisać że jest w planach bo maciej tego nie odpuści
     \label{tab-two-sources}
 \end{table}
 
-The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. As there is no single method how to achieve this assumptions vary significantly as summarised by @wu2022statistical. The main assumptions that apply to all methods are: no overlap between samples and no measurement error in $Y_i$ and $\bX_i$ is observed.  In the next sections we briefly present methods that are implemented in the package. 
+The goal is to estimate a finite population mean $\displaystyle\mu_{y}=\frac{1}{N}\sum_{i=1}^{N} y_{i}$ of the target variable $Y$. As values of $y_{i}$ are not observed in the probability sample, it cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_{y}$. Given the absence of a universally accepted methodology for achieving this objective, the assumptions vary considerably, as outlined by @wu2022statistical. However, the main assumptions that apply to all presented in this section methods are: no overlap between samples and no measurement error in $Y_i$ and $\bX_i$ is observed. In addition, this setting may be also extended to calibrated $d_i$ weights (i.e. $d_i$ adjusted for under-coverage, non-contact or non-response; cf. \citet{sarndal2007calibration}) but this requires additional developments in the theory about the consistency of the IPW, MI or DR estimators. In the next sections we briefly present methods that are implemented in the package.  
 
 ## Prediction-based approach {#sec-prediction}
 
-### Mass imputation 
-
-Imputation refers to the process of replacing missing or incomplete data with substituted values. The goal of imputation is to allow for more complete data analysis, as many statistical methods require complete datasets.
-
-<!--- Piotrek, 17.11.2024:
-Zacytować tu co nieco?
--->
-<!--- Piotrek, 17.11.2024:
-To mi troche nie pasuje, imputacja nie tyle usuwa bias ze zbioru danych co 
-uzupełnia zbiór danych w sposób, który przy poprawnej imputacji powinien być
-nieobciążony.
--->
-
-<!--- Piotrek, 17.11.2024:
-Jeżeli tylko większość jednostek ma braki w Y to nie imputujemy na cały dataset 
-tylko na większosć. Ta sekcja generalnie mi się nie klei.
--->
-
 Mass imputation is the application of imputation techniques to an entire dataset where many observations have missing values for the given variable. \cite{kim_combining_2021}, \cite{yang2021integration}, \cite{Beres} propose the following imputation strategies as:
+
 \begin{itemize}
     \item Model based approach (GLM),
     \item Nearest neighbour imputation (NN),
@@ -286,7 +213,7 @@ Mass imputation is the application of imputation techniques to an entire dataset
 
 Mass imputation is particularly useful in large datasets where missing data can be widespread, and it seeks to preserve the relationships between variables, thus improving the overall integrity of the data.
 
-As presented in (Table \ref{tab-two-sources}), we do not know the value of the dependent variable $Y$ for the units in the probability sample. In this case, the method will be to impute the values of the explanatory variable for all units in the probability sample. We therefore treat the non-probability sample as a training set that is used to build the imputation model. In this subsection, we distinguish three main methods of mass imputation based on linear models and the k-nearest neighbours algorithm. Other popular methods for estimating the variable $Y$ from the variable $\bX$ can also be considered, e.g. machine learning models such as random forests or neural networks. 
+As presented in Table \ref{tab-two-sources}, we do not know the value of the dependent variable $Y$ for the units in the probability sample. In this case, the method will be to impute the values of the explanatory variable for all units in the probability sample. We therefore treat the non-probability sample as a training set that is used to build the imputation model. In this subsection, we distinguish three main methods of mass imputation based on linear models and the k-nearest neighbours algorithm. Other popular methods for estimating the variable $Y$ from the variable $\bX$ can also be considered, e.g. machine learning models such as random forests or neural networks. 
 
 We can obtain an estimate of the population mean based on known design weights and an imputation model for units from the probability sample:
 

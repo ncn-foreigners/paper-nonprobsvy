@@ -111,15 +111,17 @@ non-response rates, particularly unit non-response and non-contact,
 resulting from the growing respondent burden, as well as rising costs of
 surveys conducted by National Statistical Institutes (NSIs),
 non-probability data sources are becoming more popular
-\citep{berkesewicz2017two, beaumont2020probability}. Non-probability
-surveys, such as opt-in web panels, social media, scanner data, mobile
-phone data or voluntary register data, are currently being explored for
-use in the production of official statistics
-\citep{citro2014multiple,daas2015big}, public opinion studies or market
-research. Since the selection mechanism in these sources is unknown,
-standard design-based inference methods cannot be directly applied.
+\citep{berkesewicz2017two, beaumont2020probability, biffignandi2021handbook}.
+Non-probability surveys, such as opt-in web panels, social media,
+scanner data, mobile phone data or voluntary register data, are
+currently being explored for use in the production of official
+statistics \citep{citro2014multiple,daas2015big}, public opinion studies
+or market research. Since the selection mechanism in these sources is
+unknown, standard design-based inference methods cannot be directly
+applied and in case of large datasets may lead to
+\textit{big data paradox} as described by \citet{meng2018statistical}.
 
-Table \ref{tab-comparison-characteristics} that compares the basic
+Table \ref{tab-comparison-characteristics} compares the basic
 characteristics of probability and non-probability samples. In
 particular, what are the advantages and disadvantages of each type of
 sample with respect to population coverage, bias, variance, costs, and
@@ -151,55 +153,53 @@ is significantly smaller than for non-probability samples.
 \end{table}
 
 To address this problem, several approaches based on inverse probability
-weighting (IPW), model-based prediction / mass imputation (MI) and
-doubly robust (DR) estimators have been proposed for two main scenarios:
-1) population-level data are available, either in the form of unit-level
-data (e.g.~from a\textasciitilde register covering the whole population)
-or known population totals/means, and 2) only survey data are available
-as a\textasciitilde source of information about the target population
+weighting (IPW; also propensity score weighting/adjustment,
+\citet{lee2006propensity}), model-based prediction (in particular, mass
+imputation estimators; MI) and doubly robust (DR) approach have been
+proposed for two main scenarios: 1) population-level data are available,
+either in the form of unit-level data (e.g.~from a register covering the
+whole population) or known population totals/means, and 2) only survey
+data is available as a source of information about the target population
 \citep[cf.][]{elliott_inference_2017}. \citet{wu2022statistical}
-classified these approaches into three groups that require
-a\textasciitilde joint randomization framework involving \(p\)
-(probability sampling design) and one of the outcome regression model
-\(\xi\) or propensity score model \(q\). In this approach the IPW
-estimator is under the \(qp\) framework, the MI estimator is under the
-\(\xi p\) framework, DR is under the \(qp\) or \(\xi p\) framework.
+classified these approaches into three groups that require a joint
+randomization framework involving \textit{probability sampling design}
+(denoted as \(p\)) and one of the outcome regression model (denoted as
+\(\xi\)) or propensity score model (denoted as \(q\)). In this approach
+the IPW estimators are under the \(qp\) framework, the MI estimators are
+under the \(\xi p\) framework, DR estimators are under the \(qp\) or
+\(\xi p\) framework.
 
 Most approaches assume that population data are used to reduce the bias
 of non-probability sampling by a proper reweighting to reproduce known
-population totals/means; by modelling \(E(Y|\boldsymbol{X})\) using
-various techniques; or combining both approaches (for instance doubly
-robust estimators, cf.~\citet{chen2020doubly}; Multilevel Regression and
-Post-stratification (MRP) also called \textit{Mister-P},
-cf.~\citet{gelman1997poststratification}). Majority of these methods
-rely on a limited number of moments of continuous or count data, with
-some exceptions. For example, non-parametric approaches based on nearest
-neighbours (NN), such as those discussed by \citet{yang2021integration},
-kernel density estimation (KDE) described by Chen, Yang and Kim
-\citet{chen_nonparametric_2022} or quantile balanced IPW by
-\citet{beresewicz2025} have also been proposed. It should be highlighted
-that, on contrary to probability samples, there is no single method that
-can be used for non-probability samples. Literature, and thus
-statistical software, offers various methods as presented in the next
-section.
+population totals/means (i.e.~IPW estimators); by modelling target
+variable using various techniques (i.e.~MI estimators); or combining
+both approaches (for instance DR estimators, cf.~\citet{chen2020doubly};
+Multilevel Regression and Post-stratification (MRP) also called
+\textit{Mister-P}, cf.~\citet{gelman1997poststratification}). This topic
+have became very popular and number of new methods were proposed; for
+instance non-parametric approaches based on nearest neighbours
+\citep{yang2021integration}, kernel density estimation
+\citep{chen_nonparametric_2022}, empirical likelihood
+\citep{kim2023empirical} or quantile balanced \citep{beresewicz2025} to
+name few. It should be highlighted that, on contrary to probability
+samples, there is no single method that can be used for non-probability
+samples. As shown literature, and thus statistical software, offers
+various methods as presented in the next section.
 
 \subsection{Software for non-probability samples}\label{sec-software}
 
 Table \ref{tab-comparisons} presents comparison of availability of
 various inference methods and functionalities of selected packages. We
-focused on packages available through CRAN or PyPI (for non-CRAN
-packages see \citet{cobo2024software}). In the comparison we included
-four packages that focuses on non-probability samples: \pkg{NonProbEst}
-\citep{NonProbEst}, \pkg{balance} \citep{sarig2023balancepythonpackage},
-\pkg{inps} \citep{castro2024inps} and our \pkg{nonprobsvy} as well as
-two packages that implements specific, methods: \pkg{rstanarm} (MRP;
-\citet{rstanarm}) and \pkg{GJRM} (sample selection models from
-econometrics; \citet{GJRM}). The \pkg{NonProbEst} implements IPW under
-logistic regression as well as machine learning approaches (e.g.~CART,
-GBM or Neural Networks) however does not provide theoretical
-justification of using the ML approaches. The \pkg{balance} focuses
-solely on the IPW and uses standard and covariate balancing propensity
-score.
+focused on packages available through CRAN or PyPI (for non-CRAN or
+non-PyPI software see \citet{cobo2024software}).
+
+In the comparison we have included four packages that particularly focus
+on non-probability samples: \pkg{NonProbEst} \citep{NonProbEst},
+\pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps}
+\citep{castro2024inps} and our \pkg{nonprobsvy}. We have included two
+packages that implements specific methods: \pkg{rstanarm} (MRP;
+\citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models;
+\citet{GJRM}).
 
 \begin{table}[ht!]
 \centering
@@ -210,11 +210,10 @@ score.
 \hline
 IPW  & $\checkmark$ & -- & +/- & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
-MI (population)   & $\checkmark$ & -- & -- & --& --& $\checkmark$ \\
-MI (sample) & -- & -- & -- & -- & -- & $\checkmark$\\
-DR & -- & -- & -- & -- & $\checkmark$ & $\checkmark$\\
+MI & $\checkmark$ & -- & -- & -- & -- & $\checkmark$ \\
+DR & -- & -- & -- & +/- & $\checkmark$ & $\checkmark$\\
 MRP & -- & $\checkmark$ & -- & --  &--  & -- \\
-Sample selection & -- & -- & $\checkmark$ & --  &--  & -- \\
+Sample selection & -- & -- & $\checkmark$ & --  & --  & -- \\
 Variable selection & $\checkmark$ & -- & -- & $\checkmark$ & -- & $\checkmark$\\
 Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
 Bootstrap variance & $\checkmark$ & -- & -- & -- & -- & $\checkmark$\\
@@ -222,9 +221,15 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \hline
 \end{tabular}
 }
-\caption{Comparison of inference methods an of different packages}
+\caption{Comparison of packages and implemented methods}
 \label{tab-comparisons}
 \end{table}
+
+The \pkg{NonProbEst} implements IPW under logistic regression as well as
+machine learning approaches (e.g.~CART, GBM or Neural Networks) however
+does not provide theoretical justification of using the ML approaches.
+The \pkg{balance} focuses solely on the IPW and uses standard and
+covariate balancing propensity score.
 
 It should be however noted that implementation of specific approaches
 may vary significantly as the documentation of specific modules is
@@ -238,9 +243,11 @@ calibration for non-probability sample but it is not theoretically
 justified as the inclusion probabilities are unknown (on the contrary to
 probability samples). Only the \pkg{nonprobsvy} package leveraged the
 use of the \pkg{survey} package to estimate analytic as well as
-bootstrap variance of the non-probability estimators. To our knowledge
-the \pkg{nonprobsvy} is the solely software (open or close) that
-implements state-of-the-art methods for non-probability samples.
+bootstrap variance of the non-probability estimators.
+
+To our knowledge the \pkg{nonprobsvy} is the solely software (open or
+close) that implements state-of-the-art methods for non-probability
+samples.
 
 The remaining part of the paper is as follows. In Section
 \ref{sec-methods} theory of the statistical inference based on
@@ -264,10 +271,10 @@ of the implemented methods.
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
 labelled units. Each unit \(i\) has an associated vector of auxiliary
 variables \(\boldsymbol{x}_{i}\) (a realisation of the random vector
-\(\boldsymbol{X}_{i}\) in the super-population) and the study variable
-\(y_{i}\) (a realisation of the random variable \(Y_{i}\) in the
-super-population). Let \(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\) be a
-dataset of a non-probability sample \(S_A\) of size \(n_A\) and let
+\(\boldsymbol{X}_{i}\) in the super-population) and the study/target
+variable \(y_{i}\) (a realisation of the random variable \(Y_{i}\) in
+the super-population). Let \(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\)
+be a dataset of a non-probability sample \(S_A\) of size \(n_A\) and let
 \(\{\left(\boldsymbol{x}_i, \pi_{i}\right), i \in S_B\}\) be a dataset
 of a probability sample \(S_B\) of size \(n_B\), where only information
 about variables \(\boldsymbol{X}\) and inclusion probabilities \(\pi\)
@@ -283,7 +290,7 @@ description of the data is presented in a more concise form in Table
     \resizebox{\linewidth}{!}{
     \begin{tabular}{llccc} 
     \hline
-    Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\boldsymbol{x}$ & Study variable $y$ \\
+    Sample & ID & Sample weight $d=\pi^{-1}$ & Covariates $\boldsymbol{X}$ & Study variable $Y$ \\
     \hline
     Non-probability sample ($S_A$) & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
     & $\vdots$ & ? & $\vdots$ & $\vdots$ \\
@@ -303,12 +310,17 @@ The goal is to estimate a finite population mean
 variable \(Y\). As values of \(y_{i}\) are not observed in the
 probability sample, it cannot be used to estimate the target quantity.
 Instead, one could try combining the non-probability and probability
-samples to estimate \(\mu_{y}\). As there is no single method how to
-achieve this assumptions vary significantly as summarised by
-\citet{wu2022statistical}. The main assumptions that apply to all
-methods are: no overlap between samples and no measurement error in
-\(Y_i\) and \(\boldsymbol{X}_i\) is observed. In the next sections we
-briefly present methods that are implemented in the package.
+samples to estimate \(\mu_{y}\). Given the absence of a universally
+accepted methodology for achieving this objective, the assumptions vary
+considerably, as outlined by \citet{wu2022statistical}. However, the
+main assumptions that apply to all presented in this section methods
+are: no overlap between samples and no measurement error in \(Y_i\) and
+\(\boldsymbol{X}_i\) is observed. In addition, this setting may be also
+extended to calibrated \(d_i\) weights (i.e.~\(d_i\) adjusted for
+non-response; cf.~\citet{sarndal2007calibration}) but this requires
+additional developments in the theory about the consistency of the IPW,
+MI or DR estimators. In the next sections we briefly present methods
+that are implemented in the package.
 
 \subsection{Prediction-based approach}\label{sec-prediction}
 
@@ -1422,7 +1434,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010890218
+single_shift1 0.7083228 0.010938192
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1437,9 +1449,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7063183
-[2,]    0.7184122
-[3,]    0.7057586
+[1,]    0.7025747
+[2,]    0.7274951
+[3,]    0.7004047
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1505,7 +1517,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7034021 0.01119051
+MI with var sel    0.7031075 0.01120569
 \end{CodeOutput}
 \end{CodeChunk}
 
