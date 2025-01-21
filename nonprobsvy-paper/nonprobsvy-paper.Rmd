@@ -255,77 +255,38 @@ There are several approaches how to impute $y_i^*$ and in the package we have im
 
 The properties of the MI-GLM estimator was studied by \citet{kim_combining_2021} additional assumption called \textit{model transportability}: the model which is built for the non-probability sample $S_A$ can be used for prediction with the reference probability sample $S_B$. In the package we allow for the following GLM families: \code{gaussian}, \code{binomial} and \code{poisson}. 
 
-The MI-NN estimator was initially proposed by \citet{rivers2007sampling} under the name \textit{sample matching} and theoretical properties for the MI-NN estimator for large non-probability samples (i.e. $N n_A^{-1}=O(1)$) was studied by \citet{yang2021integration}. The basic idea of the NN matching is as follows: 1) for each $i$ unit in the probability sample $S_B$ find a donor $j$ (or donors) in sample $S_A$ based on some distance between $\bx_i$ and $\bx_j$; 2) use the matched values $y_j$ from $S_A$ to impute missing $y_i$ values in the probability sample $S_B$. The detailed description is presented in the Algorithm \ref{algo-2} in the Appendix.
+The MI-NN estimator was initially proposed by \citet{rivers2007sampling} under the name \textit{sample matching} and theoretical properties for the MI-NN estimator for large non-probability samples (i.e. $N n_A^{-1}=O(1)$) was studied by \citet{yang2021integration}. The basic idea of the NN matching is as follows: 1) for each $i$ unit in the probability sample $S_B$ find a donor $j$ (or donors) in sample $S_A$ based on some distance between $\bx_i$ and $\bx_j$; 2) use the matched values $y_j$ from $S_A$ to impute missing $y_i$ values in the probability sample $S_B$. Imputed values $y_i^*$ depends on the number of selected neighbours. For $k=1$ the closest one is selected and for $k>1$ a simple average over a vector of selected $y$ is calculated. The detailed description is presented in the Algorithm \ref{algo-2} in the Appendix. This algorithm suffers from the curse of dimensionality as proved by for i.e. asymptotic bias of the MI estimator increases as the number of covariates $\bx$ increases with a fixed $k$. To overcome this issue PMM was proposed
 
-<!----
-skrócić sekcję i dodać odwołania do literatury
-- zacząc od MI-GLM i opisac artykuł kima
-- opisać MI-NN odnieść się do Riversa, publikcji Yang i naszej
-- opisać MI-PMM odniesc sie do publikacji Yang w PMM dla imputacji, naszej o PMM i wariantach
----->
+In the PMM matching is done using predicted values of $\hat{m}_i=m\left(\bx_i, \hat{\bbeta}\right)$ instead of $\bx_i$, thus the NN algorithm is modified as follows: 1) fit the $m\left(\bx_i, \bbeta\right)$ to non-probability sample $S_A$, 2) assign predicted values $\hat{m}_i$ to all units in $S_A$ and $S_B$; 3) match all units from sample $S_B$ to donor units from sample $S_A$. The remaining part is the same as in the NN approach. \citet{chlebicki2025} studied properties of two variants of the MI-PMM estimator for non-probability samples: matching predicted to predicted ($\hat{m}-\hat{m}$ matching; MI-PMM A) and predicted to observed ($\hat{m}-y$ matching; PMM B). Details about the procedure can be found in Algorithm \ref{algo-3} and  \ref{algo-4} in the Appendix. \citet{chlebicki2025} prove consistency of the MI-PMM A estimator under model mis-specification i.e. the assumed model may be different from the true one. 
 
-
-
-  This estimator can be understood as a version of the Horvitz--Thompson estimator, which are used to estimate mean or total values in the population (based on probability sampling and inclusion probabilities). The only difference is that in our case, instead of the known values of the $Y$ variable, we use its estimated equivalents.
-  
-### Generalized Linear Models
-
-Let us assume the following parametric model for the sample $S_A$ based on the conditional expected value of the variable $Y$. Let
-\begin{equation}
-\mathbb{E}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymbol{\beta}_0\right)
-\end{equation}
-for a certain $p$--dimensional vector $\boldsymbol{\beta}_0$ and a known $m$ function from a given class of mean functions for generalized linear models.
-
-According to the model described, we have 
-$$
-y_i=m\left(\boldsymbol{x}_i\right)+\varepsilon_i, \quad i=1,2, \ldots, N.
-$$
-
-We also assume that the random variables $\varepsilon_i$ are independent with $\mathbb{E} \left(\varepsilon_i \right) = 0$ and $\sigma^2 \left(\varepsilon_i \right) = \mathbf{v} \left(\bx\right) \sigma^2$. It is assumed that $\mathbf{v} \left(\bx\right)$ has a known value and is homogeneous, i.e. homogeneous, regardless of the sample under study. Let us represent the process of mass imputation of a linear model to a sample $S_B$. Finally we are interested in finding a vector $\bbeta$ solves the following equation:
-
-\begin{equation}
-\label{eq-2.3}
-U(\boldsymbol{\beta})=\frac{1}{n_A} \sum_{i \in S_A}\left\{y_i-m\left(\bx_i ; \boldsymbol{\beta}\right)\right\} h\left(\bx_i ; \boldsymbol{\beta}\right)=\mathbf{0},
-\end{equation}
-
-for some $p$-dimensional vector of function $h\left(\bx_i ; \boldsymbol{\beta}\right)$, where $h\left(\bx_i ; \boldsymbol{\beta}\right) = \bx_i$ might be used for certain applications. The mass imputation process is described in Algorithm \ref{algo-1}.
-
-
-### Nearest Neighbour Algorithm
-
-On the other hand, it is also possible to consider a non-parametric model for the problem described, i.e. for each individual from sample $S_B$, the k-nearest neighbours from sample $S_A$ are found based on the values of the auxiliary vector $\bX$ and the corresponding metric. Then, the missing values of the variable $Y$ from sample $S_B$ are replaced by the values (or their mean if more than one neighbour is considered) of this variable for the corresponding neighbours from sample $S_A$. The algorithm is as follows
-
-Note that the algorithm differs depending on the number of nearest neighbours chosen. In case $k=1$ the nearest neighbour value is imputed according to the chosen metric, for example the Euclidean metric. In case $k>2$ the average of the nearest neighbours values is imputed. The literature indicates that this method suffers from the so-called curse of multidimensionality, i.e. for samples with several explanatory variables, imputation can lead to a large variance in the estimator. On the other hand, the algorithm is easy to interpret and simple to implement. 
-
-### Predictive Mean Matching
-
-Predictive mean-matching imputation is a particularly well-known way of dealing with non-response among respondents, and is favoured by statistical offices for compiling a country's official population statistics. It is a version of the k-nearest neighbour algorithm, but instead of looking at the distances between the vectors of the auxiliary variables, it looks at the distance between the functions of the mean vectors. This helps to reduce the curse of multidimensionality and, at the same time, allows the observed values of the explanatory variable or their mean to be calculated.
-Let us therefore present two algorithms that describe the steps to follow to perform a mass imputation using the mean matching method.
-
-
-As can be seen, the difference between the two algorithms is due to step 2. In the first approach, we compare $\hat{y}$ from samples $S_A$ and $S_B$. The second, on the other hand, compares $\hat{y}$ from sample $S_B$ with the known $y$ from sample $S_A$. It is worth noting that proof of the consistency of these estimators can be found in \citet{Beres}.
 
 ### Variance estimators for the prediction approach
 
-<!----
-- postać analityczna estymatora wariancji dla MI-GLM
-- estymator NN - jak jest duża próba big data, jak mała
-- estymator PMM - jak mała i duża
-- zaimplementowany bootstrap
----->
+Variance for the MI estimators can be either estimated using analytical or bootstrap approach. Analytical estimator of the variance of the MI-GLM estimator proposed by \citet{kim_combining_2021} (p. 950) which contains two components: $\hat{V}_1$ (based on information from both $S_A$ and $S_B$) and $\hat{V}_2$ (based solely on probability sample $S_B$); for the MI-NN estimator for large samples \citet{yang2021integration} proposed variance estimator based solely on the probability sample $S_B$ (i.e. design-based variance estimator of the mean) and for small $S_A$ samples variance estimator can be found in \citet{chlebicki2025}; and for the MI-PMM estimators \citet{chlebicki2025} contains formulas for variance estimators for small and large non-probability samples $S_A$. 
 
+Second approach is based on the bootstrap where each run of the procedure $b=1,...,B$ can be expresed as follows
 
+\begin{enumerate}
+\item Independently:
+  \begin{itemize}
+  \item draw a simple random sampling with replacement from the non-probability sample $S_A$,
+  \item draw a sample according to the declared sampling design from the probability sample $S_B$.
+  \end{itemize}
+\item Estimate $\mu_{y MI}^b$ based on appropriate approach (e.g. MI-GLM, MI-NN or MI-PMM).
+\end{enumerate}
+
+After obtaining $B$ bootstrap estimate estimate variance based on the following equation
+
+\begin{equation}
+...
+\end{equation}
+
+The above approaches are applied when unit-level data from the probability sample $S_B$ are available. If this is not the case and only population means (or totals and population size) are available we use the first component $\hat{V}_1$ of the \citet{kim_combining_2021} variance estimator (estimated population quantities are replaced with known ones). For the variance of the MI-NN and MI-PMM estimators we only use bootstrap approach with known population means.
 
 ## Inverse Probability Weighting {#sec-ipw}
 
 The main disadvantage of non-probability sampling is the unknown selection mechanism for a unit to be included in the sample. This is why we talk about the so-called biased sample problem. The inverse probability approach is based on the assumption that a reference probability sample is available and therefore we can estimate the propensity score of the selection mechanism. In recent years, a number of articles have addressed this issue. \cite{chen2020doubly} propose maximum likelihood estimation approach for estimating propensity scores for selection mechanism. \cite{wu2022statistical} present the approach based on generalized estimating equations, this method is also mentioned in \cite{yang_doubly_2020}. On the other hand calibration approach for quantiles was explained \cite{beresewicz2024inference} and \cite{santanna_covariate_2022} present the approach based on maximize the covariate distribution balance among different treatment groups.
 
-In the formal framework, let us introduce the following assumptions for propensity score model, which will imply a number of properties derived in the thesis.
-\begin{itemize}
-    \item[(A1)] The selection indicator $R_i^A$ and explanatory variable $y_i$ are independent.
-    \item[(A2)]All units have a so-called non-probability sample propensity score, which is non-zero, i.e. $\pi_i^{\mathrm{A}} > 0$, where $\pi_i^{\mathrm{A}} = P_q\left(R_i^A=1 \mid \bx_i, y_i\right)$, where $q$ refers to the model for the selection mechanism for the non-probability sample (propensity score model).
-    \item[(A3)] Indicator variables $R_i^A$ and $R_j^A$ are independent with $i \neq j$. 
-\end{itemize}
 
 The estimated propensity score is used to construct an inverse probability weighting estimator of the population mean of the form
 
