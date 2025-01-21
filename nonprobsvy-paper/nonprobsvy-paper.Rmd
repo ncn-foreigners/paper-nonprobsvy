@@ -349,7 +349,7 @@ which can be viewed as calibrated IPW. Moreover, using \eqref{eq-ipw-solution-ge
 
 \citet[section 3.2]{chen2020doubly} derived asymptotic variance estimators for both IPW estimators presented in \eqref{eq-ipw-estimators} and presented the plug-in variance estimator for the $\hat{\mu}_{IPW2}$ estimator assuming logistic regression. In the package we have implemented this approach for \code{logit}, \code{probit} and \code{cloglog} link functions. We refer the reader to the \citet[section 6.2]{wu2022statistical} and \citet[chapter 3]{chrostowski2024statistical} for more details on how this estimators are derived based on the general estimating equations approach.
 
-Another approach is to use bootstrap which esentially is the same as the one presented in the \eqref{{eq-var-bootstrap} where the $\hat{\mu}_y$ is replaced by one of the \eqref{eq-ipw-estimators} estimators.  
+Another approach is to use bootstrap which esentially is the same as the one presented in the \eqref{eq-var-bootstrap} where the $\hat{\mu}_y$ is replaced by one of the \eqref{eq-ipw-estimators} estimators.  
 
 ## Doubly Robust approach {#sec-dr-approach}
 
@@ -419,6 +419,13 @@ which can be solved using Newton--Raphson optimization method.
 When dealing with multivariate data with a large number of features, it is recommended to select variables for estimation that are statistically significant for the model under consideration. \citet{yang_asymptotic_2020} point that using variable selection techniques during estimation is crucial, especially when dealing with high-dimensional data. Variable selection not only improves model stability and computational feasibility, but also reduces variance, which can increase when irrelevant auxiliary variables are included. Including irrelevant variables increases the complexity of the model and makes the estimation process more error-prone and unstable. Therefore, variable selection is key to ensure robust and efficient estimation. Very popular in the statistical literature are variable selection methods such as \textit{Least Absolute Shrinkage and Selection Operator} (\textbf{LASSO}), \textit{Smoothly Clipped Absolute Deviation} (\textbf{SCAD}) or \textit{Minimax Concave Penalty} (\textbf{MCP}), which, thanks to appropriate loss functions, degenerate the coefficients in variables that have no significant effect on the dependent variable. In this way, the result obtained, for example, a linear regression equation, is based only on the features selected by the model. The selection procedure works in a similar way for non-probability methods using external data sources such as sample or population totals or averages. In particular, the technique is divided into two steps. In the first, we select the relevant variables using an appropriately constructed loss function and the estimating equations used. In the second case, we construct the equations on the basis of the derived biases of the relevant estimator, whose value we calculate only on the basis of the selected characteristics.
 
 In the case of data integration based on probability and nonprobability samples, the selection of variables is part of a two-step process leading to the estimation of the mean, where in the first step statistically significant variables are selected and in the second step the model is rebuilt. For the first step, a penalized logistic regression model has been proposed to estimate propensity scores (\citet{yang_doubly_2020}), but this approach can be extended to other linking models such as clog-log and probit functions. For a parametric model-based mass imputation, penalized OLS (\textit{Ordinary Least Squared}) is considered. It is worth mentioning that \citet{yang_asymptotic_2020}, in their article on this topic, used the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we extend it on other selection techniques such as LASSO and MCP.
+
+$$
+\begin{gathered}
+\operatorname{Loss}\left(\lambda_\theta\right)=\sum_{j=1}^p\left(\sum_{i=1}^N\left[\frac{R_i^A}{\pi_i^A\left\{\boldsymbol{x}_i^{\mathrm{T}} \hat{\theta}\left(\lambda_\theta\right)\right\}}-\frac{R_i^B}{\pi_i^B}\right] \boldsymbol{x}_{i, j}\right)^2 \\
+\operatorname{Loss}\left(\lambda_\beta\right)=\sum_{i=1}^N R_i^A\left[y_i-m\left\{\boldsymbol{x}_i^{\mathrm{T}} \hat{\beta}\left(\lambda_\beta\right)\right\}\right]^2
+\end{gathered}
+$$
 
 
 # The main function {#sec-package}

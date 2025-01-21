@@ -641,9 +641,8 @@ this estimators are derived based on the general estimating equations
 approach.
 
 Another approach is to use bootstrap which esentially is the same as the
-one presented in the \textbackslash eqref\{\{eq-var-bootstrap\} where
-the \(\hat{\mu}_y\) is replaced by one of the \eqref{eq-ipw-estimators}
-estimators.
+one presented in the \eqref{eq-var-bootstrap} where the \(\hat{\mu}_y\)
+is replaced by one of the \eqref{eq-ipw-estimators} estimators.
 
 \subsection{Doubly Robust approach}\label{sec-dr-approach}
 
@@ -791,6 +790,13 @@ model-based mass imputation, penalized OLS
 that \citet{yang_asymptotic_2020}, in their article on this topic, used
 the SCAD method (\textit{Smoothly Clipped Absolute Deviation}), but we
 extend it on other selection techniques such as LASSO and MCP.
+
+\[
+\begin{gathered}
+\operatorname{Loss}\left(\lambda_\theta\right)=\sum_{j=1}^p\left(\sum_{i=1}^N\left[\frac{R_i^A}{\pi_i^A\left\{\boldsymbol{x}_i^{\mathrm{T}} \hat{\theta}\left(\lambda_\theta\right)\right\}}-\frac{R_i^B}{\pi_i^B}\right] \boldsymbol{x}_{i, j}\right)^2 \\
+\operatorname{Loss}\left(\lambda_\beta\right)=\sum_{i=1}^N R_i^A\left[y_i-m\left\{\boldsymbol{x}_i^{\mathrm{T}} \hat{\beta}\left(\lambda_\beta\right)\right\}\right]^2
+\end{gathered}
+\]
 
 \section{The main function}\label{sec-package}
 
@@ -1528,7 +1534,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.009339383
+single_shift1 0.7083228 0.010114352
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1543,9 +1549,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7078424
-[2,]    0.7070039
-[3,]    0.7047423
+[1,]    0.7144318
+[2,]    0.7115123
+[3,]    0.7194236
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1611,7 +1617,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7034021 0.01119051
+MI with var sel    0.7022412 0.01112936
 \end{CodeOutput}
 \end{CodeChunk}
 
