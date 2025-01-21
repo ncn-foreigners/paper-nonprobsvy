@@ -328,58 +328,123 @@ are:
 \item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$.
 \end{itemize}
 
-In addition, we assume no overlap between samples and no measurement
-error in \(Y_i\) and \(\boldsymbol{X}_i\) is observed. Setting presented
-in Table \ref{tab-two-sources} may be also extended to calibrated
-\(d_i\) weights (i.e.~\(d_i\) adjusted for under-coverage, non-contact
-or non-response; cf.~\citet{sarndal2007calibration}) but this requires
-additional developments in the theory about the consistency of the IPW,
-MI or DR estimators. In the next sections we briefly present methods
-that are implemented in the package.
+In addition, we assume no overlap between \(S_A\) and \(S_B\), and no
+measurement error in \(Y_i\) and \(\boldsymbol{X}_i\) is observed.
+Setting presented in Table \ref{tab-two-sources} may be also extended to
+calibrated \(d_i^B\) weights (i.e.~\(d_i^B\) adjusted for
+under-coverage, non-contact or non-response;
+cf.~\citet{sarndal2005estimation}) but this requires additional
+developments in the theory about the consistency of the IPW, MI or DR
+estimators. In the next sections we briefly present methods that are
+implemented in the package.
 
 \subsection{Prediction-based approach}\label{sec-prediction}
 
-As \citet{wu2022statistical} notes there are two commonly used
-prediction estimators
+\subsubsection{General form of prediction
+estimators}\label{general-form-of-prediction-estimators}
+
+In prediction approach the following semiparametric model for the finite
+population, denoted as \(\xi\) is assumed
 
 \begin{equation}
-\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\} .
+E_{\xi}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right), \text { and } \quad V_{\xi}\left(y_i \mid \boldsymbol{x}_i\right)=v\left(\boldsymbol{x}_i\right) \sigma^2, \quad i=1,2, \ldots, N,
+\label{eq-semipar-model}
 \end{equation}
 
-Mass imputation is the application of imputation techniques to an entire
-dataset where many observations have missing values for the given
-variable. \cite{kim_combining_2021}, \cite{yang2021integration},
-\cite{Beres} propose the following imputation strategies as:
-
-\begin{itemize}
-    \item Model based approach (GLM),
-    \item Nearest neighbour imputation (NN),
-    \item Predictive mean matching (PMM).
-\end{itemize}
-
-Mass imputation is particularly useful in large datasets where missing
-data can be widespread, and it seeks to preserve the relationships
-between variables, thus improving the overall integrity of the data.
-
-As presented in Table \ref{tab-two-sources}, we do not know the value of
-the dependent variable \(Y\) for the units in the probability sample. In
-this case, the method will be to impute the values of the explanatory
-variable for all units in the probability sample. We therefore treat the
-non-probability sample as a training set that is used to build the
-imputation model. In this subsection, we distinguish three main methods
-of mass imputation based on linear models and the k-nearest neighbours
-algorithm. Other popular methods for estimating the variable \(Y\) from
-the variable \(\boldsymbol{X}\) can also be considered, e.g.~machine
-learning models such as random forests or neural networks.
-
-We can obtain an estimate of the population mean based on known design
-weights and an imputation model for units from the probability sample:
+where the mean function \(m(\cdot;\cdot)\) and the variance \(v(\cdot)\)
+have known forms and it assumed that \(y_i\) are independent given
+\(\boldsymbol{x}_i\). The model \eqref{eq-semipar-model} is assumed to
+hold for all units in the non-probability sample \(S_A\). Parameters of
+the \eqref{eq-semipar-model} can be estimated using quasi maximum
+likelihood estimation method which covers linear and non-linear models
+such as generalized linear models. Let \(\boldsymbol{\beta}_0\) and
+\(\sigma^2_0\) be the true values of the model parameters
+\(\boldsymbol{\beta}\) and \(\sigma^2_0\) under assumed model and the
+\(\hat{\boldsymbol{\beta}}\) be the quasi maximum likelihood estimator
+of \(\boldsymbol{\beta}_0\). Let
+\(m_i=m(\boldsymbol{x}_i, \boldsymbol{\beta}_0)\) and
+\(\hat{m}_i=m(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}})\) for all
+units \(i=1,...,N\). Under this settings, \citet{wu2022statistical}
+notes there are two commonly used prediction estimators
 
 \begin{equation}
-\hat{\mu}_{M I}=\frac{1}{\hat{N}_{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
-\end{equation} \(\hat{N}_{\mathrm{B}} = \sum_{i \in S_B} d_i^B\) and
-\(\hat{y}\) is the estimated value of \(y\) for units from probability
-samples based on mass imputation model.
+\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\}.
+\label{eq-pred-two-estimators}
+\end{equation}
+
+Under linear models where
+\(m(\boldsymbol{x}_i, \boldsymbol{\beta})=\boldsymbol{x}_i^{\prime}\boldsymbol{\beta}\),
+the two estimators \eqref{eq-pred-two-estimators} reduce to
+
+\begin{equation}
+\hat{\mu}_{y 1}=\mu_{\boldsymbol{x}}^{\prime} \hat{\boldsymbol{\beta}} \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{n_A}{N}\left(\bar{y}_A-\overline{\boldsymbol{x}}_A^{\prime} \hat{\boldsymbol{\beta}}\right)+\mu_{\boldsymbol{x}}^{\prime} \hat{\boldsymbol{\beta}},
+\label{eq-pred-two-estimators-simplified}
+\end{equation}
+
+where \(\mu_{\boldsymbol{x}} = N^{-1}\sum_{i=1}^N\boldsymbol{x}_i\) is
+the vector of the population means of the \(\boldsymbol{x}\) variables
+and \(\overline{\boldsymbol{x}}_A=n_A\sum_{i \in S_A}\boldsymbol{x}_i\)
+is the vector of the simple means of \(\boldsymbol{x}\) from the
+non-probability sample \(S_A\). If the linear model contains an
+intercept and \(\hat{\boldsymbol{\beta}}\) is the ordinary least square
+estimator then \(\hat{\mu}_{y 1}=\hat{\mu}_{y 2}\).
+
+This form is appealing as the only requirement is availability of
+non-probability sample \(S_A\) and reference population means (or totals
+and population size \(N\)). If the population means are unknown they can
+be replaced by estimates provided by the reference probability sample
+\(S_B\): \(\sum_{i=1}^N \hat{m}_i = \sum_{i \in S_B} d_i^B\hat{m}_i\)
+for \eqref{eq-pred-two-estimators} and \(\mu_{\boldsymbol{x}}\) replaced
+by
+\(\hat{\mu}_{\boldsymbol{x}}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\boldsymbol{x}_i\)
+for \eqref{eq-pred-two-estimators-simplified} where
+\(\hat{N}_B=\sum_{i \in S_B}d_i^B\).
+
+\subsubsection{Mass imputation
+estimators}\label{mass-imputation-estimators}
+
+Model-based prediction estimators of \(\mu_y\) can be treated as
+\textit{mass imputation estimators} as the information on \(y_i\) is
+missing entirely in the reference probability sample \(S_B\) (but
+\(\boldsymbol{x}_i\) is available) and \(y_i\) can be imputed based on
+the non-probability sample \(S_A\) as \((y_i, \boldsymbol{x}_i)\) is
+observed. The general for of the mass imputation (MI) estimator is given
+by
+
+\begin{equation}
+\hat{\mu}_{y MI}=\frac{1}{\hat{N}_{B}} \sum_{i \in S_{B}} d_i^{B} y_i^*, 
+\end{equation}
+
+where \(y_i^*\) is the imputed \(y_i\) value and \(\hat{N}_{B}\) is
+defined previously. Under deterministic regression imputation the
+\(\hat{\mu}_{y MI}\) estimator reduce to \eqref{eq-pred-two-estimators}
+estimators.
+
+There are several approaches how to impute \(y_i^*\) and in the package
+we have implemented the following MI estimators: semiparametric approach
+based on the generalized linear models (hereinafter denoted as MI-GLM),
+nearest neighbour matching (denoted as MI-NN) and predictive mean
+matching (MI-PMM).
+
+The properties of the MI-GLM estimator was studied by
+\citet{kim_combining_2021} additional assumption called
+\textit{model transportability}: the model which is built for the
+non-probability sample \(S_A\) can be used for prediction with the
+reference probability sample \(S_B\). In the package we allow for the
+following GLM families: \code{gaussian}, \code{binomial} and
+\code{poisson}.
+
+The MI-NN estimator was initially proposed by \citet{rivers2007sampling}
+under the name \textit{sample matching} and theoretical properties for
+the MI-NN estimator for large non-probability samples
+(i.e.~\(N n_A^{-1}=O(1)\)) was studied by \citet{yang2021integration}.
+The basic idea of the NN matching is as follows: 1) for each \(i\) unit
+in the probability sample \(S_B\) find a donor \(j\) (or donors) in
+sample \(S_A\) based on some distance between \(\boldsymbol{x}_i\) and
+\(\boldsymbol{x}_j\); 2) use the matched values \(y_j\) from \(S_A\) to
+impute missing \(y_i\) values in the probability sample \(S_B\). The
+detailed description is presented in the Algorithm \ref{algo-2} in the
+Appendix.
 
 This estimator can be understood as a version of the Horvitz--Thompson
 estimator, which are used to estimate mean or total values in the
@@ -400,7 +465,9 @@ of mean functions for generalized linear models.
 
 According to the model described, we have \[
 y_i=m\left(\boldsymbol{x}_i\right)+\varepsilon_i, \quad i=1,2, \ldots, N.
-\] We also assume that the random variables \(\varepsilon_i\) are
+\]
+
+We also assume that the random variables \(\varepsilon_i\) are
 independent with \(\mathbb{E} \left(\varepsilon_i \right) = 0\) and
 \(\sigma^2 \left(\varepsilon_i \right) = \mathbf{v} \left(\boldsymbol{x}\right) \sigma^2\).
 It is assumed that \(\mathbf{v} \left(\boldsymbol{x}\right)\) has a
@@ -408,6 +475,7 @@ known value and is homogeneous, i.e.~homogeneous, regardless of the
 sample under study. Let us represent the process of mass imputation of a
 linear model to a sample \(S_B\). Finally we are interested in finding a
 vector \(\boldsymbol{\beta}\) solves the following equation:
+
 \begin{equation}
 \label{eq-2.3}
 U(\boldsymbol{\beta})=\frac{1}{n_A} \sum_{i \in S_A}\left\{y_i-m\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right)\right\} h\left(\boldsymbol{x}_i ; \boldsymbol{\beta}\right)=\mathbf{0},
@@ -461,6 +529,9 @@ and \(S_B\). The second, on the other hand, compares \(\hat{y}\) from
 sample \(S_B\) with the known \(y\) from sample \(S_A\). It is worth
 noting that proof of the consistency of these estimators can be found in
 \citet{Beres}.
+
+\subsubsection{Variance estimators for the prediction
+approach}\label{variance-estimators-for-the-prediction-approach}
 
 \subsection{Inverse Probability Weighting}\label{sec-ipw}
 
@@ -569,6 +640,9 @@ phenomena, i.e.~the probabilities will oscillate around the values 1 and
 0. Compared to the sigmoidal function and the distribution, the cloglog
 function is more asymmetric towards the value 0.5.
 
+\subsubsection{Variance estimators for the inverse probability weighting
+approach}\label{variance-estimators-for-the-inverse-probability-weighting-approach}
+
 \subsection{Doubly Robust approach}\label{sec-dr-approach}
 
 The inverse probability weighting and mass imputation estimators are
@@ -668,6 +742,9 @@ system of equations \begin{equation}
 \end{array}\right) = \boldsymbol{0},
 \end{equation} which can be solved using Newton--Raphson optimization
 method.
+
+\subsubsection{Variance estimators for the doubly robust
+approach}\label{variance-estimators-for-the-doubly-robust-approach}
 
 \subsection{Variable selection algorithms}\label{sec-varsel}
 
@@ -1449,7 +1526,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010525966
+single_shift1 0.7083228 0.009476960
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1464,9 +1541,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7131774
-[2,]    0.7128429
-[3,]    0.7080788
+[1,]    0.7156102
+[2,]    0.7074725
+[3,]    0.7050278
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1532,7 +1609,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7022412 0.01112936
+MI with var sel    0.7034021 0.01119051
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1636,18 +1713,6 @@ $\hat{N}^B$ & Estimated size based on probability sample \\
 \clearpage
 
 \section{Algorithms}\label{sec-details}
-
-\begin{algorithm}[ht!]
-\caption{Mass imputation based on a generalized linear model}
-\label{algo-1}
-\begin{algorithmic}[1]
- \State Estimate the regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$\ basing on units from $S_A$ sample.
- \State For each $i \in S_B$, calculate the imputed value as
- $$
- \hat{y}_i = m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right).
- $$
-\end{algorithmic}
-\end{algorithm}
 
 \begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}

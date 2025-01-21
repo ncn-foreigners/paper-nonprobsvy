@@ -213,32 +213,59 @@ In addition, we assume no overlap between $S_A$ and $S_B$, and no measurement er
 
 ## Prediction-based approach {#sec-prediction}
 
-As @wu2022statistical notes there are two commonly used prediction estimators
+### General form of prediction estimators
+
+In prediction approach the following semiparametric model for the finite population, denoted as $\xi$ is assumed
 
 \begin{equation}
-\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\} .
+E_{\xi}\left(y_i \mid \bx_i\right)=m\left(\bx_i, \bbeta\right), \text { and } \quad V_{\xi}\left(y_i \mid \bx_i\right)=v\left(\bx_i\right) \sigma^2, \quad i=1,2, \ldots, N,
+\label{eq-semipar-model}
 \end{equation}
 
-
-Mass imputation is the application of imputation techniques to an entire dataset where many observations have missing values for the given variable. \cite{kim_combining_2021}, \cite{yang2021integration}, \cite{Beres} propose the following imputation strategies as:
-
-\begin{itemize}
-    \item Model based approach (GLM),
-    \item Nearest neighbour imputation (NN),
-    \item Predictive mean matching (PMM).
-\end{itemize}
-
-Mass imputation is particularly useful in large datasets where missing data can be widespread, and it seeks to preserve the relationships between variables, thus improving the overall integrity of the data.
-
-As presented in Table \ref{tab-two-sources}, we do not know the value of the dependent variable $Y$ for the units in the probability sample. In this case, the method will be to impute the values of the explanatory variable for all units in the probability sample. We therefore treat the non-probability sample as a training set that is used to build the imputation model. In this subsection, we distinguish three main methods of mass imputation based on linear models and the k-nearest neighbours algorithm. Other popular methods for estimating the variable $Y$ from the variable $\bX$ can also be considered, e.g. machine learning models such as random forests or neural networks. 
-
-We can obtain an estimate of the population mean based on known design weights and an imputation model for units from the probability sample:
+where the mean function $m(\cdot;\cdot)$ and the variance $v(\cdot)$ have known forms and it assumed that $y_i$ are independent given $\bx_i$. The model \eqref{eq-semipar-model} is assumed to hold for all units in the non-probability sample $S_A$. Parameters of the \eqref{eq-semipar-model} can be estimated using quasi maximum likelihood estimation method which covers linear and non-linear models such as generalized linear models. Let $\bbeta_0$ and $\sigma^2_0$ be the true values of the model parameters $\bbeta$ and $\sigma^2_0$ under assumed model and the $\hat{\bbeta}$ be the quasi maximum likelihood estimator of $\bbeta_0$. Let $m_i=m(\bx_i, \bbeta_0)$ and $\hat{m}_i=m(\bx_i, \hat{\bbeta})$ for all units $i=1,...,N$. Under this settings, @wu2022statistical notes there are two commonly used prediction estimators
 
 \begin{equation}
-\hat{\mu}_{M I}=\frac{1}{\hat{N}_{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \hat{y}, 
+\hat{\mu}_{y 1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\}.
+\label{eq-pred-two-estimators}
 \end{equation}
- $\hat{N}_{\mathrm{B}} = \sum_{i \in S_B} d_i^B$ and $\hat{y}$ is the estimated value of $y$ for units from probability samples based on mass imputation model.
- 
+
+Under linear models where $m(\bx_i, \bbeta)=\bx_i^{\prime}\bbeta$, the two estimators \eqref{eq-pred-two-estimators} reduce to 
+
+\begin{equation}
+\hat{\mu}_{y 1}=\mu_{\bx}^{\prime} \hat{\bbeta} \quad \text { and } \quad \hat{\mu}_{y 2}=\frac{n_A}{N}\left(\bar{y}_A-\overline{\bx}_A^{\prime} \hat{\bbeta}\right)+\mu_{\bx}^{\prime} \hat{\bbeta},
+\label{eq-pred-two-estimators-simplified}
+\end{equation}
+
+where $\mu_{\bx} = N^{-1}\sum_{i=1}^N\bx_i$ is the vector of the population means of the $\bx$ variables and $\overline{\bx}_A=n_A\sum_{i \in S_A}\bx_i$ is the vector of the simple means of $\bx$ from the non-probability sample $S_A$. If the linear model contains an intercept and $\hat{\bbeta}$ is the ordinary least square estimator then $\hat{\mu}_{y 1}=\hat{\mu}_{y 2}$. 
+
+This form is appealing as the only requirement is availability of non-probability sample $S_A$ and reference population means (or totals and population size $N$). If the population means are unknown they can be replaced by estimates provided by the reference probability sample $S_B$: $\sum_{i=1}^N \hat{m}_i = \sum_{i \in S_B} d_i^B\hat{m}_i$ for \eqref{eq-pred-two-estimators} and $\mu_{\bx}$ replaced by $\hat{\mu}_{\bx}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\bx_i$ for \eqref{eq-pred-two-estimators-simplified} where $\hat{N}_B=\sum_{i \in S_B}d_i^B$. 
+
+
+### Mass imputation estimators
+
+Model-based prediction estimators of $\mu_y$ can be treated as \textit{mass imputation estimators} as the information on $y_i$ is missing entirely in the reference probability sample $S_B$ (but $\bx_i$ is available) and $y_i$ can be imputed based on the non-probability sample $S_A$ as $(y_i, \bx_i)$ is observed. The general for of the mass imputation (MI) estimator is given by 
+
+\begin{equation}
+\hat{\mu}_{y MI}=\frac{1}{\hat{N}_{B}} \sum_{i \in S_{B}} d_i^{B} y_i^*, 
+\end{equation}
+
+where $y_i^*$ is the imputed $y_i$ value and $\hat{N}_{B}$ is defined previously. Under deterministic regression imputation the $\hat{\mu}_{y MI}$ estimator reduce to \eqref{eq-pred-two-estimators} estimators.
+
+There are several approaches how to impute $y_i^*$ and in the package we have implemented the following MI estimators: semiparametric approach based on the generalized linear models (hereinafter denoted as MI-GLM), nearest neighbour matching (denoted as MI-NN) and predictive mean matching (MI-PMM).
+
+The properties of the MI-GLM estimator was studied by \citet{kim_combining_2021} additional assumption called \textit{model transportability}: the model which is built for the non-probability sample $S_A$ can be used for prediction with the reference probability sample $S_B$. In the package we allow for the following GLM families: \code{gaussian}, \code{binomial} and \code{poisson}. 
+
+The MI-NN estimator was initially proposed by \citet{rivers2007sampling} under the name \textit{sample matching} and theoretical properties for the MI-NN estimator for large non-probability samples (i.e. $N n_A^{-1}=O(1)$) was studied by \citet{yang2021integration}. The basic idea of the NN matching is as follows: 1) for each $i$ unit in the probability sample $S_B$ find a donor $j$ (or donors) in sample $S_A$ based on some distance between $\bx_i$ and $\bx_j$; 2) use the matched values $y_j$ from $S_A$ to impute missing $y_i$ values in the probability sample $S_B$. The detailed description is presented in the Algorithm \ref{algo-2} in the Appendix.
+
+<!----
+skrócić sekcję i dodać odwołania do literatury
+- zacząc od MI-GLM i opisac artykuł kima
+- opisać MI-NN odnieść się do Riversa, publikcji Yang i naszej
+- opisać MI-PMM odniesc sie do publikacji Yang w PMM dla imputacji, naszej o PMM i wariantach
+---->
+
+
+
   This estimator can be understood as a version of the Horvitz--Thompson estimator, which are used to estimate mean or total values in the population (based on probability sampling and inclusion probabilities). The only difference is that in our case, instead of the known values of the $Y$ variable, we use its estimated equivalents.
   
 ### Generalized Linear Models
@@ -253,7 +280,9 @@ According to the model described, we have
 $$
 y_i=m\left(\boldsymbol{x}_i\right)+\varepsilon_i, \quad i=1,2, \ldots, N.
 $$
+
 We also assume that the random variables $\varepsilon_i$ are independent with $\mathbb{E} \left(\varepsilon_i \right) = 0$ and $\sigma^2 \left(\varepsilon_i \right) = \mathbf{v} \left(\bx\right) \sigma^2$. It is assumed that $\mathbf{v} \left(\bx\right)$ has a known value and is homogeneous, i.e. homogeneous, regardless of the sample under study. Let us represent the process of mass imputation of a linear model to a sample $S_B$. Finally we are interested in finding a vector $\bbeta$ solves the following equation:
+
 \begin{equation}
 \label{eq-2.3}
 U(\boldsymbol{\beta})=\frac{1}{n_A} \sum_{i \in S_A}\left\{y_i-m\left(\bx_i ; \boldsymbol{\beta}\right)\right\} h\left(\bx_i ; \boldsymbol{\beta}\right)=\mathbf{0},
@@ -274,11 +303,18 @@ Predictive mean-matching imputation is a particularly well-known way of dealing 
 Let us therefore present two algorithms that describe the steps to follow to perform a mass imputation using the mean matching method.
 
 
-<!--- Piotrek, 17.11.2024:
-Tutaj właśnie najlepiej tylko rozbudować to co jest poniżej i wywalić te algorytmy.
--->
-
 As can be seen, the difference between the two algorithms is due to step 2. In the first approach, we compare $\hat{y}$ from samples $S_A$ and $S_B$. The second, on the other hand, compares $\hat{y}$ from sample $S_B$ with the known $y$ from sample $S_A$. It is worth noting that proof of the consistency of these estimators can be found in \citet{Beres}.
+
+### Variance estimators for the prediction approach
+
+<!----
+- postać analityczna estymatora wariancji dla MI-GLM
+- estymator NN - jak jest duża próba big data, jak mała
+- estymator PMM - jak mała i duża
+- zaimplementowany bootstrap
+---->
+
+
 
 ## Inverse Probability Weighting {#sec-ipw}
 
@@ -344,6 +380,7 @@ Są jakieś heurystyki czy nikt o tym nie pisał? To jest bardziej istotne.
 In the `nonprobsvy` package the propensity scores can modelled using three different link functions: logistic, complementary log-log and probit. The logistic regression is the most commonly used for modelling probabilities. This method is based on the so-called sigmoidal function and for our settign it has the form
 It satisfies certain properties to model the probability. For our scheme, this will be the probability of belonging to the non-probability sample. Another approach to modelling binary variables and also probabilities is probit regression. It is based on the standard normal distribution and as logit is also symmetric around $p = 0.5$. On the other hand regression with the cloglog model is particularly useful if we are modelling rare phenomena, i.e. the probabilities will oscillate around the values 1 and 0. Compared to the sigmoidal function and the distribution, the cloglog function is more asymmetric towards the value 0.5.
 
+### Variance estimators for the inverse probability weighting approach
 
 ## Doubly Robust approach {#sec-dr-approach}
 
@@ -405,6 +442,8 @@ which leads to the problem of solving the following system of equations
 \end{array}\right) = \bZero,
 \end{equation}
 which can be solved using Newton--Raphson optimization method.
+
+### Variance estimators for the doubly robust approach
 
 ## Variable selection algorithms {#sec-varsel}
 
@@ -851,19 +890,6 @@ $\hat{N}^B$ & Estimated size based on probability sample \\
 
 
 # Algorithms {#sec-details}
-
-\begin{algorithm}[ht!]
-\caption{Mass imputation based on a generalized linear model}
-\label{algo-1}
-\begin{algorithmic}[1]
- \State Estimate the regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$\ basing on units from $S_A$ sample.
- \State For each $i \in S_B$, calculate the imputed value as
- $$
- \hat{y}_i = m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right).
- $$
-\end{algorithmic}
-\end{algorithm}
-
 
 \begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}
