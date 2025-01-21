@@ -334,7 +334,7 @@ Setting presented in Table \ref{tab-two-sources} may be also extended to
 calibrated \(d_i^B\) weights (i.e.~\(d_i^B\) adjusted for
 under-coverage, non-contact or non-response;
 cf.~\citet{sarndal2005estimation}) but this requires additional
-developments in the theory about the consistency of the IPW, MI or DR
+developments in the theory about the consistency of the MI, IPW or DR
 estimators. In the next sections we briefly present methods that are
 implemented in the package.
 
@@ -501,115 +501,149 @@ After obtaining \(B\) bootstrap estimate estimate variance based on the
 following equation
 
 \begin{equation}
-...
+\hat{V}_{\text{boot}} = \frac{1}{B-1}\sum_{b=1}^B\left(\hat{\mu}_{y}^b - \hat{\mu}_{y}\right)^2,
+\label{eq-var-bootstrap}
 \end{equation}
+
+where \(\hat{\mu}_{y}\) is the estimated mean using either MI-GLM, MI-NN
+or MI-PMM estimator.
 
 The above approaches are applied when unit-level data from the
 probability sample \(S_B\) are available. If this is not the case and
 only population means (or totals and population size) are available we
 use the first component \(\hat{V}_1\) of the \citet{kim_combining_2021}
 variance estimator (estimated population quantities are replaced with
-known ones).
+known ones). For the variance of the MI-NN and MI-PMM estimators we only
+use bootstrap approach with known population means. Note, that current
+version of the \pkg{nonprobsvy} does not support the replicated weights
+in the probability sample \(S_B\) for any of the estimators discussed in
+this section.
 
 \subsection{Inverse Probability Weighting}\label{sec-ipw}
 
-The main disadvantage of non-probability sampling is the unknown
-selection mechanism for a unit to be included in the sample. This is why
-we talk about the so-called biased sample problem. The inverse
-probability approach is based on the assumption that a reference
-probability sample is available and therefore we can estimate the
-propensity score of the selection mechanism. In recent years, a number
-of articles have addressed this issue. \cite{chen2020doubly} propose
-maximum likelihood estimation approach for estimating propensity scores
-for selection mechanism. \cite{wu2022statistical} present the approach
-based on generalized estimating equations, this method is also mentioned
-in \cite{yang_doubly_2020}. On the other hand calibration approach for
-quantiles was explained \cite{beresewicz2024inference} and
-\cite{santanna_covariate_2022} present the approach based on maximize
-the covariate distribution balance among different treatment groups.
-
-The estimated propensity score is used to construct an inverse
-probability weighting estimator of the population mean of the form
+Another popular approach is inverse probability weighting (IPW) that
+involves estimation of propensity scores denoted as
+\(\pi_i^A=P\left(i \in S_A \right)\) which denotes inclusion and
+participation probabilities. Similarly as for the prediction approach we
+have two variants of the IPW estimators given by
 
 \begin{equation}
-\begin{gathered}
-\hat{\mu}_{I P W}=\frac{1}{\hat{N}^A} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A}.
-\end{gathered}
-\end{equation} where
-\(\hat{N}^A = \sum_{i \in S_A} \hat{d}_i^A = \sum_{i \in S_A} \frac{1}{\hat{\pi}_i^A}\).
+\hat{\mu}_{IPW1}=\frac{1}{N} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A} \quad \text { and } \quad \hat{\mu}_{IPW2}=\frac{1}{\hat{N}^A} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A},
+\label{eq-ipw-estimators}
+\end{equation}
 
-\subsubsection{Maximum Likelihood
-Estimation}\label{maximum-likelihood-estimation}
+where the \(\hat{\mu}_{IPW1}\) is a version of the Horvitz-Thompson
+estimator and the \(\hat{\mu}_{IPW2}\) is the Hájek estimator with the
+estimated population size given by
+\(\hat{N}^A = \sum_{i \in S_A} \frac{1}{\pi_i^A}\). This estimator in
+the case of non-probability samples was discussed by .. and several
+approaches on using propensity scores and alternative versions of the
+IPW estimators were discussed by \ldots{} Recently,
+\citet{chen2020doubly} studied properties of the IPW estimators, proved
+their consistency as well as derived closed form estimators.
+\citet[section 4.2]{wu2022statistical} argue that \(\hat{\mu}_{IPW2}\)
+estimator performs better than \(\hat{\mu}_{IPW1}\) even if the
+population size is known.
 
-Consider the following likelihood function \begin{align}
-    \begin{split}
- \ell(\boldsymbol{\theta}) & =\sum_{i=1}^N\left\{R_i^A \log \pi_i^{\mathrm{A}}+\left(1-R_i^A\right) \log \left(1-\pi_i^{\mathrm{A}}\right)\right\} \\ & =\sum_{i \in S_{\mathrm{A}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}\right\}+\sum_{i=1}^N \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\right\}
-    \end{split}
-\end{align} In practice, a function of this form cannot be used because
-we do not observe all units from the population. Hence, the second
-component of the function is replaced by the Horvitz-Thompson estimator,
-which is used when having access to the design weights for the units in
-the sample. In our case, these will be the weights \(d_i^B\) for the
-units in the sample \(S_B\). We then have \begin{equation}
-\ell^*(\boldsymbol{\theta})=\sum_{i \in S_{\mathrm{A}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}\right\}+\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\right\}.
-\end{equation} Our objective is to find the maximum likelihood estimator
-\(\hat{\pi}_{i}^{A} = \pi(\boldsymbol{x}_{i}, \hat{\boldsymbol{\theta}})\),
-such that \(\hat{\boldsymbol{\theta}}\) maximises the function defined
-above.
+The construction of the IPW estimator involved two steps: 1) estimation
+of the propensity scores; and 2) deriving \(d_i^A\), which in our case
+are equal to \(1/\pi_i^A\). To estimate the propensity scores
+\(\pi_i^A=\pi(\boldsymbol{x}_i, \boldsymbol{\gamma})\) one can use the
+likelihood approach under assumption that the information about
+\(\boldsymbol{x}_i\) are available for each unit in the population
 
-\subsubsection{Generalized Estimating Equations}\label{sec-ipw-gee}
+\begin{equation}
+\ell(\boldsymbol{\gamma}) = \log\left\{\prod_{i=1}^N \left(\pi_i^A\right)^{R_i}\left(1-\pi_i^A\right)^{1-R_i}\right\} =
+\sum_{i \in S_{A}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+\sum_{i=1}^N \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
+\label{eq-ipw-loglik}
+\end{equation}
 
-Equations of the type
-\(\operatorname{U}(\boldsymbol{\theta}) = \boldsymbol{0}\), where
-\(\operatorname{U}(\boldsymbol{\theta}) = \frac{\partial}{\partial \boldsymbol{\theta}} l^*(\boldsymbol{\theta})\),
-obtained from the maximum likelihood estimation can be replaced by a
-system of generalized estimating equations of the form \begin{equation}
+In practice, a function of this form cannot be used because we do not
+observe all units from the population. More realistic approach involves
+a reference probability sample \(S_B\) and as a result the second
+component of the \eqref{eq-ipw-loglik} is replaced forming pseudo
+log-likelihood function
+
+\begin{equation}
+\ell^*(\boldsymbol{\gamma}) = \sum_{i \in S_{A}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+ \sum_{i \in S_{B}} d_i^B \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
+\label{eq-ipw-pseudo-loglik}
+\end{equation}
+
+The maximum pseudo-likelihood estimator \(\hat{\boldsymbol{\gamma}}\)
+can be obtained as the solution to the pseudo score equation which under
+logit function assumed for \(\pi_i^A\) is given by
+
+\begin{equation}
+\boldsymbol{U}(\boldsymbol{\gamma}) = \sum_{i \in S_A} \boldsymbol{x}_i - \sum_{i \in S_B} d_i^B \pi(\boldsymbol{x}_i, \boldsymbol{\gamma}) \boldsymbol{x}_i.
+\label{eq-ipw-solution-mle}
+\end{equation}
+
+In general, the pseudo score functions
+\(\boldsymbol{U}(\boldsymbol{\gamma})\) at the true values of the model
+parameters \(\boldsymbol{\gamma}_0\) are unbiased under the joint
+\(q p\) randomization in the sense that
+\(E_{q p}\left\{\boldsymbol{U}\left(\boldsymbol{\gamma}_0\right)\right\}=\boldsymbol{0}\),
+which implies that the estimator \(\hat{\boldsymbol{\alpha}}\) is
+\(qp\)-consistent for \(\boldsymbol{\gamma}_0\)
+\citep{wu2022statistical}.
+
+The system \eqref{eq-ipw-solution-mle} can be replaced by a system of
+general estimation equations. Let
+\(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})\) be a
+user-specified vector of functions with the same dimension of
+\(\boldsymbol{\gamma}\) and \(\boldsymbol{G}(\boldsymbol{\gamma})\) is
+defined as
+
+\begin{equation}
 \label{gee}
-\mathbf{G}(\boldsymbol{\theta})=\sum_{i \in S_A} h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{0},
-\end{equation} where
-\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)\) is a certain
-continuous function. In the literature, the most commonly considered
-functions are
-\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{x}_i\)
+\boldsymbol{G}(\boldsymbol{\gamma})=\sum_{i \in S_A} h\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) h\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right),
+\end{equation}
+
+then solving \(\boldsymbol{G}(\boldsymbol{\gamma})=\boldsymbol{0}\) with
+the chosen parametric form of \(\pi_i^A\) and the choosen
+\(\boldsymbol{h}(\boldsymbol{x},\boldsymbol{\gamma})\) leads to the
+consistent estimator of \(\hat{\boldsymbol{\gamma}}\). In the
+literature, the most commonly considered functions are
+\(h\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) = \boldsymbol{x}_i\)
 and
-\(h\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) = \boldsymbol{x}_i \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)^{-1}\).
-Note that if the function \(h\) is equal to the vector of observed
-characteristics \(\boldsymbol{x}\), then \(\mathbf{G}\) is reduced to \[
-\mathbf{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \boldsymbol{x}_i-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) \boldsymbol{x}_i.
-\] In the next subsection we will proof that this is disorted version of
-MLE approach with \(\pi_i^A\) modelling by logistic regression. If we
-use the second form of the function \(h\) we get the following form of
-the function \(\mathbf{G}\) \[
-\mathbf{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \frac{\boldsymbol{x}_i}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right) }-\sum_{i \in S_B} d_i^B \boldsymbol{x}_i.
+\(h\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) = \boldsymbol{x}_i \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)^{-1}\).
+Note that if the function \(h_i=\boldsymbol{x}_i\), then
+\(\boldsymbol{G}\) is reduced to
+
+\[
+\boldsymbol{G}(\boldsymbol{\gamma}) = \sum_{i \in S_A} \boldsymbol{x}_i-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) \boldsymbol{x}_i.
 \]
 
-The advantage of this method is the ability to estimate with global
-values of the variables (e.g.~from external sources) instead of a
-probability sample. Note that this is allowed by the second form of the
-\(\mathbf{G}\) function. Its second term is nothing more than the
-estimated sums of the \(\boldsymbol{x}\) variables. On the other hand,
-empirical studies suggest that the process of solving this type of
-equation may be less stable than the maximum likelihood method. In other
-words, the iterative algorithm for finding zeros that satisfy equation
-(\ref{gee}) may not converge.
+If we use the second form of the function \(h\) we get the following
+form of the function \(\mathbf{G}\)
 
-In the \texttt{nonprobsvy} package the propensity scores can modelled
-using three different link functions: logistic, complementary log-log
-and probit. The logistic regression is the most commonly used for
-modelling probabilities. This method is based on the so-called sigmoidal
-function and for our settign it has the form It satisfies certain
-properties to model the probability. For our scheme, this will be the
-probability of belonging to the non-probability sample. Another approach
-to modelling binary variables and also probabilities is probit
-regression. It is based on the standard normal distribution and as logit
-is also symmetric around \(p = 0.5\). On the other hand regression with
-the cloglog model is particularly useful if we are modelling rare
-phenomena, i.e.~the probabilities will oscillate around the values 1 and
-0. Compared to the sigmoidal function and the distribution, the cloglog
-function is more asymmetric towards the value 0.5.
+\begin{equation}
+\mathbf{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \frac{\boldsymbol{x}_i}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) }-\sum_{i \in S_B} d_i^B \boldsymbol{x}_i,
+\label{eq-ipw-solution-gee}
+\end{equation}
+
+which can be viewed as calibrated IPW. Moreover, using
+\eqref{eq-ipw-solution-gee} requires the knowledge of population totals
+for the auxiliary variables \(\boldsymbol{x}\).
 
 \subsubsection{Variance estimators for the inverse probability weighting
 approach}\label{variance-estimators-for-the-inverse-probability-weighting-approach}
+
+\citet[section 3.2]{chen2020doubly} derived asymptotic variance
+estimators for both IPW estimators presented in
+\eqref{eq-ipw-estimators} and presented the plug-in variance estimator
+for the \(\hat{\mu}_{IPW2}\) estimator assuming logistic regression. In
+the package we have implemented this approach for \code{logit},
+\code{probit} and \code{cloglog} link functions. We refer the reader to
+the \citet[section 6.2]{wu2022statistical} and
+\citet[chapter 3]{chrostowski2024statistical} for more details on how
+this estimators are derived based on the general estimating equations
+approach.
+
+Another approach is to use bootstrap which esentially is the same as the
+one presented in the \textbackslash eqref\{\{eq-var-bootstrap\} where
+the \(\hat{\mu}_y\) is replaced by one of the \eqref{eq-ipw-estimators}
+estimators.
 
 \subsection{Doubly Robust approach}\label{sec-dr-approach}
 
@@ -1494,7 +1528,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.010777682
+single_shift1 0.7083228 0.009339383
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1509,9 +1543,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7246298
-[2,]    0.7040247
-[3,]    0.7110498
+[1,]    0.7078424
+[2,]    0.7070039
+[3,]    0.7047423
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1577,7 +1611,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7022412 0.01112936
+MI with var sel    0.7034021 0.01119051
 \end{CodeOutput}
 \end{CodeChunk}
 
