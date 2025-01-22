@@ -1592,7 +1592,7 @@ R> rbind(ipw_est1$output,
 \begin{CodeOutput}
                    mean          SE
 single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.008583870
+single_shift1 0.7083228 0.010618290
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1607,9 +1607,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7112020
-[2,]    0.7204836
-[3,]    0.6997687
+[1,]    0.6957703
+[2,]    0.6988934
+[3,]    0.6906965
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1675,7 +1675,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7022412 0.01112936
+MI with var sel    0.7034021 0.01119051
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1749,33 +1749,37 @@ We would like to thank \ldots{}
 \textbf{Symbol} & \textbf{Description} \\
 \hline
 $U$ & Target population of size $N$ \\
-$N$ & Population size \\
-$\boldsymbol{x}_i$ & Vector of auxiliary variables for unit $i$ \\
-$y_i$ & Study variable for unit $i$ \\
 $S_A$ & Non-probability sample \\
 $S_B$ & Probability sample \\
+$N$ & Population size \\
 $n_A$ & Size of non-probability sample \\
 $n_B$ & Size of probability sample \\
+$\hat{N}^A$ & Estimated size based on non-probability sample \\
+$\hat{N}^B$ & Estimated size based on probability sample \\
+$\boldsymbol{x}_i$ & Vector of auxiliary variables for unit $i$ \\
+$y_i$ & Study variable for unit $i$ \\
+$y_i^*$ & Imputed value for unit $i$ in $S_B$\\
 $\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
 $\pi_i^B$ & Inclusion probability for unit $i$ in probability sample \\
-$d_i^A$ & Design weight ($1/\pi_i^A$) for non-probability sample \\
+$d_i^A$ & Inverse probability weight ($1/\pi_i^A$) for non-probability sample \\
 $d_i^B$ & Design weight ($1/\pi_i^B$) for probability sample \\
 $R_i^A$ & Indicator of inclusion into non-probability sample \\
 $R_i^B$ & Indicator of inclusion into probability sample \\
 $\mu$ & Population mean of target variable $y$ \\
-$m(\boldsymbol{x}_i, \boldsymbol{\beta})$ & Regression model for outcome variable \\
-$\hat{\mu}{PR1}$ & First prediction estimator \\
-$\hat{\mu}{PR2}$ & Second prediction estimator \\
-$\hat{\mu}{MI}$ & Mass imputation estimator \\
-$\hat{\mu}{IPW1}$ & First inverse probability weighting estimator \\
-$\hat{\mu}{IPW2}$ & Second inverse probability weighting estimator \\
-$\hat{\mu}{DR1}$ & First doubly robust estimator \\
-$\hat{\mu}_{DR2}$ & Second doubly robust estimator \\
+$\mu_{\boldsymbol{x}}$ & Population means of auxiliary variables $\boldsymbol{x}$ \\
+$m(\boldsymbol{x}_i, \boldsymbol{\beta})$ & Semiparametric model for outcome variable \\
+$\dot{m}(\boldsymbol{x}_i, \boldsymbol{\beta})$ & First derivative of the $m(\boldsymbol{x}_i, \boldsymbol{\beta})$ with respect to $\boldsymbol{\beta}$ \\
+$\pi(\boldsymbol{x}_i, \boldsymbol{\gamma})$ & Propensity score model for $R_i^A$ \\
 $\boldsymbol{\beta}$ & Parameter vector for outcome model \\
 $\boldsymbol{\gamma}$ & Parameter vector for propensity score model \\
-$y_i^*$ & Imputed value for unit $i$ \\
-$\hat{N}^A$ & Estimated size based on non-probability sample \\
-$\hat{N}^B$ & Estimated size based on probability sample \\
+$\lambda_{\boldsymbol{\beta}}, \lambda_{\boldsymbol{\gamma}}$ & Tuning parameters for penalisation methods \\
+$\hat{\mu}_{\boldsymbol{x}}$ & Estimator for the population means of auxiliary variables $\boldsymbol{x}$ \\
+$\bar{\boldsymbol{x}}_{A}$ & A vector of the sample means of the auxiliary variables $\boldsymbol{x}$ from $S_A$ \\ 
+$\hat{\mu}_{PR}$ & Prediction estimators \\
+$\hat{\mu}_{MI}$ & Mass imputation estimator \\
+$\hat{\mu}_{IPW}$ & Inverse probability weighting estimator \\
+$\hat{\mu}_{DR}$ & Doubly robust estimator \\
+$\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 \hline
 \end{tabular}
 \caption{List of symbols and their descriptions}

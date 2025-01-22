@@ -853,33 +853,37 @@ We would like to thank ...
 \textbf{Symbol} & \textbf{Description} \\
 \hline
 $U$ & Target population of size $N$ \\
-$N$ & Population size \\
-$\bx_i$ & Vector of auxiliary variables for unit $i$ \\
-$y_i$ & Study variable for unit $i$ \\
 $S_A$ & Non-probability sample \\
 $S_B$ & Probability sample \\
+$N$ & Population size \\
 $n_A$ & Size of non-probability sample \\
 $n_B$ & Size of probability sample \\
+$\hat{N}^A$ & Estimated size based on non-probability sample \\
+$\hat{N}^B$ & Estimated size based on probability sample \\
+$\bx_i$ & Vector of auxiliary variables for unit $i$ \\
+$y_i$ & Study variable for unit $i$ \\
+$y_i^*$ & Imputed value for unit $i$ in $S_B$\\
 $\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
 $\pi_i^B$ & Inclusion probability for unit $i$ in probability sample \\
-$d_i^A$ & Design weight ($1/\pi_i^A$) for non-probability sample \\
+$d_i^A$ & Inverse probability weight ($1/\pi_i^A$) for non-probability sample \\
 $d_i^B$ & Design weight ($1/\pi_i^B$) for probability sample \\
 $R_i^A$ & Indicator of inclusion into non-probability sample \\
 $R_i^B$ & Indicator of inclusion into probability sample \\
 $\mu$ & Population mean of target variable $y$ \\
-$m(\bx_i, \bbeta)$ & Regression model for outcome variable \\
-$\hat{\mu}_{PR1}$ & First prediction estimator \\
-$\hat{\mu}_{PR2}$ & Second prediction estimator \\
-$\hat{\mu}_{MI}$ & Mass imputation estimator \\
-$\hat{\mu}_{IPW1}$ & First inverse probability weighting estimator \\
-$\hat{\mu}_{IPW2}$ & Second inverse probability weighting estimator \\
-$\hat{\mu}_{DR1}$ & First doubly robust estimator \\
-$\hat{\mu}_{DR2}$ & Second doubly robust estimator \\
+$\mu_{\bx}$ & Population means of auxiliary variables $\bx$ \\
+$m(\bx_i, \bbeta)$ & Semiparametric model for outcome variable \\
+$\dot{m}(\bx_i, \bbeta)$ & First derivative of the $m(\bx_i, \bbeta)$ with respect to $\bbeta$ \\
+$\pi(\bx_i, \bgamma)$ & Propensity score model for $R_i^A$ \\
 $\bbeta$ & Parameter vector for outcome model \\
 $\bgamma$ & Parameter vector for propensity score model \\
-$y_i^*$ & Imputed value for unit $i$ \\
-$\hat{N}^A$ & Estimated size based on non-probability sample \\
-$\hat{N}^B$ & Estimated size based on probability sample \\
+$\lambda_{\bbeta}, \lambda_{\bgamma}$ & Tuning parameters for penalisation methods \\
+$\hat{\mu}_{\bx}$ & Estimator for the population means of auxiliary variables $\bx$ \\
+$\bar{\bx}_{A}$ & A vector of the sample means of the auxiliary variables $\bx$ from $S_A$ \\ 
+$\hat{\mu}_{PR}$ & Prediction estimators \\
+$\hat{\mu}_{MI}$ & Mass imputation estimator \\
+$\hat{\mu}_{IPW}$ & Inverse probability weighting estimator \\
+$\hat{\mu}_{DR}$ & Doubly robust estimator \\
+$\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 \hline
 \end{tabular}
 \caption{List of symbols and their descriptions}
