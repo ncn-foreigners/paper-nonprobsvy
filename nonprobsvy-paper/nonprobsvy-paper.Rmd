@@ -343,76 +343,75 @@ If we use the second form of the function $h$ we get the following form of the f
 \label{eq-ipw-solution-gee}
 \end{equation}
 
-which can be viewed as calibrated IPW. Moreover, using \eqref{eq-ipw-solution-gee} requires the knowledge of population totals for the auxiliary variables $\bx$.  
+which can be viewed as calibrated IPW and equation \eqref{eq-ipw-solution-gee} requires only the knowledge of population totals for the auxiliary variables $\bx$. Moreover, usage of the \eqref{eq-ipw-solution-gee} leads to doubly robust estimator when the outcome model is linear (... riddles survey meth).
 
 ### Variance estimators for the inverse probability weighting approach
 
 \citet[section 3.2]{chen2020doubly} derived asymptotic variance estimators for both IPW estimators presented in \eqref{eq-ipw-estimators} and presented the plug-in variance estimator for the $\hat{\mu}_{IPW2}$ estimator assuming logistic regression. In the package we have implemented this approach for \code{logit}, \code{probit} and \code{cloglog} link functions. We refer the reader to the \citet[section 6.2]{wu2022statistical} and \citet[chapter 3]{chrostowski2024statistical} for more details on how this estimators are derived based on the general estimating equations approach.
 
-Another approach is to use bootstrap which esentially is the same as the one presented in the \eqref{eq-var-bootstrap} where the $\hat{\mu}_y$ is replaced by one of the \eqref{eq-ipw-estimators} estimators.  
+Another approach is to use bootstrap which essentially is the same as the one presented in the \eqref{eq-var-bootstrap} where the $\hat{\mu}_y$ is replaced by one of the \eqref{eq-ipw-estimators} estimators.  
 
 ## Doubly Robust approach {#sec-dr-approach}
 
-The inverse probability weighting and mass imputation estimators are sensible on misspecified models for propensity score and outcome variable respectively. For this purpose so called doubly-robust methods, which take into account these problems, are presented.
+The IPW and MI estimators are sensible on misspecified models for propensity score and outcome variable respectively. To improve robustness and efficiency, the doubly robust (DR) method incorporates a prediction model for the response variable $Y_i$ and propensity score model for participation $R_i$. This approach is doubly robust in that sense that the DR estimator remains consistent even if one of the models is mis-specified. The general formulae for the for the DR estimator is given by
 
-The proposed estimation procedure addresses the challenge of combining data from nonprobability and probability survey samples. Traditional semiparametric models, often applied to such problems, are not directly usable in this context due to the distinct nature of the two samples. Instead, a joint randomization framework is employed, integrating semiparametric models for propensity scores with outcome regression for the nonprobability sample and design-based inference from the probability sample. This framework leads to a doubly robust (DR) estimation approach, which is effective in the presence of model misspecifications.
-
-Inverse Probability Weighted (IPW) estimators are sensitive to misspecified propensity score models, particularly when propensity scores are very small. To improve robustness and efficiency, the doubly robust method incorporates a prediction model for the response variable. Moreover, even if one of the models is misspecified, the DR estimator remains consistent, showcasing the ``double robustness'' property.
+$$
+\tilde{\mu}_{DR} = \frac{1}{N}\sum_{i \in S_A}\frac{y_i - m_i}{\pi_i^A} + \frac{1}{N}\sum_{i =1}^N m_i,
+$$
+where $\pi_i^A$ and $m_i$ are defined as previously. In the next subsections we discuss two approaches to DR estimation. 
 
 ### Joint Randomization Approach
 
-The joint randomization approach combines two processes: the selection mechanism of a non-probability sample, modelled by propensity scores, and the design-based inference from a probability sample.
+As discussed previously access to population data may be limited that is why we need to consider a joint randomization approach consisting of a non-probability $S_A$ and probability $S_B$ sample. In this approach doubly robust inference is done within the $qp$ or $\xi p$ framework with no specification which one is correct. \citet{chen2020doubly} proposed two DR estimators given in \eqref{eq-dr-known-n} and \eqref{eq-dr-estimated-n} under assumption that population size either known or estimated
 
-The response $y_i$ is predicted using a regression model $m(\bx_i, \bbeta)$ (or NN/PMM methods), where $\bbeta$ is estimated from the non-probability sample. With known design weights $d_i^B$ for $i \in S_B$ we can define the DR estimator as
 \begin{equation}
-\label{dr}
-\hat{\mu}_{\mathrm{DR}}=\frac{1}{\hat{N}^{\mathrm{A}}} \sum_{i \in S_{\mathrm{A}}} d_i^{\mathrm{A}}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{\hat{N}^{\mathrm{B}}} \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
+\hat{\mu}_{DR1}=\frac{1}{N} \sum_{i \in S_{A}} d_i^{A}\left\{y_i-m\left(\bx_i, \hat{\bbeta}\right)\right\}+\frac{1}{N} \sum_{i \in S_{B}} d_i^{B} m\left(\bx_i, \hat{\bbeta}\right),
+\label{eq-dr-known-n}
 \end{equation}
-where $d_i^A=\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)^{-1}, \hat{N}^A=\sum_{i \in S_A} d_i^A$ and $\hat{N}^B=\sum_{i \in S_B} d_i^B$.
 
-It remains consistent if either the propensity score model $\pi(\bx_i, \btheta)$ or the outcome regression model $m(\bx_i, \bbeta)$ is correctly specified.
+and
 
-The joint randomization approach ensures robustness by accounting for randomness in both the non-probability sample through $\pi(\bx_i, \btheta)$ and the probability sample through design-based inference.
+\begin{equation}
+\hat{\mu}_{DR2}=\frac{1}{\hat{N}^{A}} \sum_{i \in S_{A}} d_i^{A}\left\{y_i-m\left(\bx_i, \hat{\bbeta}\right)\right\}+\frac{1}{\hat{N}^{B}} \sum_{i \in S_{B}} d_i^{B} m\left(\bx_i, \hat{\bbeta}\right),
+\label{eq-dr-estimated-n}
+\end{equation}
+
+
+where $d_i^A=\pi\left(\bx_i, \bgamma\right)^{-1}, \hat{N}^A=\sum_{i \in S_A} d_i^A$ and $\hat{N}^B=\sum_{i \in S_B} d_i^B$. The estimator \eqref{eq-dr-estimated-n} using the estimated population size has better performance in terms of bias and mean squared error and should be used in practice. However, the main limitation is estimation of the variance which will be discussed at the end of this section. 
+
+Estimation of \eqref{eq-dr-known-n} or \eqref{eq-dr-estimated-n} involves estimation of two models separately which is attractive as it is possible to specify different number of variables for the propensity and outcome model. Alternative approach was proposed by \citet{yang_doubly_2020} and will be discussed in the next subsection.
+
 
 ### Minimization of the bias for doubly robust methods
 
-By reducing the variance of the estimators, for example by variable selection, we cannot control the bias of the estimator, which may increase. Therefore, according to @yang_doubly_2020, the idea is to determine the equations leading to the estimation of the $\bbeta$ and $\btheta$ parameters based on the bias of the population mean estimator. In contrast to the joint randomization approach, this method allows for the estimation of the parameters $\boldsymbol{\beta}$ and $\boldsymbol{\theta}$ in a single step, rather than in two separate steps.
+\citet{yang_doubly_2020} discussed variable selection for high-dimensional setting and noted that we cannot control the bias of the estimator, which may increase. Therefore, according to \citet{yang_doubly_2020}, the idea is to determine the equations leading to the estimation of the $\bbeta$ and $\bgamma$ parameters based on the bias of the population mean estimator. In contrast to the joint randomization approach, this method allows for the estimation of the parameters $\bbeta$ and $\bgamma$ in a single step, rather than in two separate steps. First, they derived the bias of the $\hat{\mu}_{DR}$, assuming $\bh(\bx, \bgamma)=\bx$ for the IPW estimator, which is given by equation \eqref{eq-dr-bias}
 
-We will first present the bias of the doubly robust estimator and then, using optimisation techniques, discuss the equations leading to its minimization. Thus we have
 \begin{equation}
 \begin{aligned}
-\operatorname{bias}\left(\hat{\mu}_{D R}\right) & = \mid\hat{\mu}_{DR}-\mu\mid& \\
-& =\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi_i^A\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\beta}\right)\right\}\\
-& + \frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\boldsymbol{x}_i^{\mathrm{T}} \boldsymbol{\beta}\right)
+\operatorname{bias}\left(\hat{\mu}_{D R}\right) = \mid\hat{\mu}_{DR}-\mu\mid &=\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\bx_i, \bgamma\right)} - 1\right\}\left\{y_i-m\left(\bx_i, \bbeta\right)\right\}\\
+& + \frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\bx_i, \bbeta\right)
 \end{aligned}
+\label{eq-dr-bias}
 \end{equation}
 
-To minimize $\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2$ let us calculate the gradient of the square of the bias at $\left(\bbeta, \btheta\right)$. We then have 
+The goal of this approach is to minimize $(\operatorname{bias}\left(\hat{\mu}_{D R}\right))^2$ which leads to solving the following system of equations
 
-\begin{equation*}
-\frac{\partial \operatorname{bias}\left(\hat{\mu}_{D R}\right)^2}{\partial\left(\boldsymbol{\beta}^{\mathrm{T}}, \boldsymbol{\theta}^{\mathrm{T}}\right)^{\mathrm{T}}}=2 \operatorname{bias}\left(\hat{\mu}_{D R}\right) J(\theta, \beta),
-\end{equation*}
-where
-\begin{equation*}
-J(\theta, \beta)=\left(\begin{array}{l}
-J_1(\theta, \beta) \\
-J_2(\theta, \beta)
-\end{array}\right)=\left(\begin{array}{c}
-\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
-\sum_{i=1}^N \frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}-\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}
-\end{array}\right),
-\end{equation*}
-which leads to the problem of solving the following system of equations
 \begin{equation}
-\label{bias-min}
-    \left(\begin{array}{c}
-\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
-\sum_{i=1}^N \frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\theta}\right)} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}-\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}
+\left(\begin{array}{c}
+\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\bx_i, \bgamma\right)}-1\right\}\left\{y_i-m\left(\bx_i, \bbeta\right)\right\} \bx_i \\
+\sum_{i=1}^N \frac{R_i^A}{\pi\left(\bx_i, \bgamma\right)} \frac{\partial m\left(\bx_i, \bbeta\right)}{\partial \bbeta}-\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \frac{\partial m\left(\bx_i, \bbeta\right)}{\partial \bbeta}
 \end{array}\right) = \bZero,
+\label{eq-bias-min}
 \end{equation}
-which can be solved using Newton--Raphson optimization method.
+
+which can be solved using Newton--Raphson optimization method. This method is is equivalent to (kim and haziza) and was extensively discussed by \citet{chen2020doubly} and \citet{wu2022statistical}. The main limitation is the existence of the solution to \eqref{eq-bias-min} as it may not exist unless the two sets of covariates used, respectively, in the outcome regression model and the propensity score model have the same dimensions. That is why \citet{yang_doubly_2020} suggested to use this approach on a union of variables from both models (e.g. after variable selection).
+
+In the \pkg{nonprobsby} package we have implemented this approach not only for $\bh(\bx, \bgamma)=\bx$ but also for $\bh(\bx, \bgamma)=\bx$ and $h\left(\bx_i, \bgamma\right) = \bx_i \pi\left(\bx_i, \bgamma\right)^{-1}$ and various link functions for propensity score model. We also allow selection of this estimation strategy with or without variable selection methods discussed in Section \ref{sec-varsel}. As noted in the beginning the selection between \eqref{eq-dr-known-n} and \eqref{eq-dr-estimated-n} result in a different approach of estimating variance which will be presented in the next subsection.
 
 ### Variance estimators for the doubly robust approach
+
+\citet{yang_doubly_2020} derived a closed form estimator for the \eqref{eq-dr-known-n} but this requires knowledge of the population and it is requires bias correction to obtain valid estimator for $V_{\xi p}\left(\hat{\mu}_{DR}-\mu_y\right)$ under the outcome regression model $\xi$. A doubly robust variance estimator for the $\hat{\mu}_{DR2}$ given by \eqref{eq-dr-estimated-n} is not yet available in the literature. In the package, for the analytical variance estimator of the $\hat{\mu}_{DR2}$ we simply replace $N$ with estimated $\hat{N}_A$ and $\hat{N}_B$ and we strongly advice users to be be careful when using this approach. Alternatively, one can use bootstrap approach. \citet{chen2020doubly} showed that bootstrap approach presented in the Section \ref{sec-prediction} have excellent performance when one of the working models is correctly specified. That is why this approach is recommended for all users.
+
 
 ## Variable selection algorithms {#sec-varsel}
 
@@ -575,7 +574,7 @@ summary(ipw_est1)
 
 This displays information on the datasets used for estimation (probability and non-probability sample). The estimated regression coefficients are also shown, in this case for the logit model for propensity score model (section \code{Regression coefficients}). In addition, for diagnostic purposes, we have access to the distribution of the weights calculated from the inclusion probabilities (section \code{Weights}), the distribution of the residuals from the model (section \code{Residuals}), as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
 
-If we are interested in the calibrated IPW, one needs to define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to `gee` (the default is `mle`) and set the value of `h` (as dicussed in the \ref{sec-ipw-gee} section).
+If we are interested in the calibrated IPW, one needs to define a `controlSel` function in the `control_selection` argument with the `est_method_sel` argument equal to `gee` (the default is `mle`) and set the value of `h`.
 
 ```{r}
 ipw_est2 <- nonprob(
