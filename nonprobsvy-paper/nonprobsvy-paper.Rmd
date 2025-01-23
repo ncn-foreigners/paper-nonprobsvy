@@ -157,11 +157,15 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \label{tab-comparisons}
 \end{table}
 
-The \pkg{NonProbEst} is the most comprehensive package in comparison to other discussed in this section. It allows for various techniques such as IPW, calibration or prediction approaches (e.g. model-calibrated). It allows for several different setting of the IPW weights, variables selection and the variance is estimated using leave-one-out Jackknife procedure. Unfortunately the package is no longer developed (last update was in 2022) and some of the techniques are outdated or proved in the recent literature to be inappropriate for non-probability samples. The package also contains various functions aimed at specific methods and does not allow to leverage the \pkg{survey} package for estimation. The \pkg{balance} package focuses solely on the PS approach. It allows only for the population totals and contains invalid analytical approach to estimate the variance and thus constructing confidence intervals. The IPW estimator weights are constructed using the approach proposed by \citet{Schonlau2017} which does not allow to reproduce population totals. \pkg{inps} contains supports unit-level data from probability sample or population, implements IPW, MI and DR estimators and allows for variable selection. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} leverage usage of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM} package is the only package that allows to estimate sample selection models used widely for correction of selection bias in observational studies (including not missing at random mechanism). Unfortunately, there is no theory on how this approach can be used for estimating population quantities nor how to estimate variance based on this approach. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} with variable selection specified by an appropriate prior. It should be also highlighted that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements calibration (or post-stratification) which from statistical point of view is invalid as the non-probability sample is not a simple random sampling from the population nor the inclusion probabilities are known.
+The \pkg{NonProbEst} is the most comprehensive package in comparison to other discussed in this section. It allows for various techniques such as IPW, calibration or prediction approaches (e.g. model-calibrated). It allows for several different setting of the IPW weights, variables selection and the variance is estimated using leave-one-out Jackknife procedure. Unfortunately the package is no longer developed (last update was in 2022) and some of the techniques are outdated or proved in the recent literature to be inappropriate for non-probability samples. The package also contains various functions aimed at specific methods and does not allow to leverage the \pkg{survey} package for estimation. The \pkg{balance} package focuses solely on the PS approach. It allows only for the population totals and contains invalid analytical approach to estimate the variance and thus constructing confidence intervals. The IPW estimator weights are constructed using the approach proposed by \citet{Schonlau2017} which does not allow to reproduce population totals. The \pkg{inps} contains supports unit-level data from probability sample or population, implements IPW, MI and DR estimators, allows for variable selection and is at very early stage of development. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} leverage usage of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM} package is the only package that allows to estimate sample selection models used widely for correction of selection bias in observational studies (including not missing at random mechanism). Unfortunately, to best of our knowledge there is no theory on how this approach can be used for estimating population quantities nor to conduct statistical inference. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} with variable selection specified by an appropriate prior. 
+
+<!----
+It should be also highlighted that \pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements calibration (and post-stratification) which from statistical point of view is invalid approach as the non-probability sample is not a simple random sampling from the population nor the inclusion probabilities are known and thus does not allow for valid statistical inference.
+---->
 
 There are several advantages of the \pkg{nonprobsvy} package over the discussed ones. First, the package implements state-of-the-art methods recently proposed in the literature along with valid statistical inference procedures. Second, the package implements other approaches such as calibrated IPW (i.e. PS weights match the population or estimated totals), NN and PMM matching, various IPW and DR estimators with possibility of selection of link functions for logistic regression. Thirdly, the \pkg{nonprobsvy} leverage functionalities of the \pkg{survey} package to account for the design of the probability sample. Finally, we provide a user friendly API that mimics \code{glm} or other functions known in \proglang{R} with one main function that allows to specify the approach and estimators. To our knowledge the \pkg{nonprobsvy} is the solely software (open or close) that allows for such functionalities. 
 
-The remaining part of the paper is as follows. In Section \ref{sec-methods} theory of the statistical inference based on non-probability samples is presented. We provide basic set up and introduce specific methods in separate subsections. In the paper we \citet{wu2022statistical} notation. Section \ref{sec-package} the main function and the package functionalities. Section \ref{sec-data-analysis} presents a case study of integration of the Polish Job Vacancy Survey with a voluntary admin data: Central Job Offers Database with an aim on estimating number of companies with at least vacancy offered on a single shift. Section \ref{sec-s3methods} presents classes and \code{S3Methods} implemented in the package. Paper finishes with summary and plans for the future works. In the Appendix we present list of symbols and algorithms for selected estimators and in the Replication Materials we include codes for specific estimators described in the paper.
+The remaining part of the paper is as follows. In Section \ref{sec-methods} theory of the statistical inference based on non-probability samples is presented. We provide basic set up and introduce specific methods in separate subsections. In the paper we \citet{wu2022statistical} notation. Section \ref{sec-package} the main function and the package functionalities. Section \ref{sec-data-analysis} presents a case study of integration of the Polish Job Vacancy Survey with a voluntary admin data: Central Job Offers Database with an aim on estimating number of companies with at least vacancy offered on a single shift. Section \ref{sec-s3methods} presents classes and \code{S3Methods} implemented in the package. Paper finishes with summary and plans for the future works. In the Appendix, Table \ref{tab-list-of-symbols} presents list of symbols and Section \ref{sec-details} contains algorithms for selected MI estimators. In the Replication Materials we include additional codes for specific estimators described in the paper.
 
 # Methods for non-probability samples {#sec-methods}
 
@@ -520,7 +524,7 @@ In the next sections we present a case study on integration of non-probability s
 
 ## Description of the data
 
-Before we explain the case study let's first load the package.
+Before we explain the case study let's first load packages.
 
 ```{r load-package, message=FALSE, warning=FALSE}
 library(nonprobsvy) ## for estimation
@@ -697,23 +701,26 @@ dr_est2
 Finally, as there is no single method for non-probability samples we suggest to compare results in a single table or a plot. In the Figure ... we presents point estimates along with 95\% confidence intervals. The various estimators show interesting patterns compared to the naive estimate (red dashed line). MI estimators demonstrate notably different behaviours: while PMM produces the highest point estimate with the widest confidence interval, NN yields the lowest estimate, close to the naive value. The other estimators - MI (GLM), IPW (both MLE and GEE), and DR (with and without bias minimization) -- cluster together with similar point estimates and confidence interval widths, suggesting some consensus in their bias correction. These methods all indicate a population parameter higher than the naive estimate, but their relative consistency, except for the extreme estimates from MI (PMM) and MI (NN), provides some confidence in their bias correction capabilities.
 
 ```{r comparison-of-est, fig.cap="Comparison of estimates of the share of job vacancies offered on a single-shift", fig.align='center', fig.pos='ht!'}
-dr_summary <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
+df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
                     cbind(ipw_est2$output, ipw_est2$confidence_interval),
                     cbind(mi_est1$output, mi_est1$confidence_interval),
                     cbind(mi_est2$output, mi_est2$confidence_interval),
                     cbind(mi_est3$output, mi_est3$confidence_interval),
                     cbind(dr_est1$output, dr_est1$confidence_interval),
                     cbind(dr_est2$output, dr_est2$confidence_interval))
-rownames(dr_summary) <- NULL
-dr_summary$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
+rownames(df_s) <- NULL
+
+df_s$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
                     "MI (PMM)", "DR", "DR (BM)")
-ggplot(data = dr_summary, 
+
+ggplot(data = df_s, 
        aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
   geom_point() + 
   geom_vline(xintercept = mean(admin$single_shift), 
              linetype = "dotted", color = "red") + 
   geom_errorbar() + 
-  labs(x = "Point estimator and confidence interval", y = "Estimators")
+  labs(x = "Point estimator and confidence interval", y = "Estimators") +
+  theme_bw()
 
 ```
 
@@ -722,18 +729,12 @@ ggplot(data = dr_summary,
 
 ### Bootstrap Approach for Variance Estimation
 
-In the package we allow user to estimate variance of the mean using analytical (default) or bootstrap approach. In case of analytical variance estimators we use the estimators proposed in the papers described in the Section \ref{sec-methods}. Users may disable standard error calculation using \code{nonprob(se=FALSE)}. The bootstrap approach implemented in the package refers to two samples: 
+In the package we allow user to estimate variance of the mean using analytical (default) or bootstrap approach as described in Section \ref{sec-prediction}. In case of analytical variance estimators we use the estimators proposed in the papers described in the Section \ref{sec-methods}. Users may disable standard error calculation using \code{nonprob(se=FALSE)}. The bootstrap approach implemented in the package refers to two samples: 
 
 \begin{itemize}
 \item non-probability -- we currently support only simple random sampling with replacement,
-\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function. Currently we do not support the 
+\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refer the reader to the help file of this function. 
 \end{itemize}
-
-The bootstrap approach is done in the following way: 1) we independently draw the same number of $B$ bootstrap samples from non-probability and probability survey; 2) we estimate population mean based on selected method (e.g. the DR approach); and 3) calculate bootstrap standard error using the following formulae
-
-\begin{equation}
-aaa
-\end{equation}
 
 To specify the bootstrap approach one should use \code{controlInf()} function with `var_method = "bootstrap"`. Controlling the bootstrap method for probability sample is done by `rep_type` argument which passes the method to the `as.svrepdesign` function. The number of iterations is set in the `num_boot` argument (default 100). If the samples are large or the estimation method is complicated (e.g. involves variable selection) one can set `verbose=TRUE` to track the progress. By default results of bootstrap are stored in the `boot_sample` element of the resulting list (to disable this `keep_boot` should be set to `FALSE`). The following code provides an example of using the IPW approach with the bootstrap approach specified by the argument `control_inference` of the `nonprob` function. 
 
@@ -753,8 +754,8 @@ ipw_est1_boot <- nonprob(
 Next, we compare the estimated standard error with the analytical one below.
 
 ```{r}
-rbind(ipw_est1$output,
-      ipw_est1_boot$output)
+rbind("IPW analytic variance"=ipw_est1$output,
+      "IPW bootstrap variance"=ipw_est1_boot$output)
 ```
 To assess the samples one can access the `boot_sample` element of the output list of the `nonprob` function. Note that this is returned as `matrix` because we allow multiple `target` variables.
 
@@ -825,8 +826,7 @@ Further methodological extensions under consideration include empirical likeliho
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main developer and maintainer of the package. He was also responsible for the first draft of the paper as it is based on his Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}).
-Piotr Chlebicki contributed to the package and implemented PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and small contributions code and prepared the final manuscript.
+Łukasz Chrostowski is the main developer and maintainer of the package. Parts of this paper are based on Łukasz's  Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki contributed to the package and implemented MI-PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and small contributions code and prepared the manuscript.
 
 We would like to thank ...
 
@@ -851,7 +851,7 @@ $n_B$ & Size of probability sample \\
 $\hat{N}^A$ & Estimated size based on non-probability sample \\
 $\hat{N}^B$ & Estimated size based on probability sample \\
 $\bx_i$ & Vector of auxiliary variables for unit $i$ \\
-$y_i$ & Study variable for unit $i$ \\
+$y_i$ & Value of the study/target variable for unit $i$ \\
 $y_i^*$ & Imputed value for unit $i$ in $S_B$\\
 $\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
 $\pi_i^B$ & Inclusion probability for unit $i$ in probability sample \\
@@ -883,7 +883,7 @@ $\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 \clearpage
 
 
-# Algorithms {#sec-details}
+# Algorithms for the MI-NN and MI-PMM estimators {#sec-details}
 
 \begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}
@@ -952,261 +952,4 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-
-\clearpage
-
-
-# Codes for specific methods {#sec-examples}
-
-In this section we provide list of methods along with the appropriate set up of the `nonprob` function. We divide this section into two groups: 1) unit-level data from the reference probability sample is available; 2) only a vector of population totals or means (with population size) is available.
-
-## Unit-level probability sample is available
-
-1. Mass imputation based on regression imputation
-
-
-```{r, eval=FALSE}
-nonprob(
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "glm", 
-  family_outcome = "gaussian"
-)
-```
-
-2. Mass imputation based on nearest neighbour imputation
-
-```{r, eval=FALSE}
-nonprob(
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "nn", 
-  family_outcome = "gaussian", 
-  control_outcome = controlOutcome(k = 2)
-)
-```
-
-
-3. Mass imputation based on predictive mean matching
-
-```{r, eval=FALSE}
-nonprob(
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "pmm", 
-  family_outcome = "gaussian"
-)
-```
-
-
-4. Mass imputation based on regression imputation with variable selection (LASSO)
-
-```{r, eval=FALSE}
-nonprob(
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "pmm", 
-  family_outcome = "gaussian", 
-  control_outcome = controlOut(penalty = "lasso"), 
-  control_inference = controlInf(vars_selection = TRUE)
-)
-```
-
-5. Inverse probability weighting (MLE)
-
-```{r, eval=FALSE}
-nonprob(
-  selection =  ~ x1 + x2, 
-  target = ~ y, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_selection = "logit"
-)
-```
-
-
-6. Inverse probability weighting with calibration constraint (GEE)
-
-```{r, eval=FALSE}
-nonprob(
-  selection =  ~ x1 + x2, 
-  target = ~ y, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_selection = "logit", 
-  control_selection = controlSel(est_method_sel = "gee", h = 1)
-)
-```
-
-
-7. Inverse probability weighting with calibration constraint (GEE) with variable selection (SCAD)
-
-```{r, eval=FALSE}
-nonprob(
-  selection =  ~ x1 + x2, 
-  target = ~ y, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "pmm", 
-  family_outcome = "gaussian", 
-  control_inference = controlInf(vars_selection = TRUE)
-)
-```
-
-
-8. Doubly robust estimator
-
-```{r, eval=FALSE}
-nonprob(
-  selection = ~ x1 + x2, 
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob, 
-  method_outcome = "glm", 
-  family_outcome = "gaussian"
-)
-```
-
-
-9. Doubly robust estimator with variable selection (SCAD) and bias minimization
-
-```{r, eval=FALSE}
-nonprob(
-  selection = ~ x1 + x2, 
-  outcome = y ~ x1 + x2, 
-  data = nonprob, 
-  svydesign = prob,
-  method_outcome = "glm", 
-  family_outcome = "gaussian", 
-  control_inference = controlInf(
-    vars_selection = TRUE, 
-    bias_correction = TRUE
-  )
-)
-```
-
-
-## Only population totals or means are available
-
-Example declarations
-
-1. Mass imputation based on regression imputation
-
-```{r, eval=FALSE}
-nonprob(
-  outcome = y ~ x1 + x2,
-  data = nonprob,
-  pop_totals = c(`(Intercept)`= N,
-                 x1 = tau_x1,
-                 x2 = tau_x2),
-  method_outcome = "glm",
-  family_outcome = "gaussian"
-)
-```
-
-2. Inverse probability weighting
-
-```{r, eval=F}
-nonprob(
-  selection =  ~ x1 + x2, 
-  target = ~ y, 
-  data = nonprob, 
-  pop_totals = c(`(Intercept)` = N, 
-                 x1 = tau_x1, 
-                 x2 = tau_x2), 
-  method_selection = "logit"
-)
-```
-
-3. Inverse probability weighting with calibration constraint
-
-```{r, eval=F}
-nonprob(
-  selection =  ~ x1 + x2, 
-  target = ~ y, 
-  data = nonprob, 
-  pop_totals = c(`(Intercept)`= N, 
-                 x1 = tau_x1, 
-                 x2 = tau_x2), 
-  method_selection = "logit", 
-  control_selection = controlSel(est_method_sel = "gee", h = 1)
-)
-```
-
-4. Doubly robust estimator
-
-```{r, eval=F}
-nonprob(
-  selection = ~ x1 + x2, 
-  outcome = y ~ x1 + x2, 
-  pop_totals = c(`(Intercept)` = N, 
-                 x1 = tau_x1, 
-                 x2 = tau_x2), 
-  method_outcome = "glm", 
-  family_outcome = "gaussian"
-)
-```
-
-
-\clearpage
-
-
-
-# Detailed derivations {#sec-derivations}
-
-\begin{table}[ht!]
-\small
-\caption{MLE Functions and Gradients for Different Link Functions}
-\centering
-\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
-\hline
-Link & MLE Function & Gradient \\ 
-\hline
-\code{logit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
-& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\code{probit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
-& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
-& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
-\end{aligned}
-$ \\ \hline
-
-\code{cloglog} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
-& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\end{tabular}
-\end{table}
+\newpage

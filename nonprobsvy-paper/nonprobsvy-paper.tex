@@ -243,23 +243,20 @@ for the population totals and contains invalid analytical approach to
 estimate the variance and thus constructing confidence intervals. The
 IPW estimator weights are constructed using the approach proposed by
 \citet{Schonlau2017} which does not allow to reproduce population
-totals. \pkg{inps} contains supports unit-level data from probability
-sample or population, implements IPW, MI and DR estimators and allows
-for variable selection. It also implements kernel weighting and a simple
-bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}.
-Neither \pkg{balance} nor \pkg{ips} leverage usage of the \pkg{samplics}
-module \citep{Diallo2021}. The \pkg{GJRM} package is the only package
-that allows to estimate sample selection models used widely for
-correction of selection bias in observational studies (including not
-missing at random mechanism). Unfortunately, there is no theory on how
-this approach can be used for estimating population quantities nor how
-to estimate variance based on this approach. Finally, the MRP approach
-is implemented solely in the \pkg{rstanarm} with variable selection
-specified by an appropriate prior. It should be also highlighted that
-\pkg{NonProbEst}, \pkg{balance} and \pkg{inps} implements calibration
-(or post-stratification) which from statistical point of view is invalid
-as the non-probability sample is not a simple random sampling from the
-population nor the inclusion probabilities are known.
+totals. The \pkg{inps} contains supports unit-level data from
+probability sample or population, implements IPW, MI and DR estimators,
+allows for variable selection and is at very early stage of development.
+It also implements kernel weighting and a simple bootstrap approach via
+the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance}
+nor \pkg{ips} leverage usage of the \pkg{samplics} module
+\citep{Diallo2021}. The \pkg{GJRM} package is the only package that
+allows to estimate sample selection models used widely for correction of
+selection bias in observational studies (including not missing at random
+mechanism). Unfortunately, to best of our knowledge there is no theory
+on how this approach can be used for estimating population quantities
+nor to conduct statistical inference. Finally, the MRP approach is
+implemented solely in the \pkg{rstanarm} with variable selection
+specified by an appropriate prior.
 
 There are several advantages of the \pkg{nonprobsvy} package over the
 discussed ones. First, the package implements state-of-the-art methods
@@ -287,10 +284,11 @@ Polish Job Vacancy Survey with a voluntary admin data: Central Job
 Offers Database with an aim on estimating number of companies with at
 least vacancy offered on a single shift. Section \ref{sec-s3methods}
 presents classes and \code{S3Methods} implemented in the package. Paper
-finishes with summary and plans for the future works. In the Appendix we
-present list of symbols and algorithms for selected estimators and in
-the Replication Materials we include codes for specific estimators
-described in the paper.
+finishes with summary and plans for the future works. In the Appendix,
+Table \ref{tab-list-of-symbols} presents list of symbols and Section
+\ref{sec-details} contains algorithms for selected MI estimators. In the
+Replication Materials we include additional codes for specific
+estimators described in the paper.
 
 \section{Methods for non-probability samples}\label{sec-methods}
 
@@ -1037,7 +1035,7 @@ advanced options of the package.
 
 \subsection{Description of the data}\label{description-of-the-data}
 
-Before we explain the case study let's first load the package.
+Before we explain the case study let's first load packages.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1527,23 +1525,26 @@ provides some confidence in their bias correction capabilities.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> dr_summary <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
+R> df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
 +                     cbind(ipw_est2$output, ipw_est2$confidence_interval),
 +                     cbind(mi_est1$output, mi_est1$confidence_interval),
 +                     cbind(mi_est2$output, mi_est2$confidence_interval),
 +                     cbind(mi_est3$output, mi_est3$confidence_interval),
 +                     cbind(dr_est1$output, dr_est1$confidence_interval),
 +                     cbind(dr_est2$output, dr_est2$confidence_interval))
-R> rownames(dr_summary) <- NULL
-R> dr_summary$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
+R> rownames(df_s) <- NULL
+R> 
+R> df_s$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
 +                     "MI (PMM)", "DR", "DR (BM)")
-R> ggplot(data = dr_summary, 
+R> 
+R> ggplot(data = df_s, 
 +        aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
 +   geom_point() + 
 +   geom_vline(xintercept = mean(admin$single_shift), 
 +              linetype = "dotted", color = "red") + 
 +   geom_errorbar() + 
-+   labs(x = "Point estimator and confidence interval", y = "Estimators")
++   labs(x = "Point estimator and confidence interval", y = "Estimators") +
++   theme_bw()
 \end{CodeInput}
 \begin{figure}[ht!]
 
@@ -1561,26 +1562,17 @@ R> ggplot(data = dr_summary,
 Estimation}\label{bootstrap-approach-for-variance-estimation}
 
 In the package we allow user to estimate variance of the mean using
-analytical (default) or bootstrap approach. In case of analytical
-variance estimators we use the estimators proposed in the papers
-described in the Section \ref{sec-methods}. Users may disable standard
-error calculation using \code{nonprob(se=FALSE)}. The bootstrap approach
-implemented in the package refers to two samples:
+analytical (default) or bootstrap approach as described in Section
+\ref{sec-prediction}. In case of analytical variance estimators we use
+the estimators proposed in the papers described in the Section
+\ref{sec-methods}. Users may disable standard error calculation using
+\code{nonprob(se=FALSE)}. The bootstrap approach implemented in the
+package refers to two samples:
 
 \begin{itemize}
 \item non-probability -- we currently support only simple random sampling with replacement,
-\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refere the reader to the help file of this function. Currently we do not support the 
+\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refer the reader to the help file of this function. 
 \end{itemize}
-
-The bootstrap approach is done in the following way: 1) we independently
-draw the same number of \(B\) bootstrap samples from non-probability and
-probability survey; 2) we estimate population mean based on selected
-method (e.g.~the DR approach); and 3) calculate bootstrap standard error
-using the following formulae
-
-\begin{equation}
-aaa
-\end{equation}
 
 To specify the bootstrap approach one should use \code{controlInf()}
 function with \texttt{var\_method\ =\ "bootstrap"}. Controlling the
@@ -1615,13 +1607,13 @@ below.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind(ipw_est1$output,
-+       ipw_est1_boot$output)
+R> rbind("IPW analytic variance"=ipw_est1$output,
++       "IPW bootstrap variance"=ipw_est1_boot$output)
 \end{CodeInput}
 \begin{CodeOutput}
-                   mean          SE
-single_shift  0.7083228 0.009436907
-single_shift1 0.7083228 0.011538471
+                            mean          SE
+IPW analytic variance  0.7083228 0.009436907
+IPW bootstrap variance 0.7083228 0.010008834
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1636,9 +1628,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7274299
-[2,]    0.7138073
-[3,]    0.6986899
+[1,]    0.7060533
+[2,]    0.7115372
+[3,]    0.7191102
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1704,7 +1696,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7022412 0.01112936
+MI with var sel    0.7034021 0.01119051
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1755,13 +1747,12 @@ The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
 Łukasz Chrostowski is the main developer and maintainer of the package.
-He was also responsible for the first draft of the paper as it is based
-on his Master's thesis (available at
+Parts of this paper are based on Łukasz's Master's thesis (available at
 \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr
-Chlebicki contributed to the package and implemented PMM estimators.
+Chlebicki contributed to the package and implemented MI-PMM estimators.
 Maciej Beręsewicz was responsible for the initial idea and the design of
 the package, testing, reviewing and small contributions code and
-prepared the final manuscript.
+prepared the manuscript.
 
 We would like to thank \ldots{}
 
@@ -1786,7 +1777,7 @@ $n_B$ & Size of probability sample \\
 $\hat{N}^A$ & Estimated size based on non-probability sample \\
 $\hat{N}^B$ & Estimated size based on probability sample \\
 $\boldsymbol{x}_i$ & Vector of auxiliary variables for unit $i$ \\
-$y_i$ & Study variable for unit $i$ \\
+$y_i$ & Value of the study/target variable for unit $i$ \\
 $y_i^*$ & Imputed value for unit $i$ in $S_B$\\
 $\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
 $\pi_i^B$ & Inclusion probability for unit $i$ in probability sample \\
@@ -1817,7 +1808,8 @@ $\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 
 \clearpage
 
-\section{Algorithms}\label{sec-details}
+\section{Algorithms for the MI-NN and MI-PMM
+estimators}\label{sec-details}
 
 \begin{algorithm}[ht!]
 \caption{Mass imputation using the k-nearest-neighbour algorithm}
@@ -1886,362 +1878,7 @@ $$
 \end{algorithmic}
 \end{algorithm}
 
-\clearpage
-
-\section{Codes for specific methods}\label{sec-examples}
-
-In this section we provide list of methods along with the appropriate
-set up of the \texttt{nonprob} function. We divide this section into two
-groups: 1) unit-level data from the reference probability sample is
-available; 2) only a vector of population totals or means (with
-population size) is available.
-
-\subsection{Unit-level probability sample is
-available}\label{unit-level-probability-sample-is-available}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Mass imputation based on regression imputation
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "glm", 
-+   family_outcome = "gaussian"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
-\item
-  Mass imputation based on nearest neighbour imputation
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "nn", 
-+   family_outcome = "gaussian", 
-+   control_outcome = controlOutcome(k = 2)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
-\item
-  Mass imputation based on predictive mean matching
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "pmm", 
-+   family_outcome = "gaussian"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{3}
-\tightlist
-\item
-  Mass imputation based on regression imputation with variable selection
-  (LASSO)
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "pmm", 
-+   family_outcome = "gaussian", 
-+   control_outcome = controlOut(penalty = "lasso"), 
-+   control_inference = controlInf(vars_selection = TRUE)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{4}
-\tightlist
-\item
-  Inverse probability weighting (MLE)
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection =  ~ x1 + x2, 
-+   target = ~ y, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_selection = "logit"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{5}
-\tightlist
-\item
-  Inverse probability weighting with calibration constraint (GEE)
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection =  ~ x1 + x2, 
-+   target = ~ y, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_selection = "logit", 
-+   control_selection = controlSel(est_method_sel = "gee", h = 1)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{6}
-\tightlist
-\item
-  Inverse probability weighting with calibration constraint (GEE) with
-  variable selection (SCAD)
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection =  ~ x1 + x2, 
-+   target = ~ y, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "pmm", 
-+   family_outcome = "gaussian", 
-+   control_inference = controlInf(vars_selection = TRUE)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{7}
-\tightlist
-\item
-  Doubly robust estimator
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection = ~ x1 + x2, 
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob, 
-+   method_outcome = "glm", 
-+   family_outcome = "gaussian"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{8}
-\tightlist
-\item
-  Doubly robust estimator with variable selection (SCAD) and bias
-  minimization
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection = ~ x1 + x2, 
-+   outcome = y ~ x1 + x2, 
-+   data = nonprob, 
-+   svydesign = prob,
-+   method_outcome = "glm", 
-+   family_outcome = "gaussian", 
-+   control_inference = controlInf(
-+     vars_selection = TRUE, 
-+     bias_correction = TRUE
-+   )
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\subsection{Only population totals or means are
-available}\label{only-population-totals-or-means-are-available}
-
-Example declarations
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Mass imputation based on regression imputation
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   outcome = y ~ x1 + x2,
-+   data = nonprob,
-+   pop_totals = c(`(Intercept)`= N,
-+                  x1 = tau_x1,
-+                  x2 = tau_x2),
-+   method_outcome = "glm",
-+   family_outcome = "gaussian"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\tightlist
-\item
-  Inverse probability weighting
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection =  ~ x1 + x2, 
-+   target = ~ y, 
-+   data = nonprob, 
-+   pop_totals = c(`(Intercept)` = N, 
-+                  x1 = tau_x1, 
-+                  x2 = tau_x2), 
-+   method_selection = "logit"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{2}
-\tightlist
-\item
-  Inverse probability weighting with calibration constraint
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection =  ~ x1 + x2, 
-+   target = ~ y, 
-+   data = nonprob, 
-+   pop_totals = c(`(Intercept)`= N, 
-+                  x1 = tau_x1, 
-+                  x2 = tau_x2), 
-+   method_selection = "logit", 
-+   control_selection = controlSel(est_method_sel = "gee", h = 1)
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{3}
-\tightlist
-\item
-  Doubly robust estimator
-\end{enumerate}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> nonprob(
-+   selection = ~ x1 + x2, 
-+   outcome = y ~ x1 + x2, 
-+   pop_totals = c(`(Intercept)` = N, 
-+                  x1 = tau_x1, 
-+                  x2 = tau_x2), 
-+   method_outcome = "glm", 
-+   family_outcome = "gaussian"
-+ )
-\end{CodeInput}
-\end{CodeChunk}
-
-\clearpage
-
-\section{Detailed derivations}\label{sec-derivations}
-
-\begin{table}[ht!]
-\small
-\caption{MLE Functions and Gradients for Different Link Functions}
-\centering
-\begin{tabular}{p{2cm} p{6.5cm} p{6.5cm}}
-\hline
-Link & MLE Function & Gradient \\ 
-\hline
-\code{logit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{\mathrm{A}}} \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \\
-& {} - \sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \log \left[ 1 + \exp \left( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} \right) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \boldsymbol{x}_{i} \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \pi(\boldsymbol{x}_{i}, \boldsymbol{\theta}) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\code{probit} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \log \left( \frac{ \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) } \right) \\
-& {} + \sum_{i \in S_{B}} d_{i}^{B} \log \left[ 1 - \Phi( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right]
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_A} \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) [ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) ] } \boldsymbol{x}_i \\
-& {} - \sum_{i \in S_B} d_i^B \frac{ \phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) }{ 1 - \Phi( \boldsymbol{x}_i^{\top} \boldsymbol{\theta} ) } \boldsymbol{x}_i
-\end{aligned}
-$ \\ \hline
-
-\code{cloglog} & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \left\{ \log \left[ 1 - \exp \left( -\exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \right) \right] \right\} \\
-& {} + \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} )
-\end{aligned}
-$ & 
-$\displaystyle
-\begin{aligned}
-& \sum_{i \in S_{A}} \frac{ \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i} }{ \pi( \boldsymbol{x}_{i}, \boldsymbol{\theta} ) } \\
-& {} - \sum_{i \in S_{B}} d_{i}^{B} \exp( \boldsymbol{x}_{i}^{\top} \boldsymbol{\theta} ) \boldsymbol{x}_{i}
-\end{aligned}
-$ \\ \hline
-
-\end{tabular}
-\end{table}
+\newpage
 
 \bibliography{references.bib}
 
