@@ -580,6 +580,12 @@ In the next sections we present a case study on integration of non-probability s
 
 ## Description of the data
 
+The package can be installed in the standard manner using:
+
+```{r, installation, eval=FALSE}
+install.packages("nonprobsvy")
+```
+
 Before we explain the case study let's first load packages.
 
 ```{r load-package, message=FALSE, warning=FALSE}
@@ -854,7 +860,36 @@ rbind("MI without var sel"=mi_est1$output,
       "MI with var sel"=mi_est1_sel$output)
 ```
 
-# Classes and S3methods {#sec-s3methods}
+\section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
+
+In the package we have created the main class \code{nonprobsvy} and a supplementary class \code{summary_nonprobsvy}. All \code{S3methods} implemented can be obtained by using \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function already mentioned in the case study allows to assess the balance by checking how the PS weights reproduce known or estimated population totals, or the \code{nobs} function returns the sample size of the probability and non-probability samples:
+
+```{r method-nobs}
+nobs(dr_est1)
+```
+
+Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} class. On purpose we did not implement many methods as the goal of the package is to provide point and interval estimates. If a user is interested in assessing the quality of the models or covariate balance should use existing \proglang{R} packages.
+
+\begin{table}[ht!]
+\centering
+\small
+\begin{tabular}{p{4cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{check_balance} & aaa; \\
+\code{confint} & aaa\\
+\code{nobs} & \\
+\code{pop_size} & \\
+\code{summary} & \\
+\code{logLik, AIC, BIC, deviance} & \\
+\code{residuals, hatvalues, cooks.distance, print, vcov}  & it works exactly like \code{glm} counterparts.\\
+\hline 
+\end{tabular}
+\caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
+\label{tab-s3methods}
+\end{table}
+
 
 <!--- TODO
 nobs

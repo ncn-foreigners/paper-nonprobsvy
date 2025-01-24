@@ -1087,6 +1087,14 @@ advanced options of the package.
 
 \subsection{Description of the data}\label{description-of-the-data}
 
+The package can be installed in the standard manner using:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> install.packages("nonprobsvy")
+\end{CodeInput}
+\end{CodeChunk}
+
 Before we explain the case study let's first load packages.
 
 \begin{CodeChunk}
@@ -1665,7 +1673,7 @@ R> rbind("IPW analytic variance"=ipw_est1$output,
 \begin{CodeOutput}
                             mean          SE
 IPW analytic variance  0.7083228 0.009436907
-IPW bootstrap variance 0.7083228 0.010304809
+IPW bootstrap variance 0.7083228 0.010065839
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1680,9 +1688,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7027637
-[2,]    0.7180065
-[3,]    0.7139336
+[1,]    0.7062196
+[2,]    0.7116044
+[3,]    0.7119409
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1749,11 +1757,56 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7034021 0.01119051
+MI with var sel    0.7031075 0.01120569
 \end{CodeOutput}
 \end{CodeChunk}
 
-\section{Classes and S3methods}\label{sec-s3methods}
+\section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
+
+In the package we have created the main class \code{nonprobsvy} and a
+supplementary class \code{summary_nonprobsvy}. All \code{S3methods}
+implemented can be obtained by using \code{methods(class="nonprobsvy")}.
+For instance, the \code{check_balance} function already mentioned in the
+case study allows to assess the balance by checking how the PS weights
+reproduce known or estimated population totals, or the \code{nobs}
+function returns the sample size of the probability and non-probability
+samples:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> nobs(dr_est1)
+\end{CodeInput}
+\begin{CodeOutput}
+   prob nonprob 
+   6523    9344 
+\end{CodeOutput}
+\end{CodeChunk}
+
+Table \ref{tab-s3methods} presents methods implemented for the
+\code{nonprobsy} class. On purpose we did not implement many methods as
+the goal of the package is to provide point and interval estimates. If a
+user is interested in assessing the quality of the models or covariate
+balance should use existing \proglang{R} packages.
+
+\begin{table}[ht!]
+\centering
+\small
+\begin{tabular}{p{4cm}p{11cm}}
+\hline 
+Function & Description \\
+\hline
+\code{check_balance} & aaa; \\
+\code{confint} & aaa\\
+\code{nobs} & \\
+\code{pop_size} & \\
+\code{summary} & \\
+\code{logLik, AIC, BIC, deviance} & \\
+\code{residuals, hatvalues, cooks.distance, print, vcov}  & it works exactly like \code{glm} counterparts.\\
+\hline 
+\end{tabular}
+\caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
+\label{tab-s3methods}
+\end{table}
 
 \section{Summary and future work}\label{summary-and-future-work}
 
