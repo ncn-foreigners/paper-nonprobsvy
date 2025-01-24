@@ -907,17 +907,17 @@ deviance
 
 # Summary and future work
 
-The \pkg{nonprobsvy} package provides a comprehensive R toolkit for addressing inference challenges with non-probability samples by integrating them with probability samples or known population totals/means. As non-probability data sources like administrative data, voluntary online panels, and social media data become increasingly available, statisticians need robust methods to produce reliable population estimates. The package implements \textit{state-of-the-art} approaches including mass imputation, inverse probability weighting (IPW), and doubly robust (DR) methods, each designed to correct selection bias by leveraging auxiliary data. By providing a unified framework and integration with the \pkg{survey} package, \pkg{nonprobsvy} makes complex statistical methods for non-probability samples more accessible, enabling researchers to produce robust estimates even when working with non-representative data. 
+The \pkg{nonprobsvy} package provides a comprehensive \proglang{R} software for addressing inference challenges with non-probability samples by integrating them with probability samples or known population totals/means. As non-probability data sources like administrative data, voluntary online panels, and social media data become increasingly available, statisticians need robust methods to produce reliable population estimates. The package implements \textit{state-of-the-art} approaches including mass imputation, inverse probability weighting, and doubly robust methods, each designed to correct selection bias by leveraging auxiliary data. By providing a unified framework and integration with the \pkg{survey} package, the \pkg{nonprobsvy} makes complex statistical methods for non-probability samples more accessible, enabling researchers to produce robust estimates even when working with non-representative data. 
 
-There are several avenues for future development of the \pkg{nonprobsvy} package. A key priority is implementing model-based calibration and additional methods for estimating propensity scores and weights. The package currently assumes no overlap between probability and non-probability samples, so accounting for potential overlap (e.g., in big data sources and registers) is another important extension. Additional planned developments include handling non-ignorable sample selection through sample selection models, maintaining consistency with calibration weights, and supporting multiple non-probability samples for data integration from various sources.
+There are several avenues for future development of the \pkg{nonprobsvy} package. A key priority is implementing model-based calibration and additional methods for estimating propensity scores and weights. The package currently assumes no overlap between probability and non-probability samples, so accounting for potential overlap (e.g., in big data sources and registers) is another important extension. Additional planned developments include handling non-ignorable sample selections mechanism, developing theory for maintaining consistency with calibration weights, and supporting multiple non-probability samples for data integration from various sources. Further methodological extensions under consideration include empirical likelihood approaches for doubly/multiply robust estimation, integration of machine learning methods like debiased/double machine learning from causal inference, handling measurement error in big data variables, and expanding the bootstrap approach beyond simple random sampling with replacement. 
 
-Further methodological extensions under consideration include empirical likelihood approaches for doubly/multiply robust estimation, integration of machine learning methods like debiased/double machine learning from causal inference, handling measurement error in big data variables, and expanding the bootstrap approach beyond simple random sampling with replacement. The package will also be extended to work with the `svyrep.design` class from the \pkg{survey} package and the \pkg{svrep} package. These developments will enhance \pkg{nonprobsvy}'s capabilities for handling complex survey data structures and modern estimation challenges.
+The package will also be extended to work with the `svyrep.design` class from the \pkg{survey} package and the \pkg{svrep} package. These developments will enhance \pkg{nonprobsvy}'s capabilities for handling complex survey data structures and modern estimation challenges.
 
 # Acknowledgements {#sec-acknowledgements}
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main developer and maintainer of the package. Parts of this paper are based on Łukasz's  Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki contributed to the package and implemented MI-PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and small contributions code and prepared the manuscript.
+Łukasz Chrostowski is the main developer and maintainer of the package. Parts of this paper are based on Łukasz's  Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki contributed to the package and implemented MI-PMM estimators. Maciej Beręsewicz was responsible for the initial idea and the design of the package, testing, reviewing and contributing to the source code and prepared the manuscript.
 
 We would like to thank ...
 
@@ -977,7 +977,7 @@ $\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 # Algorithms for the MI-NN and MI-PMM estimators {#sec-details}
 
 \begin{algorithm}[ht!]
-\caption{Mass imputation using the k-nearest-neighbour algorithm}
+\caption{Mass imputation using the $k$ nearest neighbour algorithm}
 \label{algo-2}
 \begin{algorithmic}[1]
 \State If $k=1$, then for each $i \in S_B$ match $\hat{\nu}(i)$ such that
@@ -986,59 +986,68 @@ $\displaystyle \hat{\nu}(i)=
 \State If $k>1$, then
 $$\hat{\nu}(i, z) = \argmin_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
 \{\hat{\nu}(i, t)\}} d\left(\bx_i, \bx_j\right)$$
-i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample.\;
+i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample $S_A$.\;
 \State For each $i \in S_B$, calculate the imputed value as
+
 $$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
 $$
 \end{algorithmic}
 \end{algorithm}
 
 \begin{algorithm}[ht!]
-\caption{$\hat{y}-\hat{y}$ Imputation:}
+\caption{Mass imputation using predictive mean matching variant: $\hat{y}-\hat{y}$ matching}
 \label{algo-3}
 \begin{algorithmic}[1]
-\State Estimate regression model $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
-\State Impute $$\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right), 
-\hat{y}_{j}=m\left(\boldsymbol{x}_{j},\hat{\boldsymbol{\beta}}\right)$$
-for $i\in S_{B}, j\in S_{A}$ and assign each 
-$i\in S_{B}$ to $\hat{\nu}(i)$, where
-$$\displaystyle \hat{\nu}(i)=
-\argmin_{j\in S_{A}}\lVert \hat{y}_{i}-\hat{y}_{j}\rVert$$ or
-$$\displaystyle \hat{\nu}(i)=
-\argmin_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right)$$ if $d$ is not induced by the norm.\;
+\State Estimate regression model $m(\bx, \bbeta)$ parameters.\;
+\State Predict 
+
+$$\hat{y}_{i}=m\left(\bx_{i},\hat{\bbeta}\right),  \hat{y}_{j}=m\left(\bx_{j},\hat{\bbeta}\right)$$
+
+for $i\in S_{B}, j\in S_{A}$ and assign each  $i\in S_{B}$ to $\hat{\nu}(i)$, where
+
+$$
+\displaystyle \hat{\nu}(i)=
+\argmin_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right).
+$$ 
 
 \State If $k>1$, then:
-$$\hat{\nu}(i, z) = \argmin_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
-\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)$$
-e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbor from a sample.\;
+$$
+\hat{\nu}(i, z) = \argmin_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)
+$$
+e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from a sample $S_A$.\;
 \State For $i \in S_B$, calculate imputation value as 
 $$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
 $$
 \end{algorithmic}
 \end{algorithm}
 
 \begin{algorithm}[ht!]
-\caption{$\hat{y}-y$ Imputation:}
+\caption{Mass imputation using predictive mean matching variant: $\hat{y}-y$ matching}
 \label{algo-4}
 \begin{algorithmic}[1]
-\State Estimate regression $\mathbb{E}[Y|\boldsymbol{X}=\boldsymbol{x}]=m(\boldsymbol{x}, \boldsymbol{\beta})$.\;
-\State Impute $\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right)$ 
-for $i \in S_{B}$ and assign each 
-$i \in S_{B}$ do $\hat{\nu}(i)$, where
-$\displaystyle \hat{\nu}(i)=
-\argmin_{j \in S_{A}}\lVert \hat{y}_{i}-y_{j}\rVert$ or
-$\displaystyle \hat{\nu}(i)=
-\argmin_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right)$ 
-if $d$ not induced by the norm.\;
+
+\State Estimate regression model $m(\bx, \bbeta)$ parameters.\;
+
+\State Predict 
+$$
+\hat{y}_{i}=m\left(\bx_{i},\hat{\bbeta}\right)
+$$  for $i \in S_{B}$ 
+and assign each  $i \in S_{B}$ do $\hat{\nu}(i)$, where
+$$
+\displaystyle \hat{\nu}(i)=
+\argmin_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right)
+$$.\;
 \State If $k>1$, then:
-$$\hat{\nu}(i, z) = \argmin_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
-\{\hat{\nu}(i, t)\}}
-d\left(\hat{y}_{i},y_{j}\right).$$
+$$
+\hat{\nu}(i, z) = \argmin_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
+\{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},y_{j}\right).
+$$
 \State For each $i \in S_B$ calculate imputation value as
 $$
-\hat{y}_i = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
+y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
 $$
 \end{algorithmic}
 \end{algorithm}
