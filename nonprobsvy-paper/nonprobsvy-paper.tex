@@ -203,7 +203,7 @@ packages that particularly focus on non-probability samples: in
 \pkg{nonprobsvy}, and in \proglang{Python} -- \pkg{balance}
 \citep{sarig2023balancepythonpackage}, \pkg{inps}
 \citep{castro2024inps}. In addition, we have included two \proglang{R}
-packages that implements specific methods: \pkg{rstanarm} (MRP;
+packages that implement specific methods: \pkg{rstanarm} (MRP;
 \citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models;
 \citet{GJRM}).
 
@@ -245,16 +245,16 @@ dedicated to the PS approach. It assumes that the the population totals
 are known and the authors have implemented the variance estimator of the
 weighted mean as a measure of uncertainty for the IPW estimator. The
 weights for the IPW estimator are constructed using the approach
-proposed by \citet{Schonlau2017}. The \pkg{inps} supports the use of
-unit-level data from a probability sample or the population, implements
-IPW, MI and DR estimators, and offers users the possibility of selecting
-variables but is still at a very early stage of development. It also
-implements kernel weighting and a simple bootstrap approach via the
-\pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor
-\pkg{ips} supports the use of the \pkg{samplics} module
-\citep{Diallo2021}. The \pkg{GJRM} package is the only package that
-offers functions to estimate sample selection models used widely for
-correcting selection bias in observational studies (including the
+proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the
+use of unit-level data from a probability sample or the population,
+implements IPW, MI and DR estimators, and offers users the possibility
+of selecting variables but is still at a very early stage of
+development. It also implements kernel weighting and a simple bootstrap
+approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither
+\pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics}
+module \citep{Diallo2021}. The \pkg{GJRM} package is the only package
+that offers functions to estimate sample selection models used widely
+for correcting selection bias in observational studies (including the
 not-missing-at-random mechanism). Unfortunately, to best of our
 knowledge, there is no theory on how this approach can be used for
 estimating population quantities or conducting statistical inference.
@@ -270,10 +270,10 @@ various IPW and DR estimators with the possibility of selecting link
 functions for logistic regression. Thirdly, it supports the functions
 included in the \pkg{survey} package to account for the design of the
 probability sample. Finally, we provide a user-friendly API that mimics
-\code{glm} or other functions known in \proglang{R}, together with a key
-function to specify the approach and estimators. As far as we know, the
-\pkg{nonprobsvy} is the only software (open-access or commercial) that
-offers such functionalities.
+\code{glm} or other functions known in \proglang{R}, together with the
+main function to specify the approach and estimators. As far as we know,
+the \pkg{nonprobsvy} is the only software (open-access or commercial)
+that offers such functionalities.
 
 The remaining part of the paper is structured as follows. Section
 \ref{sec-methods} is dedicated to the theory of statistical inference
@@ -379,18 +379,18 @@ E_{\xi}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymb
 
 where the mean function \(m(\cdot,\cdot)\) and the variance \(v(\cdot)\)
 have known forms and \(y_i\) are assumed to be independent of
-\(\boldsymbol{x}_i\). The model \eqref{eq-semipar-model} is assumed to
-hold for all units in the non-probability \(S_A\) sample. The parameters
-of the \eqref{eq-semipar-model} can be estimated using the quasi maximum
-likelihood estimation method, which includes linear and non-linear
-models, such as generalized linear models (GLM). Let
-\(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be the true values of the
-model parameters \(\boldsymbol{\beta}\) and \(\sigma^2\) under the
+\(\boldsymbol{x}_i\). The model in \eqref{eq-semipar-model} is assumed
+to hold for all units in the non-probability sample \(S_A\). The
+parameters of the model in \eqref{eq-semipar-model} can be estimated
+using the quasi maximum likelihood estimation method, which includes
+linear and non-linear models, such as generalized linear models (GLM).
+Let \(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be the true values of
+the model parameters \(\boldsymbol{\beta}\) and \(\sigma^2\) under the
 adopted model and \(\hat{\boldsymbol{\beta}}\) be the quasi maximum
 likelihood estimator of \(\boldsymbol{\beta}_0\). Let
 \(m_i=m(\boldsymbol{x}_i, \boldsymbol{\beta}_0)\) and
 \(\hat{m}_i=m(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}})\) be
-calculated for all units \(i=1,...,N\). Under this settings, as
+calculated for all units \(i=1,...,N\). Under this setting, as
 \citet{wu2022statistical} notes, there are two commonly used prediction
 estimators:
 
@@ -415,7 +415,7 @@ and
 is the vector of the simple means of \(\boldsymbol{x}\) from the
 non-probability \(S_A\) sample. If the linear model contains an
 intercept and \(\hat{\boldsymbol{\beta}}\) is the ordinary least square
-estimator,then \(\hat{\mu}_{y,PR1}=\hat{\mu}_{y,PR2}\).
+estimator, then \(\hat{\mu}_{y,PR1}=\hat{\mu}_{y,PR2}\).
 
 This form is appealing as it only requires the non-probability sample
 \(S_A\) and reference population means (or totals and population size
@@ -574,7 +574,7 @@ the weights \citep[cf.][section 3]{elliott_inference_2017} In a recent
 article by \citet{chen2020doubly} dedicated to the properties of the
 estimators in \eqref{eq-ipw-estimators}, the authors proved their
 consistency and derived their closed form versions.
-\citet[section 4.2]{wu2022statistical} argue that the
+\citet[section 4.2]{wu2022statistical} argues that the
 \(\hat{\mu}_{y,IPW2}\) estimator performs better than
 \(\hat{\mu}_{y,IPW1}\) even if the population size is known.
 
@@ -595,8 +595,8 @@ by \eqref{eq-ipw-loglik}.
 In practice, a function of this form cannot be used because not all
 units from the population are observed. A more realistic approach
 consists in using a reference probability sample \(S_B\), which means
-that the second component of the \eqref{eq-ipw-loglik} is replaced,
-yielding a pseudo log-likelihood function given by
+that the second component of the equation in \eqref{eq-ipw-loglik} is
+replaced, yielding a pseudo log-likelihood function given by
 \eqref{eq-ipw-pseudo-loglik}
 
 \begin{equation}
@@ -733,7 +733,7 @@ with variance estimation, which is discussed at the end of this section.
 
 \citet{chen2020doubly} suggested constructing the estimators in
 \eqref{eq-dr-known-n} or \eqref{eq-dr-estimated-n} based on the two
-models estimated separately, which is an attractive option, since once
+models estimated separately, which is an attractive option, since one
 can specify a different number of variables for the propensity and
 outcome model. An alternative approach, proposed by
 \citet{yang_doubly_2020} and similar to the one described by
@@ -811,7 +811,7 @@ regression model \(\xi\). A doubly robust variance estimator for
 \(\hat{\mu}_{y,DR2}\) given by \eqref{eq-dr-estimated-n} is not yet
 available in the literature. In the package, to offer the analytical
 variance estimator of \(\hat{\mu}_{y,DR2}\) we simply replace \(N\) with
-estimated \(\hat{N}_A\) and \(\hat{N}_B\) and we urge caution when using
+estimated \(\hat{N}_A\) and \(\hat{N}_B\) but we urge caution when using
 this approach.
 
 Alternatively, one can use the bootstrap approach.
@@ -993,7 +993,7 @@ approaches (using parameters like \code{predictive_match},
 the \pkg{RANN} package \citep{rann-pkg} with the kd-tree algorithm and
 the Euclidean distance as default. We currently do not support other
 distances (e.g.~Gower). Table \ref{tab-control-out-examples} presents
-example usage of the \code{control_sel} function for three types of MI
+example usage of the \code{control_out} function for three types of MI
 estimators.
 
 \begin{table}[ht!]
@@ -1105,7 +1105,8 @@ R> install.packages("nonprobsvy")
 \end{CodeInput}
 \end{CodeChunk}
 
-Before we explain the case study let's first load packages.
+Before we explain the case study let us first load the necessary
+packages.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1114,17 +1115,17 @@ R> library(ggplot2) ## for visualisation
 \end{CodeInput}
 \end{CodeChunk}
 
-The goal of the case study to integrate administrative (\code{admin})
-and survey (\code{jvs}) data about job vacancies in Poland. The first
-source is the Job Vacancy Survey (JVS) with a sample of 6,523 units. The
-survey is based on a probability sample drawn according to a stratified
-sampling design. The details regarding the survey can be found in
-\cite{jvs2022}. The dataset contains information about industry code
-NACE (14 levels, \code{nace} column), \code{region} (16 levels), sector
-(2 levels, \code{private} column), size of the entity (3 levels: Small
-to 9, Medium 10-49 and Large 50+) and the final weight (i.e.~design
-weight corrected for non-contact and non-response). We treat it here as
-the \(d\) weight.
+The goal of the case study was to integrate survey (\code{jvs}) and
+administrative (\code{admin}) data about job vacancies in Poland. The
+first source, the Job Vacancy Survey (JVS), contains 6,523 units. The
+JVS provides a probability sample drawn according to a stratified
+sampling design. More details can be found in \cite{jvs2022}. The
+dataset contains information about the NACE code (14 levels, the
+\code{nace} column), \code{region} (16 levels), sector (2 levels, the
+\code{private} column), company size (3 levels: Small up to 9, Medium
+10-49 and Large 50+) and the final weight (i.e.~the design weight
+corrected for non-contact and non-response), which is treated as the
+\(d\) weight.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1142,13 +1143,14 @@ R> head(jvs)
 \end{CodeOutput}
 \end{CodeChunk}
 
-As the package leverage the \pkg{survey} package functionalities we need
-to define the \code{svydesign2} object via the \code{svydesign} function
-as presented below. The dataset does not contain the true stratification
-variable so we use a simplified version by specifying
-\texttt{\textasciitilde{}\ size\ +\ nace\ +\ region} and we do not know
-have information on the non-response and its correction so we simply
-assume that the \texttt{weight} sums up to the population size.
+Since the \pkg{nonprobsvy} package relies on the functionalities of the
+\pkg{survey} packag, we need to define the \code{svydesign2} object via
+the \code{svydesign} function, as shown below. The dataset does not
+contain the true stratification variable, so we use a simplified version
+by specifying \texttt{\textasciitilde{}\ size\ +\ nace\ +\ region};
+similarly, since we do not have information regarding non-response and
+its correction, we simply assume that the \texttt{weight} sums up to the
+population size.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1159,15 +1161,16 @@ R> jvs_svy <- svydesign(ids = ~ 1,
 \end{CodeInput}
 \end{CodeChunk}
 
-The second source is the Central Job Offers Database (CBOP), which is a
-register of all vacancies submitted to Public Employment Offices (see
-\url{https://oferty.praca.gov.pl}). We treat this as the
-\textit{non-probability sample} because is voluntary administrative data
-and inclusion mechanism is unknown. This dataset was prepared in such
-way that the records out of scope (either by the definition of vacancy
-or population of entities) were excluded. The dataset contains the same
-variables as JVS with one additional \code{single\_shift} which is our
-target variable defined as:
+Our second source (\code{admin}), the Central Job Offers Database
+(CJOD), is a register containing all vacancies submitted to Public
+Employment Offices (see \url{https://oferty.praca.gov.pl}). We treat
+this register as a \textit{non-probability sample} since it contains
+administrative data provided on a voluntary basis, so the inclusion
+mechanism is unknown. This dataset was prepared in such a way that
+records deemed to be out of scope (either in terms of the definition of
+vacancy or the population of entities) were excluded. In addition to the
+same variables found in the JVS, the dataset contains one called
+\code{single\_shift}, which is our target variable, defined as:
 \texttt{whether a company seeks at least one employee for a single-shift job}.
 The goal of this case study is to estimate
 \textit{the share of companies that seek employees for a single-shift job}
@@ -1189,29 +1192,30 @@ R> head(admin)
 \end{CodeOutput}
 \end{CodeChunk}
 
-Please note that, this paper does not aim to provide full tutorial on
-using non-probability samples for statistical inference. Thus, we
-skipped the part of aligning variables to meet the same definitions,
-assessing how strong is the relation between auxiliary variables, target
-variable and selection mechanism and distribution mis-matches between
-both samples. In the examples below we assume that there is no overlap
-between two sources and the nai''ve, reference estimate, given by a
-simple mean of the \texttt{single\_shift} column of \texttt{admin}
-equals to 66.1\%.
+One should keep in mind that this paper does not aim to provide a
+complete tutorial on how to use non-probability samples for statistical
+inference. We therefore do not include the stage of aligning variables
+to meet the same definitions, assessing the strength of the relation
+between auxiliary variables and the target variable, the selection
+mechanism and the distribution mis-matches between both samples. In the
+examples below we assume that there is no overlap between both sources
+and the naive, reference estimate, given by the mean of the
+\texttt{single\_shift} column of \texttt{admin}, which is equal to
+66.1\%.
 
 \subsection{Estimation}\label{estimation}
 
 \subsubsection{Propensity score
 approach}\label{propensity-score-approach}
 
-First, we start with the IPW approach with to possible estimation
-methods MLE (standard) and GEE (calibrated to the estimated survey
-totals). We start by calling the \code{nonprob} function where we define
-the \code{selection} argument responsible for the formulae for the
-inclusion variables, the \code{target} argument which specifies the
-variable of interest i.e.~\code{single_shift}. The rest refer to the
-\code{svydesign} object, dataset and specification of the link function
-(\code{method_selection}).
+First, we start with the IPW approach, which offers the choice between
+two estimation methods: MLE (standard) and GEE (calibrated to the
+estimated survey totals). We start by calling the \code{nonprob}
+function, where we define the \code{selection} argument indicating which
+variables are to be included, the \code{target} argument, which
+specifies the variable of interest, i.e.~\code{single_shift}. The
+remaining arguments specify the \code{svydesign} object, the dataset and
+the link function (\code{method_selection}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1226,9 +1230,10 @@ R> ipw_est1 <- nonprob(
 \end{CodeChunk}
 
 In order to get the basic information about the estimated target
-quantity we can use the \code{print} method the object. It provides the
-call and the estimated mean, standard error (\code{SE}) and 95\%
-confidence interval (\code{lower_bound} and \code{upper_bound}).
+quantity we can use the \code{print} method to display the object. It
+provides the call and the estimated mean, the standard error (\code{SE})
+and the 95\% confidence interval (\code{lower_bound} and
+\code{upper_bound}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1247,8 +1252,8 @@ single_shift 0.7083228 0.009436907   0.6898268   0.7268188
 \end{CodeOutput}
 \end{CodeChunk}
 
-If we are interested in a detailed information about the model we can
-use the \code{summary} method.
+If we want to see detailed information about the model, we can use the
+\code{summary} method.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1331,21 +1336,20 @@ Log-Likelihood: -21915.41 on 15835 Degrees of freedom
 \end{CodeOutput}
 \end{CodeChunk}
 
-This displays information on the datasets used for estimation
-(probability and non-probability sample). The estimated regression
-coefficients are also shown, in this case for the logit model for
-propensity score model (section \code{Regression coefficients}). In
-addition, for diagnostic purposes, we have access to the distribution of
+This function displays information about the datasets used for
+estimation (the probability and non-probability samples). The estimated
+regression coefficients are also shown, in this case for the logit model
+for the propensity score (section \code{Regression coefficients}). In
+addition, for diagnostic purposes, we can inspect the distribution of
 the weights calculated from the inclusion probabilities (section
 \code{Weights}), the distribution of the residuals from the model
 (section \code{Residuals}), as well as the values of the AIC, BIC
 statistics in the case of models based on MLE.
 
-If we are interested in the calibrated IPW, one needs to define a
-\texttt{control\_sel} function in the \texttt{control\_selection}
-argument with the \texttt{est\_method\_sel} argument equal to
-\texttt{gee} (the default is \texttt{mle}) and set the value of
-\texttt{h}.
+If we want to use the calibrated IPW approach, it is necessary to define
+the \texttt{control\_sel} function in the \texttt{control\_selection}
+argument by setting the \texttt{est\_method\_sel} argument equal to
+\texttt{gee} (the default is \texttt{mle}) and the value of \texttt{h}.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1381,8 +1385,8 @@ single_shift 0.7041796 0.01169878   0.6812504   0.7271088
 \end{CodeOutput}
 \end{CodeChunk}
 
-The calibrated IPW significantly improves the balance as can be accessed
-by the \texttt{check\_balance} function:
+The calibrated IPW significantly improves the balance, which can be
+accessed via the \texttt{check\_balance} function:
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1397,25 +1401,26 @@ sizeS  1624.1       0
 \end{CodeOutput}
 \end{CodeChunk}
 
-Notice that, neither in the package nor in this paper we focus a
-detailed description of the post-hoc results, such as covariate balance.
-This can be done via existing CRAN packages, for instance using the
+Notice that neither in the package nor in this paper do we provide a
+detailed description of the post-hoc results, such as the covariate
+balance. This can be done using existing CRAN packages, e.g.~through the
 \code{bal.tab} function from the \pkg{cobalt} package \citep{cobalt}.
 
 \subsubsection{Prediction-based
 approach}\label{prediction-based-approach}
 
-If a user is interested in a prediction-based approach, in particular MI
-estimators, then should specify the argument \texttt{outcome} as a
-formulae (similarly as in the \texttt{glm} function). We allow single
-outcome (specified as
+If the user is interested in the prediction-based approach, in
+particular involving MI estimators, then, they should specify the
+argument \texttt{outcome} as a formula (as in the case of the
+\texttt{glm} function). We allow a single outcome (specified as
 \texttt{y\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}) and multiple
 outcomes (as
 \texttt{y1\ +\ y2\ +\ y2\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}).
-Note that if the \texttt{outcome} argument is specified then there is no
-need to specify \texttt{target} argument. By default GLM type of the MI
-estimator is assumed (i.e.~\texttt{method\_outcome="glm"}). In the code
-below we present possible way to declare this type of the MI estimator.
+Note that if the \texttt{outcome} argument is specified, then there is
+no need to specify the \texttt{target} argument. By default, the GLM
+type of an MI estimator is used (i.e.~\texttt{method\_outcome="glm"}).
+In the code below we show how this type of an MI estimator can be
+declared.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1443,14 +1448,14 @@ single_shift 0.7032081 0.01120231    0.681252   0.7251642
 \end{CodeOutput}
 \end{CodeChunk}
 
-If a user is interested in the nearest neighbours MI estimator one can
-specify \texttt{method\_outcome\ =\ "nn"} for the nearest neighbours
-search using all variables specified in the \texttt{outcome} argument,
-or \texttt{method\_outcome\ =\ "pmm"} if is interested in predictive
-mean matching. In both cases we are using \(k=5\) nearest neighbours
-(i.e.~\texttt{control\_out(k=5)}). For the NN MI estimator there is no
-need to specify the \texttt{family\_outcome} argument as no model is
-estimated underneath.
+In order to employ an MI estimator based on nearest neighbour matching,
+one can specify \texttt{method\_outcome\ =\ "nn"} for the nearest
+neighbours search using all variables specified in the \texttt{outcome}
+argument, or \texttt{method\_outcome\ =\ "pmm"} to use predictive mean
+matching. In both cases, we employ \(k=5\) nearest neighbours
+(i.e.~\texttt{control\_out(k=5)}). In the case of the MI-NN estimator
+there is no need to specify the \texttt{family\_outcome} argument as no
+model is estimated underneath.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1473,9 +1478,9 @@ R> mi_est3 <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-Results of both estimators seems to be similar, but it should be noted
-that the NN MI estimator suffers from the curse of dimensionality so one
-should trust more the PMM MI estimator.
+Results of both estimators are more or less similar, but it should be
+noted that the NN version suffers from the curse of dimensionality, so
+the PMM version seems to be more reliable.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1494,20 +1499,20 @@ single_shift 0.7450896 0.01527651
 \end{CodeOutput}
 \end{CodeChunk}
 
-As discussed in Section \ref{sec-methods} both IPW and MI estimators are
+As discussed in Section \ref{sec-methods}, IPW and MI estimators are
 asymptotically unbiased only when the model and auxiliary variables are
-correctly specified. To overcome this problem we focus now on the doubly
-robust estimators.
+correctly specified. To overcome this problem, the user can turn to
+doubly robust estimators.
 
 \subsubsection{The doubly robust
 approach}\label{the-doubly-robust-approach}
 
-To indicate that the doubly robust estimation should used user needs to
-specify both the \texttt{selection} and \texttt{outcome} arguments.
-These formulas can be specified with the same or varying number of
-aixuliary variables. We also allow, simiarly as in the MI approach,
-multiple outcomes. In the following example code we specified the
-non-calibrated IPW and the GLM MI estimator.
+In order to choose doubly robust estimation the user needs to specify
+both the \texttt{selection} and \texttt{outcome} arguments. These
+formulas can be specified with the same or varying number of auxiliary
+variables. As in the MI approach, we also allow multiple outcomes. In
+the following example code we have specified the non-calibrated IPW and
+the MI-GLM estimator.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1537,14 +1542,15 @@ single_shift 0.7034644 0.01131974   0.6812781   0.7256507
 \end{CodeOutput}
 \end{CodeChunk}
 
-Detailed results can be obtained by using \texttt{summary} function
-which prints both set of coefficients for the outcome and selection
-models. We omit this output due to limited space of the paper. Finally,
-we can use bias minimisation approach as proposed by
-\citet{yang_doubly_2020} by specifying
+Detailed results can be displayed by using the \texttt{summary}
+function, which prints both sets of coefficients for the outcome and
+selection models. We omit this output due to the limited space. Finally,
+we can use the bias minimisation approach, as proposed by
+\citet{yang_doubly_2020}, by specifying the
 \texttt{control\_inference\ =\ control\_inf(bias\_correction\ =\ TRUE)}
 argument. This part is implemented in the \pkg{Rcpp} \citep{Rcpp} and
-\pkg{RcppArmadillo} \citep{RcppArmadillo} packages for performance.
+\pkg{RcppArmadillo} \citep{RcppArmadillo} packages for improved
+performance.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1577,21 +1583,21 @@ single_shift 0.7043248 0.01128182   0.6822129   0.7264368
 
 \subsection{Comparison of estimates}\label{comparison-of-estimates}
 
-Finally, as there is no single method for non-probability samples we
-suggest to compare results in a single table or a plot. In the Figure
+Finally, as there is no single method for non-probability samples, we
+suggest comparing results in a single table or a plot. Figure
 \ref{fig:comparison-of-est} presents point estimates along with 95\%
 confidence intervals. The various estimators show interesting patterns
-compared to the naive estimate (red dashed line). MI estimators
-demonstrate notably different behaviours: while PMM produces the highest
-point estimate with the widest confidence interval, NN yields the lowest
-estimate, close to the naive value. The other estimators - MI (GLM), IPW
-(both MLE and GEE), and DR (with and without bias minimization) --
-cluster together with similar point estimates and confidence interval
-widths, suggesting some consensus in their bias correction. These
-methods all indicate a population parameter higher than the naive
-estimate, but their relative consistency, except for the extreme
-estimates from MI (PMM) and MI (NN), provides some confidence in their
-bias correction capabilities.
+compared to the naive estimate (red dashed line). The MI estimators
+demonstrate notably different behaviours: while MI-PMM produces the
+highest point estimate with the widest confidence interval, MI-NN yields
+the lowest estimate, close to the naive value. Results for the other
+estimators -- MI-GLM, IPW (both MLE and GEE), and DR (with and without
+bias minimization) -- are clustered together, with similar point
+estimates and confidence interval widths, suggesting some consensus in
+their bias correction. All these methods indicate a population parameter
+higher than the naive estimate, but their relative consistency, except
+for the extreme estimates given by MI-PMM and MI-NN, provides a certain
+degree of confidence in their bias correction capabilities.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1628,33 +1634,33 @@ R> ggplot(data = df_s,
 
 \subsection{Advanced usage}\label{advanced-usage}
 
-\subsubsection{Bootstrap Approach for Variance
-Estimation}\label{bootstrap-approach-for-variance-estimation}
+\subsubsection{Bootstrap approach for variance
+estimation}\label{bootstrap-approach-for-variance-estimation}
 
-In the package we allow user to estimate variance of the mean using
-analytical (default) or bootstrap approach as described in Section
-\ref{sec-prediction}. In case of analytical variance estimators we use
-the estimators proposed in the papers described in the Section
-\ref{sec-methods}. Users may disable standard error calculation using
+In the package we allow the user to estimate the variance of the mean
+analytically (by default) or using the bootstrap approach, as described
+in Section \ref{sec-prediction}. We use analytical variance estimators
+proposed in the papers referenced in Section \ref{sec-methods}. The
+calculation of the standard error can be disabled using
 \code{nonprob(se=FALSE)}. The bootstrap approach implemented in the
-package refers to two samples:
+package refers to:
 
 \begin{itemize}
-\item non-probability -- we currently support only simple random sampling with replacement,
-\item probability -- we support all the approaches implemented in the \code{as.svrepdesign} and we refer the reader to the help file of this function. 
+\item the non-probability sample -- currently only simple random sampling with replacement is available,
+\item the probability sample -- all the approaches implemented in the \code{as.svrepdesign} function of the \pkg{survey} package are supported and we refer the reader to the relevant help file. 
 \end{itemize}
 
-To specify the bootstrap approach one should use \code{control_inf()}
-function with \texttt{var\_method\ =\ "bootstrap"}. Controlling the
-bootstrap method for probability sample is done by \texttt{rep\_type}
-argument which passes the method to the \texttt{as.svrepdesign}
+The bootstrap approach is specified via the \code{control_inf()}
+function with \texttt{var\_method\ =\ "bootstrap"}. The bootstrap method
+for the probability sample is controlled via the \texttt{rep\_type}
+argument, which passes the method to the \texttt{as.svrepdesign}
 function. The number of iterations is set in the \texttt{num\_boot}
-argument (default 100). If the samples are large or the estimation
+argument (100 by default). If the samples are large or the estimation
 method is complicated (e.g.~involves variable selection) one can set
-\texttt{verbose=TRUE} to track the progress. By default results of
-bootstrap are stored in the \texttt{boot\_sample} element of the
-resulting list (to disable this \texttt{keep\_boot} should be set to
-\texttt{FALSE}). The following code provides an example of using the IPW
+\texttt{verbose=TRUE} to track progress. By default bootstrap results
+are stored in the \texttt{boot\_sample} element of the resulting list
+(to disable this option, \texttt{keep\_boot} should be set to
+\texttt{FALSE}). The following code is an example of applying the IPW
 approach with the bootstrap approach specified by the argument
 \texttt{control\_inference} of the \texttt{nonprob} function.
 
@@ -1672,8 +1678,8 @@ R> ipw_est1_boot <- nonprob(
 \end{CodeInput}
 \end{CodeChunk}
 
-Next, we compare the estimated standard error with the analytical one
-below.
+Next, we compare the estimated standard error of variance estimation for
+the analytical and the bootstrap approach.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1683,14 +1689,14 @@ R> rbind("IPW analytic variance"=ipw_est1$output,
 \begin{CodeOutput}
                             mean          SE
 IPW analytic variance  0.7083228 0.009436907
-IPW bootstrap variance 0.7083228 0.011179381
+IPW bootstrap variance 0.7083228 0.011785604
 \end{CodeOutput}
 \end{CodeChunk}
 
-To assess the samples one can access the \texttt{boot\_sample} element
-of the output list of the \texttt{nonprob} function. Note that this is
-returned as \texttt{matrix} because we allow multiple \texttt{target}
-variables.
+The boot samples can be accessed via the \texttt{boot\_sample} element
+of the output list of the \texttt{nonprob} function. Note that the
+output is returned as a \texttt{matrix} because we allow multiple
+\texttt{target} variables.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1698,40 +1704,40 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7203402
-[2,]    0.7172369
-[3,]    0.7180005
+[1,]    0.7244605
+[2,]    0.7119338
+[3,]    0.7088635
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsubsection{Variable Selection
-Algorithms}\label{variable-selection-algorithms}
+\subsubsection{Variable selection
+algorithms}\label{variable-selection-algorithms}
 
-In this section we briefly present how to use variable selection
-algorithms. In order to specify that a variable selection algorithm
+In this section we briefly show how to use variable selection
+algorithms. In order to indicate that a variable selection algorithm
 should be used one should specify the
 \texttt{control\_inference\ =\ control\_inf(vars\_selection\ =\ TRUE)}
-argument. Then, the user should either leave the default or specify the
-parameters for the outcome via the \code{control_out} function or
-selection outcome (\code{control_sel}). Both function have the same
+argument. Then, the user should either leave the default setting or
+specify the outcome parameters via the \code{control_out} function or
+the \code{control_sel} function. Both functions have the same
 parameters:
 
 \begin{itemize}
 \item \code{penalty} -- The penalization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")})
-\item \code{nlambda} -- The number of $\lambda$ values. Default is 50.
-\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}. Default is .001.
+\item \code{nlambda} -- The number of $\lambda$ values; by default set to 50.
+\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; .001 by default.
 \item \code{lambda} -- A user specified vector of lambdas (only for the \code{control_sel} function).
-\item \code{nfolds} -- The number of folds for cross validation. Default is 10.
-\item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for selection model. Default is 3.7 and 3 respectively.
+\item \code{nfolds} -- The number of folds for cross validation; by default set to 10.
+\item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for the selection model; by default set to 3.7 and 3, respectively.
 \end{itemize}
 
-For the MI approach we leverage the \pkg{ncvreg} package \citep{ncvreg}
-as it is solely package that uses the SCAD method in \proglang{R}. For
-the IPW and DR approaches we have developed our own codes in
-\proglang{C++} via the \pkg{Rcpp} and \pkg{RcppArmadillo} packages. In
-the code below we apply variable selection for the MI GLM estimator
-using only 5 folds, 25 possible values of \(\lambda\) parameters and
-apply the LASSO penalty.
+In the case of the MI approach we rely on the \pkg{ncvreg} package
+\citep{ncvreg}, which is the only \proglang{R} package that employs the
+SCAD method. For the IPW and DR approaches, we have developed our own
+codes in \proglang{C++} via the \pkg{Rcpp} and \pkg{RcppArmadillo}
+packages. In the code below we apply variable selection for the MI-GLM
+estimator using only 5 folds, 25 possible values of \(\lambda\)
+parameters and the LASSO penalty.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1755,9 +1761,9 @@ Starting CV fold #5
 \end{CodeOutput}
 \end{CodeChunk}
 
-In this case study the MI GLM estimator with variable selection yields
+In this case study, the MI-GLM estimator with variable selection yields
 almost the same results as the approach without it. Point estimates and
-standard errors differ at the fourth and third digit respectively.
+standard errors differ at the fourth and third digit, respectively.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1773,14 +1779,14 @@ MI with var sel    0.7034021 0.01119051
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
-In the package we have created the main class \code{nonprobsvy} and a
-supplementary class \code{summary_nonprobsvy}. All \code{S3methods}
-implemented can be obtained by using \code{methods(class="nonprobsvy")}.
-For instance, the \code{check_balance} function already mentioned in the
-case study allows to assess the balance by checking how the PS weights
-reproduce known or estimated population totals, or the \code{nobs}
-function returns the sample size of the probability and non-probability
-samples:
+The package contains the main class \code{nonprobsvy} and a
+supplementary class \code{summary_nonprobsvy}. All available
+\code{S3methods} can be obtained by calling
+\code{methods(class="nonprobsvy")}. For instance, the
+\code{check_balance} function, already mentioned in the case study, is
+used to view the balance by checking how the PS weights reproduce known
+or estimated population totals; the \code{nobs} function returns the
+sample size of the probability and non-probability samples:
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1821,41 +1827,41 @@ Function & Description \\
 \section{Summary and future work}\label{summary-and-future-work}
 
 The \pkg{nonprobsvy} package provides a comprehensive \proglang{R}
-software for addressing inference challenges with non-probability
-samples by integrating them with probability samples or known population
-totals/means. As non-probability data sources like administrative data,
-voluntary online panels, and social media data become increasingly
-available, statisticians need robust methods to produce reliable
-population estimates. The package implements \textit{state-of-the-art}
-approaches including mass imputation, inverse probability weighting, and
-doubly robust methods, each designed to correct selection bias by
-leveraging auxiliary data. By providing a unified framework and
-integration with the \pkg{survey} package, the \pkg{nonprobsvy} makes
-complex statistical methods for non-probability samples more accessible,
-enabling researchers to produce robust estimates even when working with
-non-representative data.
+software solution that addresses inference challenges connected with
+non-probability samples by integrating them with probability samples or
+known population totals/means. As non-probability data sources like
+administrative registers, voluntary online panels, and social media data
+become increasingly available, statisticians need robust methods to
+produce reliable population estimates. The package implements
+\textit{state-of-the-art} approaches including mass imputation, inverse
+probability weighting, and doubly robust methods, each designed to
+correct selection bias by leveraging auxiliary data. By providing a
+unified framework and its integration with the \pkg{survey} package, the
+\pkg{nonprobsvy} makes complex statistical methods for non-probability
+samples more accessible, enabling researchers to produce robust
+estimates even when working with non-representative data.
 
 There are several avenues for future development of the \pkg{nonprobsvy}
-package. A key priority is implementing model-based calibration and
+package. One key priority is to implement model-based calibration and
 additional methods for estimating propensity scores and weights. The
 package currently assumes no overlap between probability and
 non-probability samples, so accounting for potential overlap (e.g., in
 big data sources and registers) is another important extension.
 Additional planned developments include handling non-ignorable sample
-selections mechanism, developing theory for maintaining consistency with
-calibration weights, and supporting multiple non-probability samples for
-data integration from various sources. Further methodological extensions
-under consideration include empirical likelihood approaches for
-doubly/multiply robust estimation, integration of machine learning
-methods like debiased/double machine learning from causal inference,
-handling measurement error in big data variables, and expanding the
-bootstrap approach beyond simple random sampling with replacement.
+selection mechanisms, developing a theory for maintaining consistency
+with calibration weights, and supporting multiple non-probability
+samples from various sources for the purpose of data integration.
+Further methodological extensions under consideration include empirical
+likelihood approaches for doubly/multiply robust estimation, integration
+of machine learning methods like debiased/double machine learning from
+causal inference, handling measurement errors in big data variables, and
+expanding the bootstrap approach beyond simple random sampling with
+replacement.
 
-The package will also be extended to work with the
-\texttt{svyrep.design} class from the \pkg{survey} package and the
-\pkg{svrep} package. These developments will enhance \pkg{nonprobsvy}'s
-capabilities for handling complex survey data structures and modern
-estimation challenges.
+The package will also be extended to handle the \texttt{svyrep.design}
+class from the \pkg{survey} package and the \pkg{svrep} package. These
+developments will enhance its capabilities for handling complex survey
+data structures and modern estimation challenges.
 
 \section{Acknowledgements}\label{sec-acknowledgements}
 
@@ -1865,10 +1871,10 @@ Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 Łukasz Chrostowski is the main developer and maintainer of the package.
 Parts of this paper are based on Łukasz's Master's thesis (available at
 \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr
-Chlebicki contributed to the package and implemented MI-PMM estimators.
-Maciej Beręsewicz was responsible for the initial idea and the design of
-the package, testing, reviewing and contributing to the source code and
-prepared the manuscript.
+Chlebicki has contributed to the package and has implemented MI-PMM
+estimators. Maciej Beręsewicz came up with the initial idea and was
+responsible for the design of the package as well as testing, reviewing
+and contributing to the source code and prepared the manuscript.
 
 We would like to thank \ldots{}
 
