@@ -101,7 +101,8 @@ ul. Wojska Polskiego 27/29\\
 
 
 
-\section{Introduction}\label{sec-introduction}
+\hypertarget{sec-introduction}{%
+\section{Introduction}\label{sec-introduction}}
 
 In official statistics, information about the target population and its
 characteristics is mainly collected through probability surveys,
@@ -134,7 +135,7 @@ estimates based on non-probability samples are biased and, in most
 cases, are characterised by small variance owing to their size, which is
 known as the \textit{big data paradox}, i.e.~the larger the sample, the
 larger the bias. Certainly, the costs and timeliness of these surveys
-are significantly smaller than those of non-probability samples.
+are significantly smaller than those of probability samples.
 
 \begin{table}[ht!]
     \centering
@@ -192,7 +193,8 @@ single method that can be used for non-probability samples. Based on the
 methods available in the literature several statistical software
 solutions have been developed, which are presented in the next section.
 
-\subsection{Software for non-probability samples}\label{sec-software}
+\hypertarget{sec-software}{%
+\subsection{Software for non-probability samples}\label{sec-software}}
 
 Table \ref{tab-comparisons} presents a comparison of selected packages
 in terms of the availability of various inference methods. We focus on
@@ -266,14 +268,14 @@ above. Firstly, it implements state-of-the-art methods recently proposed
 in the literature, along with valid statistical inference procedures.
 Secondly, it offers other approaches, such as calibrated IPW (where PS
 weights match the population or estimated totals), NN and PMM matching,
-various IPW and DR estimators with the possibility of selecting link
-functions for logistic regression. Thirdly, it supports the functions
-included in the \pkg{survey} package to account for the design of the
-probability sample. Finally, we provide a user-friendly API that mimics
-\code{glm} or other functions known in \proglang{R}, together with the
-main function to specify the approach and estimators. As far as we know,
-the \pkg{nonprobsvy} is the only software (open-access or commercial)
-that offers such functionalities.
+various IPW and DR estimators using generalized linear models with
+different link functions for probability estimation. Thirdly, it
+supports the functions included in the \pkg{survey} package to account
+for the design of the probability sample. Finally, we provide a
+user-friendly API that mimics \code{glm} or other functions known in
+\proglang{R}, together with the main function to specify the approach
+and estimators. As far as we know, the \pkg{nonprobsvy} is the only
+software (open-access or commercial) that offers such functionalities.
 
 The remaining part of the paper is structured as follows. Section
 \ref{sec-methods} is dedicated to the theory of statistical inference
@@ -293,9 +295,11 @@ Section \ref{sec-details}, which presents algorithms for selected MI
 estimators. The Replication Materials include additional codes for
 specific estimators described in the paper.
 
-\section{Methods for non-probability samples}\label{sec-methods}
+\hypertarget{sec-methods}{%
+\section{Methods for non-probability samples}\label{sec-methods}}
 
-\subsection{Basic setup}\label{basic-setup}
+\hypertarget{basic-setup}{%
+\subsection{Basic setup}\label{basic-setup}}
 
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
 labelled units. Each unit \(i\) has an associated vector of auxiliary
@@ -365,9 +369,11 @@ additional developments in the theory about the consistency of the MI,
 IPW and DR estimators. In the next sections we briefly present the
 methods implemented in the package.
 
-\subsection{Prediction-based approach}\label{sec-prediction}
+\hypertarget{sec-prediction}{%
+\subsection{Prediction-based approach}\label{sec-prediction}}
 
-\subsubsection{Prediction estimators}\label{prediction-estimators}
+\hypertarget{prediction-estimators}{%
+\subsubsection{Prediction estimators}\label{prediction-estimators}}
 
 In the prediction approach the following semi-parametric model for the
 finite population is assumed:
@@ -428,8 +434,9 @@ and \(\mu_{\boldsymbol{x}}\) is replaced by
 for \eqref{eq-pred-two-estimators-simplified} where
 \(\hat{N}_B=\sum_{i \in S_B}d_i^B\).
 
+\hypertarget{mass-imputation-estimators}{%
 \subsubsection{Mass imputation
-estimators}\label{mass-imputation-estimators}
+estimators}\label{mass-imputation-estimators}}
 
 Model-based prediction estimators of \(\mu\) can be treated as
 \textit{mass imputation estimators}, since the information on \(y_i\) is
@@ -497,8 +504,9 @@ Details of the procedure can be found in Algorithm \ref{algo-3} and
 consistency of the MI-PMM A estimator under model mis-specification,
 i.e.~the assumed model may differ from the true one.
 
+\hypertarget{variance-estimators-for-the-prediction-approach}{%
 \subsubsection{Variance estimators for the prediction
-approach}\label{variance-estimators-for-the-prediction-approach}
+approach}\label{variance-estimators-for-the-prediction-approach}}
 
 Variance of the MI estimators can be estimated analytically or using the
 bootstrap approach. The analytical estimator of the variance of the
@@ -549,7 +557,8 @@ that the current version of the \pkg{nonprobsvy} does not support the
 use of replicated weights in the probability sample \(S_B\) for any of
 the estimators discussed in this paper.
 
-\subsection{Inverse Probability Weighting}\label{sec-ipw}
+\hypertarget{sec-ipw}{%
+\subsection{Inverse Probability Weighting}\label{sec-ipw}}
 
 Inverse probability weighting (IPW), another popular estimation
 approach, involves estimating PS given by
@@ -620,7 +629,7 @@ parameters \(\boldsymbol{\gamma}_0\) are unbiased under the joint
 \(q p\) randomization in the sense that
 \(E_{q p}\left\{\boldsymbol{U}\left(\boldsymbol{\gamma}_0\right)\right\}=\boldsymbol{0}\),
 which implies that the estimator \(\hat{\boldsymbol{\alpha}}\) is
-\(qp\)-consistent for \(\boldsymbol{\gamma}_0\)
+\(qp\)-consistent for \(\boldsymbol{\alpha}_0\)
 \citep{wu2022statistical}.
 
 The terms in equation \eqref{eq-ipw-solution-mle} can be replaced by
@@ -665,8 +674,9 @@ equation \eqref{eq-ipw-solution-gee} yields a doubly robust estimator
 under the assumption that the outcome model is linear
 \citep{kim_theory_2012}.
 
+\hypertarget{variance-estimators-for-the-inverse-probability-weighting-approach}{%
 \subsubsection{Variance estimators for the inverse probability weighting
-approach}\label{variance-estimators-for-the-inverse-probability-weighting-approach}
+approach}\label{variance-estimators-for-the-inverse-probability-weighting-approach}}
 
 \citet[section 3.2]{chen2020doubly} derived asymptotic variance
 estimators for both IPW estimators in \eqref{eq-ipw-estimators} and
@@ -683,7 +693,8 @@ Another approach is to use bootstrap, which is essentially the same as
 the one presented in \eqref{eq-var-bootstrap}, where \(\hat{\mu}_y\) is
 replaced by one of the estimators in \eqref{eq-ipw-estimators}.
 
-\subsection{Doubly robust approach}\label{sec-dr-approach}
+\hypertarget{sec-dr-approach}{%
+\subsection{Doubly robust approach}\label{sec-dr-approach}}
 
 The IPW and MI estimators are suited to mis-specified models for PS and
 outcome regression models, respectively. The DR approach was proposed to
@@ -704,8 +715,9 @@ formula for the for the DR estimator is given by
 where \(\pi_i^A\) and \(m_i\) are defined as previously. In the next
 subsections we discuss two approaches to the DR estimation.
 
+\hypertarget{parameters-estimated-separately}{%
 \subsubsection{Parameters estimated
-separately}\label{parameters-estimated-separately}
+separately}\label{parameters-estimated-separately}}
 
 \citet{chen2020doubly} proposed two DR estimators given in
 \eqref{eq-dr-known-n} and \eqref{eq-dr-estimated-n} assuming that the
@@ -739,8 +751,9 @@ outcome model. An alternative approach, proposed by
 \citet{yang_doubly_2020} and similar to the one described by
 \citet{kim2014doubly}, is discussed in the next subsection.
 
+\hypertarget{minimization-of-the-bias-for-doubly-robust-methods}{%
 \subsubsection{Minimization of the bias for doubly robust
-methods}\label{minimization-of-the-bias-for-doubly-robust-methods}
+methods}\label{minimization-of-the-bias-for-doubly-robust-methods}}
 
 \citet{yang_doubly_2020} discussed variable selection for a
 high-dimensional setting and noted that the bias of the estimator, which
@@ -800,8 +813,9 @@ noted in the beginning, the choice of either \eqref{eq-dr-known-n} or
 \eqref{eq-dr-estimated-n} results in a different approach to estimating
 variance, which is discussed in the next subsection.
 
+\hypertarget{variance-estimators-for-the-doubly-robust-approach}{%
 \subsubsection{Variance estimators for the doubly robust
-approach}\label{variance-estimators-for-the-doubly-robust-approach}
+approach}\label{variance-estimators-for-the-doubly-robust-approach}}
 
 \citet{yang_doubly_2020} derived a closed form estimator for
 \eqref{eq-dr-known-n} but this requires the knowledge of the population
@@ -820,7 +834,8 @@ presented in Section \ref{sec-prediction} performs well in terms of the
 coverage rate when one of the working models is correctly specified.
 This is why this approach is recommended for all users.
 
-\subsection{Variable selection algorithms}\label{sec-varsel}
+\hypertarget{sec-varsel}{%
+\subsection{Variable selection algorithms}\label{sec-varsel}}
 
 \citet{yang_asymptotic_2020} point out that it is crucial to use
 variable selection techniques during estimation, especially when dealing
@@ -890,8 +905,9 @@ other penalty functions and extended the possibility of selecting
 variables to MI and IPW estimators. In the next section we discuss how
 to define the approaches presented above.
 
+\hypertarget{sec-package}{%
 \section{The main function and the package
-functionalities}\label{sec-package}
+functionalities}\label{sec-package}}
 
 \subsection[The nonprob function]{The \code{nonprob} function}
 
@@ -980,8 +996,9 @@ following (most important) elements:
 \item \code{svydesign} -- a \code{svydesign2} object passed by the \code{svydesign} argument.
 \end{itemize}
 
+\hypertarget{controlling-the-type-of-estimators}{%
 \subsection{Controlling the type of
-estimators}\label{controlling-the-type-of-estimators}
+estimators}\label{controlling-the-type-of-estimators}}
 
 The \code{control_out} function can be used to specify various aspects
 of the estimation process, including the variable selection methods
@@ -1051,8 +1068,9 @@ control_selection = control_sel(penalty="MCP", nfolds=5))}\\
 \label{tab-control-sel-examples}
 \end{table}
 
+\hypertarget{controlling-variance-estimation}{%
 \subsection{Controlling variance
-estimation}\label{controlling-variance-estimation}
+estimation}\label{controlling-variance-estimation}}
 
 Finally, the \code{control_inf} function configures the parameters for
 variance estimation in the \code{nonprob} function. It allows users to
@@ -1093,9 +1111,11 @@ integrating a non-probability sample with a reference probability
 sample. We present various estimators and compare them. Finally, we
 describe more advanced options available in the package.
 
-\section{Data analysis example}\label{sec-data-analysis}
+\hypertarget{sec-data-analysis}{%
+\section{Data analysis example}\label{sec-data-analysis}}
 
-\subsection{Description of the data}\label{description-of-the-data}
+\hypertarget{description-of-the-data}{%
+\subsection{Description of the data}\label{description-of-the-data}}
 
 The package can be installed in the standard manner using:
 
@@ -1203,10 +1223,12 @@ and the naive, reference estimate, given by the mean of the
 \texttt{single\_shift} column of \texttt{admin}, which is equal to
 66.1\%.
 
-\subsection{Estimation}\label{estimation}
+\hypertarget{estimation}{%
+\subsection{Estimation}\label{estimation}}
 
+\hypertarget{propensity-score-approach}{%
 \subsubsection{Propensity score
-approach}\label{propensity-score-approach}
+approach}\label{propensity-score-approach}}
 
 First, we start with the IPW approach, which offers the choice between
 two estimation methods: MLE (standard) and GEE (calibrated to the
@@ -1406,8 +1428,9 @@ detailed description of the post-hoc results, such as the covariate
 balance. This can be done using existing CRAN packages, e.g.~through the
 \code{bal.tab} function from the \pkg{cobalt} package \citep{cobalt}.
 
+\hypertarget{prediction-based-approach}{%
 \subsubsection{Prediction-based
-approach}\label{prediction-based-approach}
+approach}\label{prediction-based-approach}}
 
 If the user is interested in the prediction-based approach, in
 particular involving MI estimators, then, they should specify the
@@ -1415,7 +1438,7 @@ argument \texttt{outcome} as a formula (as in the case of the
 \texttt{glm} function). We allow a single outcome (specified as
 \texttt{y\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}) and multiple
 outcomes (as
-\texttt{y1\ +\ y2\ +\ y2\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}).
+\texttt{y1\ +\ y2\ +\ y3\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}).
 Note that if the \texttt{outcome} argument is specified, then there is
 no need to specify the \texttt{target} argument. By default, the GLM
 type of an MI estimator is used (i.e.~\texttt{method\_outcome="glm"}).
@@ -1504,8 +1527,9 @@ asymptotically unbiased only when the model and auxiliary variables are
 correctly specified. To overcome this problem, the user can turn to
 doubly robust estimators.
 
+\hypertarget{the-doubly-robust-approach}{%
 \subsubsection{The doubly robust
-approach}\label{the-doubly-robust-approach}
+approach}\label{the-doubly-robust-approach}}
 
 In order to choose doubly robust estimation the user needs to specify
 both the \texttt{selection} and \texttt{outcome} arguments. These
@@ -1548,9 +1572,7 @@ selection models. We omit this output due to the limited space. Finally,
 we can use the bias minimisation approach, as proposed by
 \citet{yang_doubly_2020}, by specifying the
 \texttt{control\_inference\ =\ control\_inf(bias\_correction\ =\ TRUE)}
-argument. This part is implemented in the \pkg{Rcpp} \citep{Rcpp} and
-\pkg{RcppArmadillo} \citep{RcppArmadillo} packages for improved
-performance.
+argument.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1581,7 +1603,8 @@ single_shift 0.7043248 0.01128182   0.6822129   0.7264368
 \end{CodeOutput}
 \end{CodeChunk}
 
-\subsection{Comparison of estimates}\label{comparison-of-estimates}
+\hypertarget{comparison-of-estimates}{%
+\subsection{Comparison of estimates}\label{comparison-of-estimates}}
 
 Finally, as there is no single method for non-probability samples, we
 suggest comparing results in a single table or a plot. Figure
@@ -1632,10 +1655,12 @@ R> ggplot(data = df_s,
 \end{figure}
 \end{CodeChunk}
 
-\subsection{Advanced usage}\label{advanced-usage}
+\hypertarget{advanced-usage}{%
+\subsection{Advanced usage}\label{advanced-usage}}
 
+\hypertarget{bootstrap-approach-for-variance-estimation}{%
 \subsubsection{Bootstrap approach for variance
-estimation}\label{bootstrap-approach-for-variance-estimation}
+estimation}\label{bootstrap-approach-for-variance-estimation}}
 
 In the package we allow the user to estimate the variance of the mean
 analytically (by default) or using the bootstrap approach, as described
@@ -1689,7 +1714,7 @@ R> rbind("IPW analytic variance"=ipw_est1$output,
 \begin{CodeOutput}
                             mean          SE
 IPW analytic variance  0.7083228 0.009436907
-IPW bootstrap variance 0.7083228 0.011785604
+IPW bootstrap variance 0.7083228 0.011961230
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1704,14 +1729,15 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.7244605
-[2,]    0.7119338
-[3,]    0.7088635
+[1,]    0.7214492
+[2,]    0.6912925
+[3,]    0.7161628
 \end{CodeOutput}
 \end{CodeChunk}
 
+\hypertarget{variable-selection-algorithms}{%
 \subsubsection{Variable selection
-algorithms}\label{variable-selection-algorithms}
+algorithms}\label{variable-selection-algorithms}}
 
 In this section we briefly show how to use variable selection
 algorithms. In order to indicate that a variable selection algorithm
@@ -1773,7 +1799,7 @@ R> rbind("MI without var sel"=mi_est1$output,
 \begin{CodeOutput}
                         mean         SE
 MI without var sel 0.7032081 0.01120231
-MI with var sel    0.7034021 0.01119051
+MI with var sel    0.7022412 0.01112936
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1824,7 +1850,8 @@ Function & Description \\
 \label{tab-s3methods}
 \end{table}
 
-\section{Summary and future work}\label{summary-and-future-work}
+\hypertarget{summary-and-future-work}{%
+\section{Summary and future work}\label{summary-and-future-work}}
 
 The \pkg{nonprobsvy} package provides a comprehensive \proglang{R}
 software solution that addresses inference challenges connected with
@@ -1863,7 +1890,8 @@ class from the \pkg{survey} package and the \pkg{svrep} package. These
 developments will enhance its capabilities for handling complex survey
 data structures and modern estimation challenges.
 
-\section{Acknowledgements}\label{sec-acknowledgements}
+\hypertarget{sec-acknowledgements}{%
+\section{Acknowledgements}\label{sec-acknowledgements}}
 
 The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
@@ -1882,7 +1910,8 @@ We would like to thank \ldots{}
 
 \appendix
 
-\section{List of symbols}\label{list-of-symbols}
+\hypertarget{list-of-symbols}{%
+\section{List of symbols}\label{list-of-symbols}}
 
 \begin{table}[ht!]
 \centering
@@ -1930,8 +1959,9 @@ $\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
 
 \clearpage
 
+\hypertarget{sec-details}{%
 \section{Algorithms for the MI-NN and MI-PMM
-estimators}\label{sec-details}
+estimators}\label{sec-details}}
 
 \begin{algorithm}[ht!]
 \caption{Mass imputation using the $k$ nearest neighbour algorithm}
