@@ -445,7 +445,6 @@ where $R_i^A$ and $R_i^B$ are indicator functions defining the fact of being inc
 
 The \pkg{nonprobsvy} package is built around the \code{nonprob} function. The main design objective was to make the use of \code{nonprob} as similar as possible to standard R functions for fitting statistical models, such as \code{stats::glm}, while incorporating survey design features from the \pkg{survey} package. The most important arguments are given in Table \ref{tab-arguments-nonprob} and the obligatory ones include \code{data} as well as one of the following three --\code{selection}, \code{outcome}, or \code{target} -- depending on which method has been selected. In the case of \code{outcome} and \code{target} multiple $y$ variables can be specified.
 
-
 \begin{table}[ht!]
 \centering
 \small
@@ -456,7 +455,7 @@ Argument & Description \\
 \hline
     \code{data} & a \code{data.frame} with data from the non-probability sample \\
     \code{selection} & a \code{formula} for the selection (PS) equation\\
-    \code{outcome} & a \code{formula} for the outcome equation (e.g. \code{y1+y2 ~ x1 + x2})\\
+    \code{outcome} & a \code{formula} for the outcome equation (e.g. \code{y1 + y2}$\sim$\code{x1 + x2})\\
     \code{target} & a \code{formula} with target variables (e.g. \code{~y1+y2+y3})\\
     \code{svydesign} & an optional \code{svydesign2} object\\
     \code{pop\_totals}, 
@@ -593,6 +592,9 @@ library(nonprobsvy) ## for estimation
 library(ggplot2) ## for visualisation
 ```
 
+<!-- Brakuje tu wprowadzenia -->
+In order to demonstrate the capabilities of \pkg{nonprobsvy} package we use two datasets exported by the package ....
+
 The goal of the case study was to integrate survey (\code{jvs}) and administrative (\code{admin}) data about job vacancies in Poland. The first source, the Job Vacancy Survey (JVS), contains 6,523 units. The JVS provides a probability sample drawn according to a stratified sampling design. More details can be found in \cite{jvs2022}. The dataset contains information about the NACE code (14 levels, the \code{nace} column), \code{region} (16 levels), sector (2 levels, the \code{private} column), company size (3 levels: Small up to 9, Medium 10-49 and Large 50+) and the final weight (i.e. the design weight corrected for non-contact and non-response), which is treated as the $d$ weight.
 
 
@@ -694,7 +696,7 @@ mi_est1
 ```
 
 
-In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`).  In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
+In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) <!-- Używamy naszego estymatora wairiancji dla NN? Jeżeli tak to warto wspomnieć chyba.-->.  In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
 ```{r}
 mi_est2 <- nonprob(
@@ -809,7 +811,7 @@ ipw_est1_boot <- nonprob(
   data = admin,
   method_selection = "logit",
   control_inference = control_inf(var_method = "bootstrap", num_boot = 50),
-  verbose = F
+  verbose = FALSE
 )
 ```
 
