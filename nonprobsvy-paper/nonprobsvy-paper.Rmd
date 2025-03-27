@@ -2,12 +2,11 @@
 documentclass: jss
 author:
   - name: Łukasz Chrostowski
-    affiliation: Adam Mickiewicz University
+    affiliation: Analyx
     address: |
-      | First line
-      | Second line
-    email: \email{lukchr@st.amu.edu.pl}
-    url: https://posit.co
+      | Krysiewicza 2
+      | 61-887 Poznań
+    email: \email{lukaszchrostowski6@gmail.com}
   - name: Piotr Chlebicki
     affiliation: | 
       | Stockholm University \AND
@@ -462,11 +461,12 @@ Argument & Description \\
     \code{pop\_means}, 
     \code{pop\_size} & an optional named \code{vector} with population totals or means of the covariates and population size \\
     \code{method\_selection} & a link function for the IPW approach (\code{c("logit", "probit", cloglog")})\\
-    \code{method\_outcome} & specification of the MI approach (\code{c("glm", "nn", "pmm")}) \\
+    \code{method\_outcome} & specification of the MI approach (\code{c("glm", "nn", "pmm", "npar")}) \\
     \code{family\_outcome} & a GLM family for the MI approach (\code{c("gaussian", "binomial", "poisson")}) \\
     \code{subset} & an optional \code{vector} specifying a subset of observations to be used in the fitting process\\
-    \code{weights} & an optional \code{vector} of prior case-weights to be used in the fitting process\\
-    \code{na\_action} & a \code{function} indicating what to do with \code{NA}'s\\
+    \code{strata} & an optional parameter for estimation for sub-populations (currently not supported) \\
+    \code{case\_weights} & an optional \code{vector} of prior case-weights to be used in the fitting process\\
+    \code{na\_action} & a \code{function} indicating what to do with \code{NA}'s (default \code{na.omit}) \\
     \code{control\_selection},
     \code{control\_outcome}, 
     \code{control\_inference} & control functions with parameters for PS, the outcome model and variance estimation, respectively \\
@@ -485,26 +485,28 @@ The package allows the user to provide either reference population data (via the
 
 If a \code{svydesign2} object is provided and the \code{selection} argument is specified, then the IPW estimators are used (by default parameters of the PS model employ \eqref{eq-ipw-solution-mle}), if the \code{outcome} argument is specified, then the MI approach is used (the default option is the MI-GLM with the \code{gaussian} family) and if both are specified, then the DR approach is applied (parameters $(\bbeta, \bgamma)$ are estimated separately and the \eqref{eq-dr-estimated-n} is used). A particular inference method is selected through the \code{method\_selection}, \code{method\_outcome}, \code{family\_outcome}, \code{control\_selection} and \code{control\_outcome} arguments. The variance estimation method is selected through the \code{control\_inference} argument. 
 
-Resulting object of class \code{nonprobsvy} is a list that contains the following (most important) elements: <!--Obiekt ktœry zwracamy ma te÷ jakieß podklasy jak nonprob_mr, nonprob_dr etc powinnißmy to tutaj wyniemić? I może wrzucić tę liste podspodem razem z podobnymi listami dla innych klas do osobnej sekcji z opisem klas? Tam lepiej by pasowało chyba.-->
+Resulting object of class \code{nonprob} is a list that contains the following (most important) elements: 
 
 \begin{itemize}
 \item \code{data} -- a \code{data.frame} containing the non-probability sample.
 \item \code{X} -- a \code{matrix} containing both samples,
 \item \code{y} -- a \code{list} containing all variables declared in either the \code{target} or \code{outcome} arguments,
 \item \code{R} -- a numeric \code{vector} informing about inclusion in the non-probability sample,
-\item \code{weights} -- PS weights or \code{NULL} (for the MI estimators),
+\item \code{ps_scores} -- propensity scores or \code{NULL} (for the MI estimators),
+\item \code{ipw_weights} -- inverse probability weights or \code{NULL} (for the MI estimators),
 \item \code{output} - a \code{data.frame} containing point and standard error estimates,
 \item \code{confidence_interval} - a \code{data.frame} containing confidence intervals for the mean,
 \item \code{outcome} -- a \code{list} of results for each \code{outcome} model,
 \item \code{selection} -- a \code{list} of results for the \code{selection} model,
 \item \code{svydesign} -- a \code{svydesign2} object passed by the \code{svydesign} argument.
+\item \code{ys_rand_pred, ys_nons_pred} -- a \code{list} of predicted values from the MI model.
 \end{itemize}
 
 
 ## Controlling the type of estimators
 
 
-The \code{control_out} function can be used to specify various aspects of the estimation process, including the variable selection methods (through different \code{penalty} options like SCAD, LASSO, and MCP with their respective tuning parameters defined in the same way as in the \code{control_sel} function) <!-- Zacytować artykuł gdzie można znaleźć co one robią?-->, and detailed configuration for NN and PMM approaches (using parameters like \code{predictive_match}, \code{pmm_weights}, and \code{pmm_k_choice}) <!-- Ditto tutaj i dla całej sekcji-->. For both approaches we use the \pkg{RANN} package \citep{rann-pkg} with the kd-tree algorithm and the Euclidean distance as default. We currently do not support other distances (e.g. Gower). Table \ref{tab-control-out-examples} presents example usage of the \code{control_out} function for three types of MI estimators.
+The \code{control_out} function can be used to specify various aspects of the estimation process, including the variable selection methods (through different \code{penalty} options like SCAD, LASSO, and MCP with their respective tuning parameters defined in the same way as in the \code{control_sel} function; cf. \citet{yang_doubly_2020}), and detailed configuration for NN, PMM and NPAR approaches (using parameters like \code{pmm_match_type}, \code{pmm_weights}, \code{pmm_k_choice} or \code{npar_loess}). For NN and PMM approaches we use the \pkg{RANN} package \citep{rann-pkg} with the kd-tree algorithm and the Euclidean distance as default. We currently do not support other distances (e.g. Gower). Table \ref{tab-control-out-examples} presents example usage of the \code{control_out} function for three types of MI estimators.
 
 \begin{table}[ht!]
 \centering
@@ -520,7 +522,7 @@ MI-NN with the \code{bd} algorithm &
 control_outcome = control_out(treetype = "bd"))}\\
 MI-PMM A with $k=3$ & 
 \code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
-control_outcome = control_out(k=3,predictive_match=2))}\\
+control_outcome = control_out(k=3,pmm_match_type=2))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the MI estimators}
@@ -528,7 +530,7 @@ control_outcome = control_out(k=3,predictive_match=2))}\\
 \end{table}
 
 
-The \code{control_sel} function provides essential control parameters for fitting the selection model in the \code{nonprob} function. It allows users to select between MLE given by \eqref{eq-ipw-solution-mle} or GEE defined in \eqref{eq-ipw-solution-gee} through the \code{est_method_sel} argument, specify the $\bh(\cdot, \cdot)$ function through the \code{h} argument, specify the optimizer (\code{optimizer} argument) and which variable selection method should be applied (using different penalty functions like SCAD, lasso, and MCP by specifying the \code{penalty} argument) along with parameters (e.g. the number of folds through the \code{nfolds} argument). The parameters of the PS for the calibrated IPW is estimated by using the \pkg{nleqslv} package and fitting parameters (arguments starting with the \code{nleqslv_*}). Table \ref{tab-control-sel-examples} presents example usage of the \code{control_sel} function for two types of IPW estimators.
+The \code{control_sel} function provides essential control parameters for fitting the selection model in the \code{nonprob} function. It allows users to select between MLE given by \eqref{eq-ipw-solution-mle} or GEE defined in \eqref{eq-ipw-solution-gee} through the \code{est_method} argument, specify the $\bh(\cdot, \cdot)$ function through the \code{gee_h_fun} argument, specify the optimizer (\code{optimizer} argument) and which variable selection method should be applied (using different penalty functions like SCAD, lasso, and MCP by specifying the \code{penalty} argument) along with parameters (e.g. the number of folds through the \code{nfolds} argument). The parameters of the PS for the calibrated IPW is estimated by using the \pkg{nleqslv} package and fitting parameters (arguments starting with the \code{nleqslv_*}). Table \ref{tab-control-sel-examples} presents example usage of the \code{control_sel} function for two types of IPW estimators.
 
 \begin{table}[ht!]
 \centering
@@ -538,7 +540,7 @@ Estimator & Declaration with \code{control_sel} \\
 \hline
 Calibrated IPW & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
-control_selection = control_sel(est_method_sel="gee"))}\\
+control_selection = control_sel(est_method="gee"))}\\
 IPW with the MCP penalty and 5 folds & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
 control_selection = control_sel(penalty="MCP", nfolds=5))}\\
@@ -550,7 +552,7 @@ control_selection = control_sel(penalty="MCP", nfolds=5))}\\
 
 ## Controlling variance estimation
 
-Finally, the \code{control_inf} function configures the parameters for variance estimation in the \code{nonprob} function. It allows users to specify whether the analytical or bootstrap approach should be used (the \code{var_method} argument), whether the variable selection method should be applied (the \code{vars_selection} argument) and what type of bootstrap should be applied for the probability sample (the \code{rep_type} argument). This function is also used to specify the inference procedure for the DR approach: if a union or a division of variables after variable selection was applied (the \code{bias_inf} argument) and if the bias correction should be applied (the \code{bias_correction} argument). Table \ref{tab-control-inf-examples} presents example usage of the \code{control_inf} function for the IPW and DR estimators.
+Finally, the \code{control_inf} function configures the parameters for variance estimation in the \code{nonprob} function. It allows users to specify whether the analytical or bootstrap approach should be used (the \code{var_method} argument), whether the variable selection method should be applied (the \code{vars_selection} argument) and what type of bootstrap should be applied for the probability sample (the \code{rep_type} argument). This function is also used to specify the inference procedure for the DR approach: if a union or a division of variables should be applied (the \code{vars_combine} argument) and if the bias correction should be applied after variable selection (the \code{vars_selection}) and variable combination (the \code{bias_correction} argument). Table \ref{tab-control-inf-examples} presents example usage of the \code{control_inf} function for the IPW and DR estimators.
 
 <!-- Tabela bardzo fajna dobrze uczyć przez przykłady ale trochę ciężko ją przeczytać jak kod jest tak ściśnięty.-->
 \begin{table}[ht!]
@@ -561,12 +563,12 @@ Estimator & Declaration with the \code{control_sel} \\
 \hline
 Calibrated IPW with variable selection, bootstrap and $B=50$ & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
-control_selection = control_sel(est_method_sel="gee"),
+control_selection = control_sel(est_method="gee"),
 control_inference = control_inf(vars_selection=TRUE, var_method="bootstrap", rep_type = "subbootstrap", B=50))}\\
 The DR with the SCAD penalty, 5 folds and bias correction & 
 \code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2, data = df, svydesign = prob,
 control_selection = control_sel(penalty="SCAD", nfolds=5),
-control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE))}\\
+control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE, vars_combine=TRUE))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the IPW estimators}
@@ -592,9 +594,6 @@ library(nonprobsvy) ## for estimation
 library(ggplot2) ## for visualisation
 ```
 
-<!-- Brakuje tu wprowadzenia -->
-In order to demonstrate the capabilities of \pkg{nonprobsvy} package we use two datasets exported by the package ....
-
 The goal of the case study was to integrate survey (\code{jvs}) and administrative (\code{admin}) data about job vacancies in Poland. The first source, the Job Vacancy Survey (JVS), contains 6,523 units. The JVS provides a probability sample drawn according to a stratified sampling design. More details can be found in \cite{jvs2022}. The dataset contains information about the NACE code (14 levels, the \code{nace} column), \code{region} (16 levels), sector (2 levels, the \code{private} column), company size (3 levels: Small up to 9, Medium 10-49 and Large 50+) and the final weight (i.e. the design weight corrected for non-contact and non-response), which is treated as the $d$ weight.
 
 
@@ -603,7 +602,7 @@ data(jvs)
 head(jvs)
 ```
 
-Since the \pkg{nonprobsvy} package relies on the functionalities of the \pkg{survey} packag, we need to define the \code{svydesign2} object via the \code{svydesign} function, as shown below. The dataset does not contain the true stratification variable, so we use a simplified version by specifying `~ size + nace + region`; similarly, since we do not have information regarding non-response and its correction, we simply assume that the `weight` sums up to the population size.
+Since the \pkg{nonprobsvy} package relies on the functionalities of the \pkg{survey} package, we need to define the \code{svydesign2} object via the \code{svydesign} function, as shown below. The dataset does not contain the true stratification variable, so we use a simplified version by specifying `~ size + nace + region`; similarly, since we do not have information regarding non-response and its correction, we simply assume that the `weight` sums up to the population size.
 
 ```{r}
 jvs_svy <- svydesign(ids = ~ 1, 
@@ -637,21 +636,20 @@ ipw_est1 <- nonprob(
 )
 ```
 
-In order to get the basic information about the estimated target quantity we can use the \code{print} method to display the object. It provides the call and the estimated mean, the standard error (\code{SE}) and the 95\% confidence interval (\code{lower_bound} and \code{upper_bound}).
+In order to get the basic information about the estimated target quantity we can use the \code{print} method to display the object. It provides basic information about the methods, source of auxiliary variable, variable selection, the naive (uncorrected estimator) and the corrected along with the standard error and confidence interval. The the last line, i.e. \code{selected estimator}, is limited to the maximum of 5 variables.
 
 ```{r}
 ipw_est1
 ```
 
-If we want to see detailed information about the model, we can use the \code{summary} method. 
+If we want to see detailed information about the approach, we can use the \code{summary} method. This function provides information on the sample sizes, sum of tje IPW weights along with the distribution of IPW weights (for non-probability sample) and propensity scores (denoted as IPW probabilities) for both samples. A more advanced user may be interested in inspecting the details of the fit by accessing the \code{selection} element (i.e. \code{ipw_est1$selection}).
 
 ```{r}
 summary(ipw_est1)
 ```
 
-This function displays information about the datasets used for estimation (the probability and non-probability samples). The estimated regression coefficients are also shown, in this case for the logit model for the  propensity score (section \code{Regression coefficients}). In addition, for diagnostic purposes, we can inspect the distribution of the weights calculated from the inclusion probabilities (section \code{Weights}), the distribution of the residuals from the model (section \code{Residuals}), as well as the values of the AIC, BIC statistics in the case of models based on MLE. 
 
-If we want to use the calibrated IPW approach, it is necessary to define the `control_sel` function in the `control_selection` argument by setting the `est_method_sel` argument equal to `gee` (the default is `mle`) and the value of `h`.
+If we want to use the calibrated IPW approach, it is necessary to define the `control_sel` function in the `control_selection` argument by setting the `est_method` argument equal to `gee` (the default is `mle`) and the value of `gee_h_fun`.
 
 ```{r}
 ipw_est2 <- nonprob(
@@ -660,7 +658,7 @@ ipw_est2 <- nonprob(
   svydesign = jvs_svy,
   data = admin,
   method_selection = "logit",
-  control_selection = control_sel(h = 1, est_method_sel = "gee")
+  control_selection = control_sel(gee_h_fun = 1, est_method = "gee")
 )
 ```
 
@@ -696,7 +694,7 @@ mi_est1
 ```
 
 
-In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) <!-- Używamy naszego estymatora wairiancji dla NN? Jeżeli tak to warto wspomnieć chyba.-->.  In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
+In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
 ```{r}
 mi_est2 <- nonprob(
@@ -713,15 +711,15 @@ mi_est3 <- nonprob(
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5)
+  control_outcome = control_out(k=5),
+  control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
 )
 ```
 
 Results of both estimators are more or less similar, but it should be noted that the NN version suffers from the curse of dimensionality, so the PMM version seems to be more reliable.
 
 ```{r}
-mi_est2$output
-mi_est3$output
+rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
 ```
 
 As discussed in Section \ref{sec-methods}, IPW and MI estimators are asymptotically unbiased only when the model and auxiliary variables are correctly specified. To overcome this problem, the user can turn to doubly robust estimators.
@@ -743,9 +741,15 @@ dr_est1 <- nonprob(
 dr_est1
 ```
 
-Detailed results can be displayed by using the `summary` function, which prints both sets of coefficients for the outcome and selection models. We omit this output due to the limited space. Finally, we can use the bias minimisation approach, as proposed by \citet{yang_doubly_2020}, by specifying the `control_inference = control_inf(bias_correction = TRUE)` argument.
+Detailed results can be displayed by using the `summary` function, which prints both information about the distribution of the IPW weights as well as the outcome residuals and predictions. For more details one can access the \code{ "outcome"} and \code{"selection"} fields in the `nonprob` object.
 
 ```{r}
+summary(dr_est1)
+```
+
+Finally, we can use the bias minimisation approach, as proposed by \citet{yang_doubly_2020}, by specifying the `control_inference = control_inf(bias_correction = TRUE)` argument together with the `vars_combine=TRUE` and  `vars_selection=TRUE` as this approach requires variable selection followed by variable union from both equations. 
+
+```{r bias-correction}
 dr_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   outcome = single_shift ~ region + private + nace + size,
@@ -754,7 +758,11 @@ dr_est2 <- nonprob(
   method_selection = "logit",
   method_outcome = "glm",
   family_outcome = "binomial",
-  control_inference = control_inf(bias_correction = TRUE)
+  control_inference = control_inf(bias_correction = TRUE,
+                                  vars_combine = TRUE,
+                                  vars_selection = TRUE),
+  control_selection = control_sel(nfolds = 4, nlambda = 10),
+  control_outcome = control_out(nfolds = 4)
 )
 dr_est2
 ```
@@ -762,7 +770,7 @@ dr_est2
 
 ## Comparison of estimates
 
-Finally, as there is no single method for non-probability samples, we suggest comparing results in a single table or a plot. Figure \ref{fig:comparison-of-est} presents point estimates along with 95\% confidence intervals. The various estimators show interesting patterns compared to the naive estimate (red dashed line). The MI estimators demonstrate notably different behaviours: while MI-PMM produces the highest point estimate with the widest confidence interval, MI-NN yields the lowest estimate, close to the naive value. Results for the other estimators -- MI-GLM, IPW (both MLE and GEE), and DR (with and without bias minimization) -- are clustered together, with similar point estimates and confidence interval widths, suggesting some consensus in their bias correction. All these methods indicate a population parameter higher than the naive estimate, but their relative consistency, except for the extreme estimates given by MI-PMM and MI-NN, provides a certain degree of confidence in their bias correction capabilities.
+Finally, as there is no single method for non-probability samples, we suggest comparing results in a single table or a plot. Figure \ref{fig:comparison-of-est} presents point estimates along with 95\% confidence intervals. The various estimators show interesting patterns compared to the naive estimate (red dashed line). Both IPW estimators are characterised with large standard errors and the point estimates over 70\%. The MI estimators demonstrate notably different behaviours: while MI-PMM produces the highest point estimate with the widest confidence interval, MI-NN yields the lowest estimate, close to the naive value. Results for the other estimators -- MI-GLM and DR (with and without bias minimization) -- are clustered together, with similar point estimates and confidence interval widths, suggesting some consensus in their bias correction. All these methods indicate a population parameter higher than the naive estimate, but their relative consistency, provides a certain degree of confidence in their bias correction capabilities.
 
 ```{r comparison-of-est, fig.cap="Comparison of estimates of the share of job vacancies offered on a single-shift", fig.align='center', fig.pos='ht!'}
 df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
@@ -893,20 +901,6 @@ Function & Description \\
 \end{table}
 
 
-<!--- TODO
-nobs
-pop_size
-residuals
-cooks.distance
-hatvalues
-loglik
-AIC
-BIC
-confint
-vcov
-deviance
--->
-
 # Summary and future work
 
 The \pkg{nonprobsvy} package provides a comprehensive \proglang{R} software solution that addresses inference challenges connected with non-probability samples by integrating them with probability samples or known population totals/means. As non-probability data sources like administrative registers, voluntary online panels, and social media data become increasingly available, statisticians need robust methods to produce reliable population estimates. The package implements \textit{state-of-the-art} approaches including mass imputation, inverse probability weighting, and doubly robust methods, each designed to correct selection bias by leveraging auxiliary data. By providing a unified framework and its integration with the \pkg{survey} package, the \pkg{nonprobsvy} makes complex statistical methods for non-probability samples more accessible, enabling researchers to produce robust estimates even when working with non-representative data. 
@@ -919,9 +913,8 @@ The package will also be extended to handle the `svyrep.design` class from the \
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main developer and maintainer of the package. Parts of this paper are based on Łukasz's  Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki has contributed to the package and has implemented MI-PMM estimators. Maciej Beręsewicz came up with the initial idea and was responsible for the design of the package as well as testing, reviewing and contributing to the source code and prepared the manuscript.
+Łukasz Chrostowski is the main developer and maintainer of the package up to version 0.1.0. Parts of this work are based on Łukasz's master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki contributed to the package and implemented the MI-PMM estimators. Maciej Beręsewicz had the initial idea and was responsible for the design of the package, as well as testing, reviewing and contributing to the source code and preparing the manuscript. He was also responsible for the major restructuring of the package between 0.1.0 and 0.2.0 and subsequent releases.
 
-We would like to thank ...
 
 \clearpage
 
