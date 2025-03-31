@@ -875,55 +875,50 @@ rbind("MI without var sel"= mi_est1$output,
       "MI with var sel"   = mi_est1_sel$output)
 ```
 
+Which one were selected (`ncvreg`)
+
+```{r}
+class(mi_est1_sel$outcome$single_shift)
+```
+```{r}
+coef(mi_est1_sel$outcome$single_shift)
+```
+
 Inspecting the selection 
 
 ```{r}
 ipw_est1$selection$coefficients
 ```
 
-or outcome models 
-
-```{r}
-mi_est1$outcome$single_shift$coefficients
-```
-
-
-DR selection and outcome is exactly the same as it is based on the joint estimation
-
-```{r}
-dr_est2$selection$single_shift$x
-```
-
 In the future versions we plan to align the selection and outcome models to return the same type of elements and objects.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
-The package contains the main class \code{nonprobsvy} and a supplementary class \code{summary_nonprobsvy}. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples:
+The package contains the main class \code{nonprob} and a supplementary class \code{nonprob\_method} and related  \code{nonprob\_summary} class. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples:
 
 ```{r method-nobs}
 nobs(dr_est1)
 ```
 
 ```{r}
-pop_size(dr_est1)
+c(N_fixed = pop_size(ipw_est1), N_ipw_weights = sum(weights(ipw_est1)))
 ```
 
 Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} class. On purpose we did not implement many methods as the goal of the package is to provide point and interval estimates. If a user is interested in assessing the quality of the models or covariate balance should use existing \proglang{R} packages.
 
 \begin{table}[ht!]
 \centering
-\small
 \begin{tabular}{p{4cm}p{11cm}}
 \hline 
 Function & Description \\
 \hline
-\code{check_balance} & aaa; \\
-\code{pop_size} & \\
-\code{confint} & aaa\\
-\code{nobs} & \\
-\code{summary} & \\
-\code{update} & \\
-\code{weights} & \\
+\code{check_balance} & returns list of totals for IPW and DR estimators; \\
+\code{pop_size} & returns size of the population (fixed or not)\\
+\code{confint} & returns a confidence interval for the target variable(s) \\
+\code{nobs} & returns number of observations for both samples\\
+\code{summary} & returns a `nonprob\_summary` class with additional information\\
+\code{update} & returns an `updated` object\\
+\code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 
 \end{tabular}
 \caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
@@ -936,34 +931,33 @@ confint(dr_est1, level = 0.99)
 ```
 
 ```{r}
-hist(weights(dr_est1), breaks = "fd")
+summary(weights(dr_est1), breaks = "fd")
 ```
 
-Classes:
+For mass imputation estimators we allow to use special functions `method_glm` that are of class `nonprob_method`. An example is given below
 
 ```{r}
-class(dr_est1)
-```
+res_glm <- method_glm(
+  y_nons = admin$single_shift,
+  X_nons = model.matrix(~ region + private + nace + size, admin),
+  X_rand = model.matrix(~ region + private + nace + size, jvs),
+  svydesign = jvs_svy)
 
-```{r}
-res_glm <- method_glm(y_nons = admin$single_shift,
-                      X_nons = model.matrix(~ region + private + nace + size, admin),
-                      X_rand = model.matrix(~ region + private + nace + size, jvs),
-                      svydesign = jvs_svy)
-
-class(res_glm)
 res_glm
 ```
 
-IPW
+For the IPW we have created function `method_ps` which returns requested functions for a specific link. The reason for that as follows: 1) we allow different estimation techniques such as maximum likelihood and general estimation equations; 2) IPW estimator is also used for the DR estimator; and 3) variance estimators depends on whether the IPW or the DR estimator is applied (with combination with the MI estimator).
 
 ```{r}
 method_ps()
 ```
 
-```{r}
-method_ps("cloglog")$make_gradient
+Details can be found in help page.
+
+```{r, eval=F}
+?method_ps()
 ```
+
 
 # Summary and future work
 
