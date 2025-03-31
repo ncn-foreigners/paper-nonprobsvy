@@ -1404,6 +1404,8 @@ estimated underneath.
 
 \begin{CodeChunk}
 \begin{CodeInput}
+R> set.seed(2024)
+R> 
 R> mi_est2 <- nonprob(
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
@@ -1438,7 +1440,7 @@ R> rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
 \begin{CodeOutput}
          mean         SE
 NN  0.6799537 0.01568503
-PMM 0.7337228 0.02070461
+PMM 0.7337228 0.02231178
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1532,6 +1534,7 @@ selection followed by variable union from both equations.
 
 \begin{CodeChunk}
 \begin{CodeInput}
+R> set.seed(2024)
 R> dr_est2 <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   outcome = single_shift ~ region + private + nace + size,
@@ -1646,6 +1649,7 @@ approach with the bootstrap approach specified by the argument
 
 \begin{CodeChunk}
 \begin{CodeInput}
+R> set.seed(2024)
 R> ipw_est1_boot <- nonprob(
 +   selection = ~ region + private + nace + size,
 +   target = ~ single_shift,
@@ -1656,11 +1660,6 @@ R> ipw_est1_boot <- nonprob(
 +   verbose = FALSE
 + )
 \end{CodeInput}
-\begin{CodeOutput}
-Warning in ipw_maxlik(method, X_nons = X_nons, X_rand = X_rand, weights =
-weights, : Warning in fitting selection model with the `maxLik` package:
-probably not converged.
-\end{CodeOutput}
 \end{CodeChunk}
 
 Next, we compare the estimated standard error of variance estimation for
@@ -1674,7 +1673,7 @@ R> rbind("IPW analytic variance"=ipw_est1$output,
 \begin{CodeOutput}
                             mean         SE
 IPW analytic variance  0.7223628 0.04207711
-IPW bootstrap variance 0.7223628 0.04331885
+IPW bootstrap variance 0.7223628 0.04307590
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1689,9 +1688,9 @@ R> head(ipw_est1_boot$boot_sample, n=3)
 \end{CodeInput}
 \begin{CodeOutput}
      single_shift
-[1,]    0.6501353
-[2,]    0.7887037
-[3,]    0.7465485
+[1,]    0.7406651
+[2,]    0.6989083
+[3,]    0.7667519
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1726,6 +1725,7 @@ parameters and the LASSO penalty.
 
 \begin{CodeChunk}
 \begin{CodeInput}
+R> set.seed(2024)
 R> mi_est1_sel <- nonprob(
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
@@ -1752,8 +1752,8 @@ standard errors differ at the fourth and third digit, respectively.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("MI without var sel"=mi_est1$output,
-+       "MI with var sel"=mi_est1_sel$output)
+R> rbind("MI without var sel"= mi_est1$output,
++       "MI with var sel"   = mi_est1_sel$output)
 \end{CodeInput}
 \begin{CodeOutput}
                         mean         SE
@@ -1761,6 +1761,86 @@ MI without var sel 0.7031991 0.01120162
 MI with var sel    0.7019285 0.01102080
 \end{CodeOutput}
 \end{CodeChunk}
+
+Inspecting the selection
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> ipw_est1$selection$coefficients
+\end{CodeInput}
+\begin{CodeOutput}
+(Intercept)    region04    region06    region08    region10    region12 
+-0.65277121  0.83779549  0.19953188  0.10479761 -0.15756693 -0.60987005 
+   region14    region16    region18    region20    region22    region24 
+-0.84150300  0.76385615  1.17810496  0.22251032 -0.03753066 -0.40670702 
+   region26    region28    region30    region32     private     naceD.E 
+ 0.20287478  0.57862243 -0.61021662  0.32742204  0.05899377  0.77273741 
+      naceF       naceG       naceH       naceI       naceJ     naceK.L 
+-0.37783229 -0.33370352 -0.65174566  0.41179116 -1.42636886  0.06171389 
+      naceM       naceN       naceO       naceP       naceQ     naceR.S 
+-0.40677813  0.80034162 -0.69354695  1.25095429  0.30286775  0.22227967 
+      sizeM       sizeS 
+-0.36412124 -1.02915884 
+\end{CodeOutput}
+\end{CodeChunk}
+
+or outcome models
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mi_est1$outcome$single_shift$coefficients
+\end{CodeInput}
+\begin{CodeOutput}
+(Intercept)    region04    region06    region08    region10    region12 
+ 0.18158023  0.16064873  0.49613781  0.50472026  0.37620622  0.33904794 
+   region14    region16    region18    region20    region22    region24 
+ 0.16532636  0.25202192  0.15112240  0.08394541  0.15636759 -0.15168962 
+   region26    region28    region30    region32     private     naceD.E 
+ 0.31160657  0.10733779  0.12500459  0.09079820 -0.66535673  0.19809638 
+      naceF       naceG       naceH       naceI       naceJ     naceK.L 
+ 1.96624278 -0.49973896 -0.61576662 -1.15028767  1.06147195  1.09711267 
+      naceM       naceN       naceO       naceP       naceQ     naceR.S 
+ 1.05205715 -0.21529286  1.52776138  0.54423406 -0.77546255 -0.88682910 
+      sizeM       sizeS 
+ 1.05177086  1.60488041 
+\end{CodeOutput}
+\end{CodeChunk}
+
+DR selection and outcome is exactly the same as it is based on the joint
+estimation
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> dr_est2$selection$single_shift$x
+\end{CodeInput}
+\begin{CodeOutput}
+(Intercept)    region04    region06    region08    region10    region12 
+-0.51717743  0.92917534  0.14794384  0.02811020 -0.33962403 -0.46737281 
+   region14    region16    region18    region20    region22    region24 
+-1.05343074  0.94716314  0.98620715  0.59354350 -0.26246150 -0.42078921 
+   region26    region28    region30    region32     private     naceD.E 
+ 0.28109059  0.58442923 -0.43713897  0.19958205 -0.09395456  0.69148220 
+      naceF       naceG       naceH       naceI       naceJ     naceK.L 
+-0.40007411 -0.32715883 -0.64617455  0.40705788 -1.48486167  0.07245263 
+      naceM       naceN       naceO       naceP       naceQ     naceR.S 
+-0.34073542  0.64349258 -0.83113490  1.15829838  0.27323189  0.17453665 
+      sizeM       sizeS (Intercept)    region04    region06    region08 
+-0.37453707 -0.86709813  0.40191468  0.11653827  0.41441918  0.43590745 
+   region10    region12    region14    region16    region18    region20 
+ 0.39386267  0.30788149  0.22671147  0.22845793  0.14044147 -0.02400042 
+   region22    region24    region26    region28    region30    region32 
+ 0.11162524 -0.25013288  0.11116323  0.07546049  0.09347190  0.05471013 
+    private     naceD.E       naceF       naceG       naceH       naceI 
+-0.74136463 -0.06890333  1.80012499 -0.67000942 -0.92702864 -1.36247923 
+      naceJ     naceK.L       naceM       naceN       naceO       naceP 
+ 0.90185178  0.63047204  1.07719957 -0.32227506  1.65945780  0.07401888 
+      naceQ     naceR.S       sizeM       sizeS 
+-1.09015534 -1.21074120  1.12767378  1.64672671 
+\end{CodeOutput}
+\end{CodeChunk}
+
+In the future versions we plan to align the selection and outcome models
+to return the same type of elements and objects.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
@@ -1783,6 +1863,15 @@ R> nobs(dr_est1)
 \end{CodeOutput}
 \end{CodeChunk}
 
+\begin{CodeChunk}
+\begin{CodeInput}
+R> pop_size(dr_est1)
+\end{CodeInput}
+\begin{CodeOutput}
+[1] 51870
+\end{CodeOutput}
+\end{CodeChunk}
+
 Table \ref{tab-s3methods} presents methods implemented for the
 \code{nonprobsy} class. On purpose we did not implement many methods as
 the goal of the package is to provide point and interval estimates. If a
@@ -1797,17 +1886,100 @@ balance should use existing \proglang{R} packages.
 Function & Description \\
 \hline
 \code{check_balance} & aaa; \\
+\code{pop_size} & \\
 \code{confint} & aaa\\
 \code{nobs} & \\
-\code{pop_size} & \\
 \code{summary} & \\
-\code{logLik, AIC, BIC, deviance} & \\
-\code{residuals, hatvalues, cooks.distance, print, vcov}  & it works exactly like \code{glm} counterparts.\\
+\code{update} & \\
+\code{weights} & \\
 \hline 
 \end{tabular}
 \caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
 \label{tab-s3methods}
 \end{table}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> confint(dr_est1, level = 0.99)
+\end{CodeInput}
+\begin{CodeOutput}
+        target lower_bound upper_bound
+1 single_shift   0.6734515   0.7334882
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> hist(weights(dr_est1), breaks = "fd")
+\end{CodeInput}
+
+
+\begin{center}\includegraphics{nonprobsvy-paper_files/figure-latex/unnamed-chunk-25-1} \end{center}
+
+\end{CodeChunk}
+
+Classes:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> class(dr_est1)
+\end{CodeInput}
+\begin{CodeOutput}
+[1] "nonprob"
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> res_glm <- method_glm(y_nons = admin$single_shift,
++                       X_nons = model.matrix(~ region + private + nace + size, admin),
++                       X_rand = model.matrix(~ region + private + nace + size, jvs),
++                       svydesign = jvs_svy)
+R> 
+R> class(res_glm)
+\end{CodeInput}
+\begin{CodeOutput}
+[1] "nonprob_method"
+\end{CodeOutput}
+\begin{CodeInput}
+R> res_glm
+\end{CodeInput}
+\begin{CodeOutput}
+Mass imputation model (GLM approach). Estimated mean: 0.7039 (se: 0.0115)
+\end{CodeOutput}
+\end{CodeChunk}
+
+IPW
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> method_ps()
+\end{CodeInput}
+\begin{CodeOutput}
+Propensity score model with logit link
+\end{CodeOutput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> method_ps("cloglog")$make_gradient
+\end{CodeInput}
+\begin{CodeOutput}
+function(X_nons, X_rand, weights, weights_rand, ...) {
+      function(theta) {
+        eta1 <- as.matrix(X_nons) %*% theta
+        eta2 <- as.matrix(X_rand) %*% theta
+        invLink1 <- inv_link(eta1)
+        invLink2 <- inv_link(eta2)
+        # weights_sum <- sum(weights, weights_rand)
+
+        t(t(X_nons) %*% (weights * exp(eta1) / invLink1) - t(X_rand) %*% (weights_rand * exp(eta2)))
+      }
+    }
+<bytecode: 0x1228779e0>
+<environment: 0x12357f970>
+\end{CodeOutput}
+\end{CodeChunk}
 
 \section{Summary and future work}\label{summary-and-future-work}
 
@@ -1854,15 +2026,15 @@ The authors' work has been financed by the National Science Centre in
 Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
 Łukasz Chrostowski is the main developer and maintainer of the package
-up to version 0.1.0. Parts of this work are based on Łukasz's master's
+up to 0.1.0 version. Parts of this paper are based on Łukasz's Master's
 thesis (available at
 \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr
-Chlebicki contributed to the package and implemented the MI-PMM
-estimators. Maciej Beręsewicz had the initial idea and was responsible
-for the design of the package, as well as testing, reviewing and
-contributing to the source code and preparing the manuscript. He was
-also responsible for the major restructuring of the package between
-0.1.0 and 0.2.0 and subsequent releases.
+Chlebicki has contributed to the package and has implemented MI-PMM
+estimators. Maciej Beręsewicz came up with the initial idea and was
+responsible for the design of the package as well as testing, reviewing
+and contributing to the source code and prepared the manuscript. He was
+also responsible for the significant restructurisation of the package
+betwen 0.1.0 and 0.2.0 version and other.
 
 \clearpage
 

@@ -697,6 +697,8 @@ mi_est1
 In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
 ```{r}
+set.seed(2024)
+
 mi_est2 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -750,6 +752,7 @@ summary(dr_est1)
 Finally, we can use the bias minimisation approach, as proposed by \citet{yang_doubly_2020}, by specifying the `control_inference = control_inf(bias_correction = TRUE)` argument together with the `vars_combine=TRUE` and  `vars_selection=TRUE` as this approach requires variable selection followed by variable union from both equations. 
 
 ```{r bias-correction}
+set.seed(2024)
 dr_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   outcome = single_shift ~ region + private + nace + size,
@@ -812,6 +815,7 @@ The bootstrap approach is specified via the \code{control_inf()} function with `
 
 
 ```{r}
+set.seed(2024)
 ipw_est1_boot <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
@@ -851,6 +855,7 @@ In this section we briefly show how to use variable selection algorithms. In ord
 In the case of the MI approach we rely on the \pkg{ncvreg} package \citep{ncvreg}, which is the only \proglang{R} package that employs the SCAD method. For the IPW and DR approaches, we have developed our own codes in \proglang{C++} via the \pkg{Rcpp} and \pkg{RcppArmadillo} packages. In the code below we apply variable selection for the MI-GLM estimator using only 5 folds, 25 possible values of $\lambda$ parameters and the LASSO penalty.
 
 ```{r}
+set.seed(2024)
 mi_est1_sel <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -866,9 +871,30 @@ mi_est1_sel <- nonprob(
 In this case study, the MI-GLM estimator with variable selection yields almost the same results as the approach without it. Point estimates and standard errors differ at the fourth and third digit, respectively.
 
 ```{r}
-rbind("MI without var sel"=mi_est1$output,
-      "MI with var sel"=mi_est1_sel$output)
+rbind("MI without var sel"= mi_est1$output,
+      "MI with var sel"   = mi_est1_sel$output)
 ```
+
+Inspecting the selection 
+
+```{r}
+ipw_est1$selection$coefficients
+```
+
+or outcome models 
+
+```{r}
+mi_est1$outcome$single_shift$coefficients
+```
+
+
+DR selection and outcome is exactly the same as it is based on the joint estimation
+
+```{r}
+dr_est2$selection$single_shift$x
+```
+
+In the future versions we plan to align the selection and outcome models to return the same type of elements and objects.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
@@ -876,6 +902,10 @@ The package contains the main class \code{nonprobsvy} and a supplementary class 
 
 ```{r method-nobs}
 nobs(dr_est1)
+```
+
+```{r}
+pop_size(dr_est1)
 ```
 
 Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} class. On purpose we did not implement many methods as the goal of the package is to provide point and interval estimates. If a user is interested in assessing the quality of the models or covariate balance should use existing \proglang{R} packages.
@@ -888,18 +918,52 @@ Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} 
 Function & Description \\
 \hline
 \code{check_balance} & aaa; \\
+\code{pop_size} & \\
 \code{confint} & aaa\\
 \code{nobs} & \\
-\code{pop_size} & \\
 \code{summary} & \\
-\code{logLik, AIC, BIC, deviance} & \\
-\code{residuals, hatvalues, cooks.distance, print, vcov}  & it works exactly like \code{glm} counterparts.\\
+\code{update} & \\
+\code{weights} & \\
 \hline 
 \end{tabular}
 \caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
 \label{tab-s3methods}
 \end{table}
 
+
+```{r}
+confint(dr_est1, level = 0.99)
+```
+
+```{r}
+hist(weights(dr_est1), breaks = "fd")
+```
+
+Classes:
+
+```{r}
+class(dr_est1)
+```
+
+```{r}
+res_glm <- method_glm(y_nons = admin$single_shift,
+                      X_nons = model.matrix(~ region + private + nace + size, admin),
+                      X_rand = model.matrix(~ region + private + nace + size, jvs),
+                      svydesign = jvs_svy)
+
+class(res_glm)
+res_glm
+```
+
+IPW
+
+```{r}
+method_ps()
+```
+
+```{r}
+method_ps("cloglog")$make_gradient
+```
 
 # Summary and future work
 
@@ -913,7 +977,7 @@ The package will also be extended to handle the `svyrep.design` class from the \
 
 The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
-Łukasz Chrostowski is the main developer and maintainer of the package up to version 0.1.0. Parts of this work are based on Łukasz's master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki contributed to the package and implemented the MI-PMM estimators. Maciej Beręsewicz had the initial idea and was responsible for the design of the package, as well as testing, reviewing and contributing to the source code and preparing the manuscript. He was also responsible for the major restructuring of the package between 0.1.0 and 0.2.0 and subsequent releases.
+Łukasz Chrostowski is the main developer and maintainer of the package up to 0.1.0 version. Parts of this paper are based on Łukasz's  Master's thesis (available at \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr Chlebicki has contributed to the package and has implemented MI-PMM estimators. Maciej Beręsewicz came up with the initial idea and was responsible for the design of the package as well as testing, reviewing and contributing to the source code and prepared the manuscript. He was also responsible for the significant restructurisation of the package betwen 0.1.0 and 0.2.0 version and other.
 
 
 \clearpage
