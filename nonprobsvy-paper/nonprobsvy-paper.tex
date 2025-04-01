@@ -380,14 +380,15 @@ E_{\xi}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymb
 \end{equation}
 
 where the mean function \(m(\cdot,\cdot)\) and the variance \(v(\cdot)\)
-have known forms and \(y_i\) are assumed to be independent of
-\(\boldsymbol{x}_i\). The model in \eqref{eq-semipar-model} is assumed
-to hold for all units in the non-probability sample \(S_A\). The
-parameters of the model in \eqref{eq-semipar-model} can be estimated
-using the quasi maximum likelihood estimation method, which includes
-linear and non-linear models, such as generalized linear models (GLM).
-Let \(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be the true values of
-the model parameters \(\boldsymbol{\beta}\) and \(\sigma^2\) under the
+have known forms and \(y_i\) are also assumed to be conditionally
+independent given the \(\boldsymbol{x}_i\). The model in
+\eqref{eq-semipar-model} is assumed to hold for all units in the
+non-probability sample \(S_A\). The parameters of the model in
+\eqref{eq-semipar-model} can be estimated using the quasi maximum
+likelihood estimation method, which includes linear and non-linear
+models, such as generalized linear models (GLM). Let
+\(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be the true values of the
+model parameters \(\boldsymbol{\beta}\) and \(\sigma^2\) under the
 adopted model and \(\hat{\boldsymbol{\beta}}\) be the quasi maximum
 likelihood estimator of \(\boldsymbol{\beta}_0\). Let
 \(m_i=m(\boldsymbol{x}_i, \boldsymbol{\beta}_0)\) and
@@ -452,14 +453,18 @@ defined as previously. Under deterministic regression imputation, the
 
 There are several ways of imputing \(y_i^*\) and in the package we have
 implemented the following MI estimators: the semi-parametric approach
-based on generalized linear models (MI-GLM), nearest neighbour matching
-(MI-NN) and predictive mean matching (MI-PMM).
+based on generalized linear models (MI-GLM), kernel smoothing (MI-NPAR),
+nearest neighbour matching (MI-NN) and predictive mean matching
+(MI-PMM).
 
 The properties of the MI-GLM estimator, where \(y_i^*\) are imputed with
 \(\hat{m}_i\) from the semi-parametric model, were studied by
 \citet{kim_combining_2021}. In the \pkg{nonprobsvy} package, we account
 for the following GLM families: \code{gaussian}, \code{binomial} and
-\code{poisson}.
+\code{poisson}. The MI-NPAR estimator was proposed by
+\citet{chen_nonparametric_2022} who studied its finite population
+properties. In the package we implement this approach using local
+polynomial regression using \code{stats::loess} method.
 
 The MI-NN estimator was initially proposed by \citet{rivers2007sampling}
 under the name \textit{sample matching} and theoretical properties of
@@ -514,7 +519,9 @@ probability sample \(S_B\)); for the MI-NN estimator
 easily be obtained from the \pkg{survey} package) and a version for
 smaller samples can be found in \citet{chlebicki2025}; with respect to
 the variance of MI-PMM estimators, \citet{chlebicki2025} propose
-formulas which are the same as those for the MI-NN estimators.
+formulas which are the same as those for the MI-NN estimators. The
+analytical variance estimator for the MI-NPAR was proposed by
+\citet{chen_nonparametric_2022}.
 
 In the bootstrap approach each bootstrap replication \(b=1,...,B\)
 consists of the following steps.
@@ -522,7 +529,7 @@ consists of the following steps.
 \begin{enumerate}
 \item Independently:
   \begin{itemize}
-  \item draw a simple random sampling with replacement from the non-probability sample $S_A$ ,
+  \item draw a simple random sampling with replacement from the non-probability sample $S_A$ (using \code{base::sample}),
   \item draw a sample according to the declared sampling design from the probability sample $S_B$ (e.g. one can use the \code{as.svrepdesign} function from the \pkg{survey} package).
   \end{itemize}
 \item Estimate $\mu_{y, MI}^b$ using an appropriate approach (e.g. MI-GLM, MI-NN or MI-PMM).
@@ -683,17 +690,18 @@ replaced by one of the estimators in \eqref{eq-ipw-estimators}.
 
 \subsection{Doubly robust approach}\label{sec-dr-approach}
 
-The IPW and MI estimators are suited to mis-specified models for PS and
-outcome regression models, respectively. The DR approach was proposed to
-improve robustness and efficiency \citep[cf.][]{robins1994estimation}.
-It incorporates a prediction model for the response variable \(y_i\) and
-a PS model for participation \(R_i^A\). This approach is doubly robust
-in the sense that the DR estimator remains consistent even if one of the
-models is mis-specified. We need to consider a joint randomization
-approach involving a non-probability sample \(S_A\) and a probability
-sample \(S_B\) and DR inference is conducted within the \(qp\) or
-\(\xi p\) framework without specifying which one is correct. The general
-formula for the for the DR estimator is given by
+The IPW and MI estimators are suited to correctly specified models for
+PS and outcome regression models, respectively. The DR approach was
+proposed to improve robustness and efficiency
+\citep[cf.][]{robins1994estimation}. It incorporates a prediction model
+for the response variable \(y_i\) and a PS model for participation
+\(R_i^A\). This approach is doubly robust in the sense that the DR
+estimator remains consistent even if one of the models is mis-specified.
+We need to consider a joint randomization approach involving a
+non-probability sample \(S_A\) and a probability sample \(S_B\) and DR
+inference is conducted within the \(qp\) or \(\xi p\) framework without
+specifying which one is correct. The general formula for the for the DR
+estimator is given by
 
 \[
 \tilde{\mu}_{y,DR} = \frac{1}{N}\sum_{i \in S_A}\frac{y_i - m_i}{\pi_i^A} + \frac{1}{N}\sum_{i =1}^N m_i,
@@ -741,28 +749,29 @@ outcome model. An alternative approach, proposed by
 methods}\label{minimization-of-the-bias-for-doubly-robust-methods}
 
 \citet{yang_doubly_2020} discussed variable selection for a
-high-dimensional setting and noted that the bias of the estimator, which
-can increase, cannot be controlled. Therefore, according to
-\citet{yang_doubly_2020}, the idea is to develop equations that can be
-used to estimate the \(\boldsymbol{\beta}\) and \(\boldsymbol{\gamma}\)
-parameters based on the bias of the population mean estimator. In this
-way the parameters can be estimated in a single step, rather than in two
-separate steps. First, the authors derived the bias of the
-\(\hat{\mu}_{DR}\), assuming
+high-dimensional setting and noted that the asymptotic bias of the
+estimator, which can increase, cannot be controlled. Therefore,
+according to \citet{yang_doubly_2020}, the idea is to develop equations
+that can be used to estimate the \(\boldsymbol{\beta}\) and
+\(\boldsymbol{\gamma}\) parameters based on the bias of the population
+mean estimator. In this way the parameters can be estimated in a single
+step, rather than in two separate steps. First, the authors derived the
+asymptotic bias of the \(\hat{\mu}_{DR}\), assuming
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})=\boldsymbol{x}\pi(\boldsymbol{x}, \boldsymbol{\gamma})^{-1}\)
 for the IPW estimator, which is given by equation \eqref{eq-dr-bias}
 
 \begin{equation}
 \begin{aligned}
-\operatorname{bias}\left(\hat{\mu}_{D R}\right) = \mid\hat{\mu}_{DR}-\mu\mid &=\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} - 1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\}\\
-& + \frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)
+\operatorname{bias}\left(\hat{\mu}_{D R}\right) = E\mid\hat{\mu}_{DR}-\mu\mid &=
+E\left\{\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} - 1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \right\}\\
+& + E\left\{\frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\}.
 \end{aligned}
 \label{eq-dr-bias}
 \end{equation}
 
 The goal of this approach is to minimize
 \(\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2\), which consists in
-solving the following system of equations:
+solving the following system of empirical equations:
 
 \begin{equation}
 \left(\begin{array}{c}
@@ -773,8 +782,8 @@ solving the following system of equations:
 \end{equation}
 
 where
-\(\dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)=\frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}\)
-. The system in \eqref{eq-bias-min} can be solved using the
+\(\dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)=\frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}\).
+The system in \eqref{eq-bias-min} can be solved using the
 Newton--Raphson method. This approach, without variable selection, is
 equivalent to that proposed by \citet{kim2014doubly} and was extensively
 discussed by \citet{chen2020doubly} and \citet{wu2022statistical} in the
@@ -791,10 +800,8 @@ only for
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})=\boldsymbol{x}_i \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)^{-1}\)
 but also for
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})=\boldsymbol{x}\)
-and various link functions for the propensity score model. We also
-enable the user to select this estimation strategy with or without
-variable selection methods discussed in Section \ref{sec-varsel}. As
-noted in the beginning, the choice of either \eqref{eq-dr-known-n} or
+and various link functions for the propensity score model. As noted in
+the beginning, the choice of either \eqref{eq-dr-known-n} or
 \eqref{eq-dr-estimated-n} results in a different approach to estimating
 variance, which is discussed in the next subsection.
 
@@ -1000,19 +1007,23 @@ estimators.
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{5cm}p{9cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with \code{control_out} \\
 \hline
 MI-GLM with the LASSO penalty and 5 folds & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
-control_outcome = control_out(penalty="lasso", folds = 5))}\\
+\code{nonprob(outcome = y1 ~ x1 + x2, \newline
+data = df, svydesign=prob, \newline
+control_outcome = control_out(penalty="lasso", folds=5))}\\
 MI-NN with the \code{bd} algorithm & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
+\code{nonprob(outcome = y1 ~ x1 + x2, \newline
+data = df, svydesign=prob, \newline
 control_outcome = control_out(treetype = "bd"))}\\
 MI-PMM A with $k=3$ & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
-control_outcome = control_out(k=3,pmm_match_type=2))}\\
+\code{nonprob(outcome = y1 ~ x1 + x2,  \newline
+data = df, svydesign=prob, \newline
+control_outcome = control_out(k=3, pmm_match_type=2))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the MI estimators}
@@ -1037,15 +1048,18 @@ estimators.
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{10cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with \code{control_sel} \\
 \hline
 Calibrated IPW & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob,\newline
 control_selection = control_sel(est_method="gee"))}\\
 IPW with the MCP penalty and 5 folds & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob, \newline
 control_selection = control_sel(penalty="MCP", nfolds=5))}\\
 \hline
 \end{tabular}
@@ -1063,28 +1077,32 @@ specify whether the analytical or bootstrap approach should be used (the
 should be applied (the \code{vars_selection} argument) and what type of
 bootstrap should be applied for the probability sample (the
 \code{rep_type} argument). This function is also used to specify the
-inference procedure for the DR approach: if a union or a division of
-variables should be applied (the \code{vars_combine} argument) and if
-the bias correction should be applied after variable selection (the
-\code{vars_selection}) and variable combination (the
-\code{bias_correction} argument). Table \ref{tab-control-inf-examples}
-presents example usage of the \code{control_inf} function for the IPW
-and DR estimators.
+inference procedure for the DR approach: if a union of variables should
+be applied (the \code{vars_combine} argument) and if the bias correction
+(the \code{bias_correction} argument) should be applied after variable
+selection (the \code{vars_selection}) and variable combination. Table
+\ref{tab-control-inf-examples} presents example usage of the
+\code{control_inf} function for the IPW and DR estimators.
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{10cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with the \code{control_sel} \\
 \hline
 Calibrated IPW with variable selection, bootstrap and $B=50$ & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
-control_selection = control_sel(est_method="gee"),
-control_inference = control_inf(vars_selection=TRUE, var_method="bootstrap", rep_type = "subbootstrap", B=50))}\\
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob, \newline
+control_selection = control_sel(est_method="gee"), \newline
+control_inference = control_inf(vars_selection=TRUE,  \newline
+var_method="bootstrap", rep_type="subbootstrap", B=50))}\\
 The DR with the SCAD penalty, 5 folds and bias correction & 
-\code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2, data = df, svydesign = prob,
-control_selection = control_sel(penalty="SCAD", nfolds=5),
-control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE, vars_combine=TRUE))}\\
+\code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2,  \newline
+data = df, svydesign = prob, \newline
+control_selection = control_sel(penalty="SCAD", nfolds=5), \newline
+control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE,  
+vars_combine=TRUE))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the IPW estimators}
@@ -1095,6 +1113,8 @@ In the next sections we present a case study illustrating the process of
 integrating a non-probability sample with a reference probability
 sample. We present various estimators and compare them. Finally, we
 describe more advanced options available in the package.
+
+\newpage
 
 \section{Data analysis example}\label{sec-data-analysis}
 
@@ -1114,7 +1134,7 @@ packages.
 \begin{CodeChunk}
 \begin{CodeInput}
 R> library(nonprobsvy) ## for estimation
-R> library(ggplot2) ## for visualisation
+R> library(ggplot2)    ## for visualisation
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -1212,7 +1232,7 @@ and the naive, reference estimate, given by the mean of the
 approach}\label{propensity-score-approach}
 
 First, we start with the IPW approach, which offers the choice between
-two estimation methods: MLE (standard) and GEE (calibrated to the
+two estimation methods: MLE (default) and GEE (calibrated to the
 estimated survey totals). We start by calling the \code{nonprob}
 function, where we define the \code{selection} argument indicating which
 variables are to be included, the \code{target} argument, which
@@ -1234,11 +1254,11 @@ R> ipw_est1 <- nonprob(
 
 In order to get the basic information about the estimated target
 quantity we can use the \code{print} method to display the object. It
-provides basic information about the methods, source of auxiliary
-variable, variable selection, the naive (uncorrected estimator) and the
-corrected along with the standard error and confidence interval. The the
-last line, i.e.~\code{selected estimator}, is limited to the maximum of
-5 variables.
+provides information about the methods, source of auxiliary variable,
+variable selection, the naive (uncorrected estimator) and the corrected
+along with the standard error and confidence interval. The the last
+line, i.e.~\code{selected estimator}, is limited to the maximum of 5
+variables.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1259,7 +1279,7 @@ A nonprob object
 
 If we want to see detailed information about the approach, we can use
 the \code{summary} method. This function provides information on the
-sample sizes, sum of tje IPW weights along with the distribution of IPW
+sample sizes, sum of the IPW weights along with the distribution of IPW
 weights (for non-probability sample) and propensity scores (denoted as
 IPW probabilities) for both samples. A more advanced user may be
 interested in inspecting the details of the fit by accessing the
@@ -1391,11 +1411,12 @@ A nonprob object
 \end{CodeOutput}
 \end{CodeChunk}
 
-In order to employ an MI estimator based on nearest neighbour matching,
-one can specify \texttt{method\_outcome\ =\ "nn"} for the nearest
-neighbours search using all variables specified in the \texttt{outcome}
-argument, or \texttt{method\_outcome\ =\ "pmm"} to use predictive mean
-matching. In both cases, we employ \(k=5\) nearest neighbours
+In order to employ an MI estimator based on NN matching, one can specify
+\texttt{method\_outcome\ =\ "nn"} for the nearest neighbours search
+using all variables specified in the \texttt{outcome} argument,
+\texttt{method\_outcome\ =\ "pmm"} to use PMM or
+\texttt{method\_outcome\ =\ "npar"} to use non-parametric approach. For
+the NN and PMM estimators, we employ \(k=5\) nearest neighbours
 (i.e.~\texttt{control\_out(k=5)}) but the variance of the PMM estimator
 can be only estimated using bootstrap approach suggested by
 \citet{chlebicki2025}. In the case of the MI-NN estimator there is no
@@ -1629,7 +1650,7 @@ calculation of the standard error can be disabled using
 package refers to:
 
 \begin{itemize}
-\item the non-probability sample -- currently only simple random sampling with replacement is available,
+\item the non-probability sample -- currently only simple random sampling with replacement is available via the \code{base::sample},
 \item the probability sample -- all the approaches implemented in the \code{as.svrepdesign} function of the \pkg{survey} package are supported and we refer the reader to the relevant help file. 
 \end{itemize}
 
@@ -1708,8 +1729,8 @@ parameters:
 
 \begin{itemize}
 \item \code{penalty} -- The penalization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")})
-\item \code{nlambda} -- The number of $\lambda$ values; by default set to 50.
-\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; .001 by default.
+\item \code{nlambda} -- The number of $\lambda$ values; by default set to 50 (grid search).
+\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; 0.001 by default.
 \item \code{lambda} -- A user specified vector of lambdas (only for the \code{control_sel} function).
 \item \code{nfolds} -- The number of folds for cross validation; by default set to 10.
 \item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for the selection model; by default set to 3.7 and 3, respectively.
@@ -1762,56 +1783,53 @@ MI with var sel    0.7019285 0.01102080
 \end{CodeOutput}
 \end{CodeChunk}
 
-Which one were selected (\texttt{ncvreg})
+The result object of the \code{cv.ncvreg} class is stored in the
+\code{"outcome"} element of the result, and you can access the selected
+variables using the \code{coef} generic method as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> class(mi_est1_sel$outcome$single_shift)
-\end{CodeInput}
-\begin{CodeOutput}
-[1] "cv.ncvreg"
-\end{CodeOutput}
-\end{CodeChunk}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> coef(mi_est1_sel$outcome$single_shift)
-\end{CodeInput}
-\begin{CodeOutput}
- (Intercept)     region04     region06     region08     region10     region12 
- 0.281738543  0.002305430  0.327210071  0.319456666  0.211844407  0.177343036 
-    region14     region16     region18     region20     region22     region24 
- 0.014156489  0.079148065  0.000000000  0.000000000  0.004585772 -0.255483907 
-    region26     region28     region30     region32      private      naceD.E 
- 0.133196421  0.000000000  0.000000000  0.000000000 -0.608717740  0.176206471 
-       naceF        naceG        naceH        naceI        naceJ      naceK.L 
- 1.917488362 -0.455569036 -0.560525320 -1.096362422  0.921599230  1.037171708 
-       naceM        naceN        naceO        naceP        naceQ      naceR.S 
- 1.002703340 -0.183874433  1.474778598  0.537111623 -0.711282188 -0.813566538 
-       sizeM        sizeS 
- 0.997059838  1.535269579 
-\end{CodeOutput}
-\end{CodeChunk}
-
-Inspecting the selection
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> ipw_est1$selection$coefficients
+R> round(coef(mi_est1_sel$outcome$single_shift), 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
--0.65277121  0.83779549  0.19953188  0.10479761 -0.15756693 -0.60987005 
+     0.2817      0.0023      0.3272      0.3195      0.2118      0.1773 
    region14    region16    region18    region20    region22    region24 
--0.84150300  0.76385615  1.17810496  0.22251032 -0.03753066 -0.40670702 
+     0.0142      0.0791      0.0000      0.0000      0.0046     -0.2555 
    region26    region28    region30    region32     private     naceD.E 
- 0.20287478  0.57862243 -0.61021662  0.32742204  0.05899377  0.77273741 
+     0.1332      0.0000      0.0000      0.0000     -0.6087      0.1762 
       naceF       naceG       naceH       naceI       naceJ     naceK.L 
--0.37783229 -0.33370352 -0.65174566  0.41179116 -1.42636886  0.06171389 
+     1.9175     -0.4556     -0.5605     -1.0964      0.9216      1.0372 
       naceM       naceN       naceO       naceP       naceQ     naceR.S 
--0.40677813  0.80034162 -0.69354695  1.25095429  0.30286775  0.22227967 
+     1.0027     -0.1839      1.4748      0.5371     -0.7113     -0.8136 
       sizeM       sizeS 
--0.36412124 -1.02915884 
+     0.9971      1.5353 
+\end{CodeOutput}
+\end{CodeChunk}
+
+If a user is interested in viewing the PS estimation results, then
+access to the \code{"selection"} element is required. This is a
+\textbackslash code\{list\{\} of all the results returned by the MLE or
+GEE estimation method. For example, the evaluation of coefficients can
+be done in the following way
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> round(ipw_est1$selection$coefficients,4)
+\end{CodeInput}
+\begin{CodeOutput}
+(Intercept)    region04    region06    region08    region10    region12 
+    -0.6528      0.8378      0.1995      0.1048     -0.1576     -0.6099 
+   region14    region16    region18    region20    region22    region24 
+    -0.8415      0.7639      1.1781      0.2225     -0.0375     -0.4067 
+   region26    region28    region30    region32     private     naceD.E 
+     0.2029      0.5786     -0.6102      0.3274      0.0590      0.7727 
+      naceF       naceG       naceH       naceI       naceJ     naceK.L 
+    -0.3778     -0.3337     -0.6517      0.4118     -1.4264      0.0617 
+      naceM       naceN       naceO       naceP       naceQ     naceR.S 
+    -0.4068      0.8003     -0.6935      1.2510      0.3029      0.2223 
+      sizeM       sizeS 
+    -0.3641     -1.0292 
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1821,7 +1839,7 @@ to return the same type of elements and objects.
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
 The package contains the main class \code{nonprob} and the supplementary
-class \code{nonprob\_method} and the related \code{nonprob\_summary}
+class \code{nonprob_method} and the related \code{nonprob_summary}
 class. All available \code{S3methods} can be obtained by calling
 \code{methods(class="nonprobsvy")}. For instance, the
 \code{check_balance} function, already mentioned in the case study, is
@@ -1875,6 +1893,9 @@ Function & Description \\
 \label{tab-s3methods}
 \end{table}
 
+The confidence interval for the target variable(s) can be estimated
+using the generic \code{confint} method.
+
 \begin{CodeChunk}
 \begin{CodeInput}
 R> confint(dr_est1, level = 0.99)
@@ -1884,6 +1905,9 @@ R> confint(dr_est1, level = 0.99)
 1 single_shift   0.6734515   0.7334882
 \end{CodeOutput}
 \end{CodeChunk}
+
+If a user is interested in assessing the distribution of the IPW
+weights, we suggest using the \code{weights} method.
 
 \begin{CodeChunk}
 \begin{CodeInput}

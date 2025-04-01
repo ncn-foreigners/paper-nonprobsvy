@@ -260,7 +260,7 @@ In the bootstrap approach each bootstrap replication $b=1,...,B$ consists of the
 \begin{enumerate}
 \item Independently:
   \begin{itemize}
-  \item draw a simple random sampling with replacement from the non-probability sample $S_A$ ,
+  \item draw a simple random sampling with replacement from the non-probability sample $S_A$ (using \code{base::sample}),
   \item draw a sample according to the declared sampling design from the probability sample $S_B$ (e.g. one can use the \code{as.svrepdesign} function from the \pkg{survey} package).
   \end{itemize}
 \item Estimate $\mu_{y, MI}^b$ using an appropriate approach (e.g. MI-GLM, MI-NN or MI-PMM).
@@ -339,7 +339,7 @@ Another approach is to use bootstrap, which is essentially the same as the one p
 
 ## Doubly robust approach {#sec-dr-approach}
 
-The IPW and MI estimators are suited to mis-specified <!--Nie powinno być correctly specified--> models for PS and outcome regression models, respectively. The DR approach was proposed to improve robustness and efficiency \citep[cf.][]{robins1994estimation}. It incorporates a prediction model for the response variable $y_i$ and a PS model for participation $R_i^A$. This approach is doubly robust in the sense that the DR estimator remains consistent even if one of the models is mis-specified. We need to consider a joint randomization approach involving a non-probability sample $S_A$ and a probability sample $S_B$ and DR inference is conducted within the $qp$ or $\xi p$ framework without specifying which one is correct. The general formula for the for the DR estimator is given by
+The IPW and MI estimators are suited to correctly specified models for PS and outcome regression models, respectively. The DR approach was proposed to improve robustness and efficiency \citep[cf.][]{robins1994estimation}. It incorporates a prediction model for the response variable $y_i$ and a PS model for participation $R_i^A$. This approach is doubly robust in the sense that the DR estimator remains consistent even if one of the models is mis-specified. We need to consider a joint randomization approach involving a non-probability sample $S_A$ and a probability sample $S_B$ and DR inference is conducted within the $qp$ or $\xi p$ framework without specifying which one is correct. The general formula for the for the DR estimator is given by
 
 $$
 \tilde{\mu}_{y,DR} = \frac{1}{N}\sum_{i \in S_A}\frac{y_i - m_i}{\pi_i^A} + \frac{1}{N}\sum_{i =1}^N m_i,
@@ -371,17 +371,18 @@ where $d_i^A=\pi\left(\bx_i, \bgamma\right)^{-1}, \hat{N}^A=\sum_{i \in S_A} d_i
 
 ### Minimization of the bias for doubly robust methods
 
-\citet{yang_doubly_2020} discussed variable selection for a high-dimensional setting and noted that the bias of the estimator, which can increase, cannot be controlled. Therefore, according to \citet{yang_doubly_2020}, the idea is to develop equations that can be used to estimate the $\bbeta$ and $\bgamma$ parameters based on the bias of the population mean estimator. In this way the parameters can be estimated in a single step, rather than in two separate steps. First, the authors derived the bias of the $\hat{\mu}_{DR}$, assuming $\bh(\bx, \bgamma)=\bx\pi(\bx, \bgamma)^{-1}$ for the IPW estimator, which is given by equation \eqref{eq-dr-bias}<!-- Nie powinniśmy tego nazwać empirical bias czy jakoś inaczej jak nie mamy wartości oczekiwanej?-->
+\citet{yang_doubly_2020} discussed variable selection for a high-dimensional setting and noted that the asymptotic bias of the estimator, which can increase, cannot be controlled. Therefore, according to \citet{yang_doubly_2020}, the idea is to develop equations that can be used to estimate the $\bbeta$ and $\bgamma$ parameters based on the bias of the population mean estimator. In this way the parameters can be estimated in a single step, rather than in two separate steps. First, the authors derived the asymptotic bias of the $\hat{\mu}_{DR}$, assuming $\bh(\bx, \bgamma)=\bx\pi(\bx, \bgamma)^{-1}$ for the IPW estimator, which is given by equation \eqref{eq-dr-bias}
 
 \begin{equation}
 \begin{aligned}
-\operatorname{bias}\left(\hat{\mu}_{D R}\right) = \mid\hat{\mu}_{DR}-\mu\mid &=\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\bx_i, \bgamma\right)} - 1\right\}\left\{y_i-m\left(\bx_i, \bbeta\right)\right\}\\
-& + \frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\bx_i, \bbeta\right)
+\operatorname{bias}\left(\hat{\mu}_{D R}\right) = E\mid\hat{\mu}_{DR}-\mu\mid &=
+E\left\{\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\bx_i, \bgamma\right)} - 1\right\}\left\{y_i-m\left(\bx_i, \bbeta\right)\right\} \right\}\\
+& + E\left\{\frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\bx_i, \bbeta\right)\right\}.
 \end{aligned}
 \label{eq-dr-bias}
 \end{equation}
 
-The goal of this approach is to minimize $\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2$, which consists in solving the following system of equations:
+The goal of this approach is to minimize $\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2$, which consists in solving the following system of empirical equations:
 
 \begin{equation}
 \left(\begin{array}{c}
@@ -391,13 +392,13 @@ The goal of this approach is to minimize $\operatorname{bias}\left(\hat{\mu}_{D 
 \label{eq-bias-min}
 \end{equation}
 
-where $\dot{m}\left(\bx_i, \bbeta\right)=\frac{\partial m\left(\bx_i, \bbeta\right)}{\partial \bbeta}$ <!--Jeżeli używamy tego tylko raz to może lepiej nie wprowadzać nowej notacji?-->. The system in \eqref{eq-bias-min} can be solved using the Newton--Raphson method. This approach, without variable selection, is equivalent to that proposed by \citet{kim2014doubly} and was extensively discussed by \citet{chen2020doubly} and \citet{wu2022statistical} in the context of estimating parameters and the variance of the DR estimator. The main limitation of this approach is the possibility that a solution to \eqref{eq-bias-min} may not exist unless the two sets of covariates used in the outcome regression model and the PS model have the same dimensions. That is why \citet{yang_doubly_2020} suggested using this approach on the union of variables from both models (e.g. after variable selection).
+where $\dot{m}\left(\bx_i, \bbeta\right)=\frac{\partial m\left(\bx_i, \bbeta\right)}{\partial \bbeta}$. The system in \eqref{eq-bias-min} can be solved using the Newton--Raphson method. This approach, without variable selection, is equivalent to that proposed by \citet{kim2014doubly} and was extensively discussed by \citet{chen2020doubly} and \citet{wu2022statistical} in the context of estimating parameters and the variance of the DR estimator. The main limitation of this approach is the possibility that a solution to \eqref{eq-bias-min} may not exist unless the two sets of covariates used in the outcome regression model and the PS model have the same dimensions. That is why \citet{yang_doubly_2020} suggested using this approach on the union of variables from both models (e.g. after variable selection).
 
-In the \pkg{nonprobsvy} package we have implemented these approaches not only for $\bh(\bx, \bgamma)=\bx_i \pi\left(\bx_i, \bgamma\right)^{-1}$ but also for $\bh(\bx, \bgamma)=\bx$ and various link functions for the propensity score model. We also enable the user to select this estimation strategy with or without variable selection methods discussed in Section \ref{sec-varsel}. As noted in the beginning, the choice of either \eqref{eq-dr-known-n} or \eqref{eq-dr-estimated-n} results in a different approach to estimating variance, which is discussed in the next subsection.
+In the \pkg{nonprobsvy} package we have implemented these approaches not only for $\bh(\bx, \bgamma)=\bx_i \pi\left(\bx_i, \bgamma\right)^{-1}$ but also for $\bh(\bx, \bgamma)=\bx$ and various link functions for the propensity score model. As noted in the beginning, the choice of either \eqref{eq-dr-known-n} or \eqref{eq-dr-estimated-n} results in a different approach to estimating variance, which is discussed in the next subsection.
 
 ### Variance estimators for the doubly robust approach
 
-\citet{yang_doubly_2020} derived a closed form estimator for \eqref{eq-dr-known-n} but this requires the knowledge of the population and bias correction to obtain a valid estimator for $V_{\xi p}\left(\hat{\mu}_{y,DR}-\mu_y\right)$ under the outcome regression model $\xi$. A doubly robust variance estimator for $\hat{\mu}_{y,DR2}$ given by \eqref{eq-dr-estimated-n} is not yet available in the literature. In the package, to offer the analytical variance estimator of $\hat{\mu}_{y,DR2}$ we simply replace $N$ with estimated $\hat{N}_A$ and $\hat{N}_B$ but we urge caution when using this approach. <!-- Jest warning w pakiecie? Albo message? Jeżeli tak to warto tu napisać, jak nie to Imo powinniśmy dodać.-->
+\citet{yang_doubly_2020} derived a closed form estimator for \eqref{eq-dr-known-n} but this requires the knowledge of the population and bias correction to obtain a valid estimator for $V_{\xi p}\left(\hat{\mu}_{y,DR}-\mu_y\right)$ under the outcome regression model $\xi$. A doubly robust variance estimator for $\hat{\mu}_{y,DR2}$ given by \eqref{eq-dr-estimated-n} is not yet available in the literature. In the package, to offer the analytical variance estimator of $\hat{\mu}_{y,DR2}$ we simply replace $N$ with estimated $\hat{N}_A$ and $\hat{N}_B$ but we urge caution when using this approach. 
 
 Alternatively, one can use the bootstrap approach. \citet{chen2020doubly} demonstrated that the bootstrap approach presented in Section \ref{sec-prediction} performs well in terms of the coverage rate when one of the working models is correctly specified. This is why this approach is recommended for all users.
 
@@ -505,19 +506,23 @@ The \code{control_out} function can be used to specify various aspects of the es
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{5cm}p{9cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with \code{control_out} \\
 \hline
 MI-GLM with the LASSO penalty and 5 folds & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
-control_outcome = control_out(penalty="lasso", folds = 5))}\\
+\code{nonprob(outcome = y1 ~ x1 + x2, \newline
+data = df, svydesign=prob, \newline
+control_outcome = control_out(penalty="lasso", folds=5))}\\
 MI-NN with the \code{bd} algorithm & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
+\code{nonprob(outcome = y1 ~ x1 + x2, \newline
+data = df, svydesign=prob, \newline
 control_outcome = control_out(treetype = "bd"))}\\
 MI-PMM A with $k=3$ & 
-\code{nonprob(outcome = y1 ~ x1 + x2, data = df, svydesign=prob,
-control_outcome = control_out(k=3,pmm_match_type=2))}\\
+\code{nonprob(outcome = y1 ~ x1 + x2,  \newline
+data = df, svydesign=prob, \newline
+control_outcome = control_out(k=3, pmm_match_type=2))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the MI estimators}
@@ -529,15 +534,18 @@ The \code{control_sel} function provides essential control parameters for fittin
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{10cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with \code{control_sel} \\
 \hline
 Calibrated IPW & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob,\newline
 control_selection = control_sel(est_method="gee"))}\\
 IPW with the MCP penalty and 5 folds & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob, \newline
 control_selection = control_sel(penalty="MCP", nfolds=5))}\\
 \hline
 \end{tabular}
@@ -547,23 +555,27 @@ control_selection = control_sel(penalty="MCP", nfolds=5))}\\
 
 ## Controlling variance estimation
 
-Finally, the \code{control_inf} function configures the parameters for variance estimation in the \code{nonprob} function. It allows users to specify whether the analytical or bootstrap approach should be used (the \code{var_method} argument), whether the variable selection method should be applied (the \code{vars_selection} argument) and what type of bootstrap should be applied for the probability sample (the \code{rep_type} argument). This function is also used to specify the inference procedure for the DR approach: if a union or a division of variables should be applied (the \code{vars_combine} argument) and if the bias correction should be applied after variable selection (the \code{vars_selection}) and variable combination (the \code{bias_correction} argument). Table \ref{tab-control-inf-examples} presents example usage of the \code{control_inf} function for the IPW and DR estimators.
+Finally, the \code{control_inf} function configures the parameters for variance estimation in the \code{nonprob} function. It allows users to specify whether the analytical or bootstrap approach should be used (the \code{var_method} argument), whether the variable selection method should be applied (the \code{vars_selection} argument) and what type of bootstrap should be applied for the probability sample (the \code{rep_type} argument). This function is also used to specify the inference procedure for the DR approach: if a union of variables should be applied (the \code{vars_combine} argument) and if the bias correction (the \code{bias_correction} argument) should be applied after variable selection (the \code{vars_selection}) and variable combination. Table \ref{tab-control-inf-examples} presents example usage of the \code{control_inf} function for the IPW and DR estimators.
 
-<!-- Tabela bardzo fajna dobrze uczyć przez przykłady ale trochę ciężko ją przeczytać jak kod jest tak ściśnięty.-->
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{10cm}}
+\small
+\begin{tabular}{p{4cm}p{11cm}}
 \hline
 Estimator & Declaration with the \code{control_sel} \\
 \hline
 Calibrated IPW with variable selection, bootstrap and $B=50$ & 
-\code{nonprob(selection = ~ x1 + x2, target = ~y1, data = df, svydesign = prob,
-control_selection = control_sel(est_method="gee"),
-control_inference = control_inf(vars_selection=TRUE, var_method="bootstrap", rep_type = "subbootstrap", B=50))}\\
+\code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
+data = df, svydesign = prob, \newline
+control_selection = control_sel(est_method="gee"), \newline
+control_inference = control_inf(vars_selection=TRUE,  \newline
+var_method="bootstrap", rep_type="subbootstrap", B=50))}\\
 The DR with the SCAD penalty, 5 folds and bias correction & 
-\code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2, data = df, svydesign = prob,
-control_selection = control_sel(penalty="SCAD", nfolds=5),
-control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE, vars_combine=TRUE))}\\
+\code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2,  \newline
+data = df, svydesign = prob, \newline
+control_selection = control_sel(penalty="SCAD", nfolds=5), \newline
+control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE,  
+vars_combine=TRUE))}\\
 \hline
 \end{tabular}
 \caption{Example declarations of the IPW estimators}
@@ -571,6 +583,8 @@ control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE, vars_
 \end{table}
 
 In the next sections we present a case study illustrating the process of integrating a non-probability sample with a reference probability sample. We present various estimators and compare them. Finally, we describe more advanced options available in the package.
+
+\newpage
 
 # Data analysis example {#sec-data-analysis}
 
@@ -586,7 +600,7 @@ Before we explain the case study let us first load the necessary packages.
 
 ```{r load-package, message=FALSE, warning=FALSE}
 library(nonprobsvy) ## for estimation
-library(ggplot2) ## for visualisation
+library(ggplot2)    ## for visualisation
 ```
 
 The goal of the case study was to integrate survey (\code{jvs}) and administrative (\code{admin}) data about job vacancies in Poland. The first source, the Job Vacancy Survey (JVS), contains 6,523 units. The JVS provides a probability sample drawn according to a stratified sampling design. More details can be found in \cite{jvs2022}. The dataset contains information about the NACE code (14 levels, the \code{nace} column), \code{region} (16 levels), sector (2 levels, the \code{private} column), company size (3 levels: Small up to 9, Medium 10-49 and Large 50+) and the final weight (i.e. the design weight corrected for non-contact and non-response), which is treated as the $d$ weight.
@@ -619,7 +633,7 @@ One should keep in mind that this paper does not aim to provide a complete tutor
 
 ### Propensity score approach
 
-First, we start with the IPW approach, which offers the choice between two estimation methods: MLE (standard) and GEE (calibrated to the estimated survey totals). We start by calling the \code{nonprob} function, where we define the \code{selection} argument indicating which variables are to be included, the \code{target} argument, which specifies the variable of interest, i.e. \code{single_shift}. The remaining arguments specify the \code{svydesign} object, the dataset and the link function (\code{method_selection}).
+First, we start with the IPW approach, which offers the choice between two estimation methods: MLE (default) and GEE (calibrated to the estimated survey totals). We start by calling the \code{nonprob} function, where we define the \code{selection} argument indicating which variables are to be included, the \code{target} argument, which specifies the variable of interest, i.e. \code{single_shift}. The remaining arguments specify the \code{svydesign} object, the dataset and the link function (\code{method_selection}).
 
 ```{r}
 ipw_est1 <- nonprob(
@@ -631,18 +645,17 @@ ipw_est1 <- nonprob(
 )
 ```
 
-In order to get the basic information about the estimated target quantity we can use the \code{print} method to display the object. It provides basic information about the methods, source of auxiliary variable, variable selection, the naive (uncorrected estimator) and the corrected along with the standard error and confidence interval. The the last line, i.e. \code{selected estimator}, is limited to the maximum of 5 variables.
+In order to get the basic information about the estimated target quantity we can use the \code{print} method to display the object. It provides information about the methods, source of auxiliary variable, variable selection, the naive (uncorrected estimator) and the corrected along with the standard error and confidence interval. The the last line, i.e. \code{selected estimator}, is limited to the maximum of 5 variables.
 
 ```{r}
 ipw_est1
 ```
 
-If we want to see detailed information about the approach, we can use the \code{summary} method. This function provides information on the sample sizes, sum of tje IPW weights along with the distribution of IPW weights (for non-probability sample) and propensity scores (denoted as IPW probabilities) for both samples. A more advanced user may be interested in inspecting the details of the fit by accessing the \code{selection} element (i.e. \code{ipw_est1$selection}).
+If we want to see detailed information about the approach, we can use the \code{summary} method. This function provides information on the sample sizes, sum of the IPW weights along with the distribution of IPW weights (for non-probability sample) and propensity scores (denoted as IPW probabilities) for both samples. A more advanced user may be interested in inspecting the details of the fit by accessing the \code{selection} element (i.e. \code{ipw_est1$selection}).
 
 ```{r}
 summary(ipw_est1)
 ```
-
 
 If we want to use the calibrated IPW approach, it is necessary to define the `control_sel` function in the `control_selection` argument by setting the `est_method` argument equal to `gee` (the default is `mle`) and the value of `gee_h_fun`.
 
@@ -689,7 +702,7 @@ mi_est1
 ```
 
 
-In order to employ an MI estimator based on nearest neighbour matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, or `method_outcome = "pmm"` to use predictive mean matching. In both cases, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
+In order to employ an MI estimator based on NN matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, `method_outcome = "pmm"` to use PMM or `method_outcome = "npar"` to use non-parametric approach. For the NN and PMM estimators, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
 ```{r}
 set.seed(2024)
@@ -802,7 +815,7 @@ ggplot(data = df_s,
 In the package we allow the user to estimate the variance of the mean analytically (by default) or using the bootstrap approach, as described in Section \ref{sec-prediction}. We use analytical variance estimators proposed in the papers referenced in Section \ref{sec-methods}. The calculation of the standard error can be disabled using \code{nonprob(se=FALSE)}. The bootstrap approach implemented in the package refers to: 
 
 \begin{itemize}
-\item the non-probability sample -- currently only simple random sampling with replacement is available,
+\item the non-probability sample -- currently only simple random sampling with replacement is available via the \code{base::sample},
 \item the probability sample -- all the approaches implemented in the \code{as.svrepdesign} function of the \pkg{survey} package are supported and we refer the reader to the relevant help file. 
 \end{itemize}
 
@@ -840,8 +853,8 @@ In this section we briefly show how to use variable selection algorithms. In ord
 
 \begin{itemize}
 \item \code{penalty} -- The penalization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")})
-\item \code{nlambda} -- The number of $\lambda$ values; by default set to 50.
-\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; .001 by default.
+\item \code{nlambda} -- The number of $\lambda$ values; by default set to 50 (grid search).
+\item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; 0.001 by default.
 \item \code{lambda} -- A user specified vector of lambdas (only for the \code{control_sel} function).
 \item \code{nfolds} -- The number of folds for cross validation; by default set to 10.
 \item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for the selection model; by default set to 3.7 and 3, respectively.
@@ -870,26 +883,24 @@ rbind("MI without var sel"= mi_est1$output,
       "MI with var sel"   = mi_est1_sel$output)
 ```
 
-Which one were selected (`ncvreg`)
+The result object of the \code{cv.ncvreg} class is stored in the \code{"outcome"} element of the result, and you can access the selected variables using the \code{coef} generic method as follows.
+
 
 ```{r}
-class(mi_est1_sel$outcome$single_shift)
-```
-```{r}
-coef(mi_est1_sel$outcome$single_shift)
+round(coef(mi_est1_sel$outcome$single_shift), 4)
 ```
 
-Inspecting the selection 
+If a user is interested in viewing the PS estimation results, then access to the \code{"selection"} element is required. This is a \code{list{} of all the results returned by the MLE or GEE estimation method. For example, the evaluation of coefficients can be done in the following way
 
 ```{r}
-ipw_est1$selection$coefficients
+round(ipw_est1$selection$coefficients,4)
 ```
 
 In the future versions we plan to align the selection and outcome models to return the same type of elements and objects.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
-The package contains the main class \code{nonprob} and the supplementary class \code{nonprob\_method} and the related \code{nonprob\_summary} class. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples:
+The package contains the main class \code{nonprob} and the supplementary class \code{nonprob_method} and the related \code{nonprob_summary} class. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples:
 
 ```{r method-nobs}
 nobs(dr_est1)
@@ -921,9 +932,13 @@ Function & Description \\
 \end{table}
 
 
+The confidence interval for the target variable(s) can be estimated using the generic \code{confint} method. 
+
 ```{r}
 confint(dr_est1, level = 0.99)
 ```
+
+If a user is interested in assessing the distribution of the IPW weights, we suggest using the \code{weights} method.
 
 ```{r}
 summary(weights(dr_est1), breaks = "fd")
