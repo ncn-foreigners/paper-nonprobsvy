@@ -23,8 +23,8 @@ non-probability surveys}
 
 
 \Abstract{
-The present paper presents \pkg{nonprobsvy} \proglang{R} package for
-inference based on non-probability samples. The package implements
+The following paper presents \pkg{nonprobsvy} -- an \proglang{R} package
+for inference based on non-probability samples. The package implements
 various approaches that can be categorized into three groups:
 prediction-based approach, inverse probability weighting and doubly
 robust approach. Contrary to the existing packages \pkg{nonprobsvy}
@@ -232,36 +232,35 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \label{tab-comparisons}
 \end{table}
 
-The \pkg{NonProbEst} is the most comprehensive alternative to
-\pkg{nonprobsvy} in the comparison. It offers various techniques, such
-as IPW or prediction approaches (e.g.~model-calibrated). Users can
-choose several different settings for IPW weights, variable selection
-and can estimate variance using the leave-one-out Jackknife procedure.
-Unfortunately, the package is no longer developed (it was last updated
-in 2022) and some of the techniques are either outdated or have been
-shown to be inappropriate for non-probability samples. While the package
-contains functions designed for specific methods, it does not allow
-users to leverage the \pkg{survey} package for estimation. The
-\pkg{balance} package is solely dedicated to the PS approach. It assumes
-that the the population totals are known and the authors have
-implemented the variance estimator of the weighted mean as a measure of
-uncertainty for the IPW estimator. The weights for the IPW estimator are
-constructed using the approach proposed by \citet{Schonlau2017}. The
-\pkg{inps} package supports the use of unit-level data from a
-probability sample or the population, implements IPW, MI and DR
-estimators, and offers users the possibility of selecting variables but
-is still at a very early stage of development. It also implements kernel
-weighting and a simple bootstrap approach via the \pkg{scipy.stats}
-module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} supports
-the use of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM}
-package is the only package that offers functions to estimate sample
-selection models used widely for correcting selection bias in
-observational studies (including the not-missing-at-random mechanism).
-Unfortunately, to best of our knowledge, there is no theory on how this
-approach can be used for estimating population quantities or conducting
-statistical inference. Finally, the MRP approach is implemented solely
-in the \pkg{rstanarm} package with variable selection specified by an
-appropriate prior.
+The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy},
+offers various techniques, such as IPW or prediction approaches
+(e.g.~model-calibrated). Users can choose several different settings for
+IPW weights, variable selection and can estimate variance using the
+leave-one-out Jackknife procedure. Unfortunately, the package is no
+longer developed (it was last updated in 2022) and some of the
+techniques are either outdated or have been shown to be inappropriate
+for non-probability samples. While the package contains functions
+designed for specific methods, it does not allow users to leverage the
+\pkg{survey} package for estimation. The \pkg{balance} package is solely
+dedicated to the PS approach. It assumes that the the population totals
+are known and the authors have implemented the variance estimator of the
+weighted mean as a measure of uncertainty for the IPW estimator. The
+weights for the IPW estimator are constructed using the approach
+proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the
+use of unit-level data from a probability sample or the population,
+implements IPW, MI and DR estimators, and offers users the possibility
+of selecting variables but is still at a very early stage of
+development. It also implements kernel weighting and a simple bootstrap
+approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither
+\pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics}
+module \citep{Diallo2021}. The \pkg{GJRM} package is the only package
+that offers functions to estimate sample selection models used widely
+for correcting selection bias in observational studies (including the
+not-missing-at-random mechanism). Unfortunately, to best of our
+knowledge, there is no theory on how this approach can be used for
+estimating population quantities or conducting statistical inference.
+Finally, the MRP approach is implemented solely in the \pkg{rstanarm}
+package with variable selection specified by an appropriate prior.
 
 The \pkg{nonprobsvy} package has several advantages over those presented
 above. Firstly, it implements state-of-the-art methods recently proposed
@@ -272,10 +271,11 @@ matching, various IPW and DR estimators using generalized linear models
 with different link functions for probability estimation. Thirdly, it
 supports the functions included in the \pkg{survey} package to account
 for the design of the probability sample. Finally, we provide a
-user-friendly API that mimics \code{glm} or other functions known in
-\proglang{R}, together with the main function to specify the approach
-and estimators. As far as we know, the \pkg{nonprobsvy} is the only
-software (open-access or commercial) that offers such functionalities.
+user-friendly API that mimics \code{glm}, \code{survey::svydesign} and
+other functions known in \proglang{R}, together with the main function
+to specify the approach and estimators. As far as we know, the
+\pkg{nonprobsvy} is the only software (open-access or commercial) that
+offers such functionalities.
 
 The remaining part of the paper is structured as follows. Section
 \ref{sec-methods} is dedicated to the theory of statistical inference
@@ -349,7 +349,8 @@ combining the non-probability and probability samples to estimate
 \(\mu_y\). Given the absence of a universally accepted method for
 achieving this objective, assumptions vary considerably, as outlined by
 \cite{wu2022statistical}. However, the following are the main
-assumptions that apply to all methods presented in this section:
+assumptions that apply to the majority of methods presented in this
+section:
 
 \begin{itemize}
 \item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$ (i.e., $\left(R_i^A \perp y_i\right) \mid \boldsymbol{x}_i$; the MAR mechanism).
@@ -357,7 +358,7 @@ assumptions that apply to all methods presented in this section:
 \item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$ (i.e. no clustering).
 \end{itemize}
 
-In addition, we assume no overlap between \(S_A\) and \(S_B\), and no
+Currently, we ignore overlap between \(S_A\) and \(S_B\), and assume no
 measurement error in \(y_i\) and the fact that values of
 \(\boldsymbol{x}_i\) are known. The setting presented in Table
 \ref{tab-two-sources} can also be extended to calibrated \(d_i^B\)
@@ -463,8 +464,10 @@ The properties of the MI-GLM estimator, where \(y_i^*\) are imputed with
 for the following GLM families: \code{gaussian}, \code{binomial} and
 \code{poisson}. The MI-NPAR estimator was proposed by
 \citet{chen_nonparametric_2022} who studied its finite population
-properties. In the package we implement this approach using local
-polynomial regression using \code{stats::loess} method.
+properties. Currently, we implement this approach using local polynomial
+regression using \code{stats::loess} method. In the next releases we
+will allow users to use the \pkg{np} \citep{nppkg} or \pkg{KernSmooth}
+\citep{KernSmooth} packages.
 
 The MI-NN estimator was initially proposed by \citet{rivers2007sampling}
 under the name \textit{sample matching} and theoretical properties of
@@ -480,9 +483,9 @@ the number of selected \(k\) neighbours: for \(k=1\), the closest one is
 selected, and for \(k>1\), one can calculate a simple average over a
 vector of selected \(y\) values. A detailed description of the procedure
 is presented in Algorithm \ref{algo-2} in the Appendix. The MI-NN
-estimator suffers from the curse of dimensionality, as shown by
-{[}\ldots{]}, i.e.~asymptotic bias of the MI estimator increases as the
-number of covariates \(\boldsymbol{x}\) increases with a fixed \(k\)
+estimator suffers from the curse of dimensionality, i.e.~asymptotic bias
+of the MI estimator increases as the number of covariates
+\(\boldsymbol{x}\) increases with a fixed \(k\)
 \citep{abadie2006large, yang_asymptotic_2020}. The PMM approach has been
 proposed to overcome this issue.
 
@@ -630,8 +633,7 @@ parameters \(\boldsymbol{\gamma}_0\) are unbiased under the joint
 \(q p\) randomization in the sense that
 \(E_{q p}\left\{\boldsymbol{U}\left(\boldsymbol{\gamma}_0\right)\right\}=\boldsymbol{0}\),
 which implies that the estimator \(\hat{\boldsymbol{\alpha}}\) is
-\(qp\)-consistent for \(\boldsymbol{\alpha}_0\)
-\citep{wu2022statistical}.
+consistent for \(\boldsymbol{\alpha}_0\) \citep{wu2022statistical}.
 
 The terms in equation \eqref{eq-ipw-solution-mle} can be replaced by
 general estimation equations. Let
@@ -1809,9 +1811,9 @@ R> round(coef(mi_est1_sel$outcome$single_shift), 4)
 
 If a user is interested in viewing the PS estimation results, then
 access to the \code{"selection"} element is required. This is a
-\textbackslash code\{list\{\} of all the results returned by the MLE or
-GEE estimation method. For example, the evaluation of coefficients can
-be done in the following way
+\code{list} of all the results returned by the MLE or GEE estimation
+method. For example, the evaluation of coefficients can be done in the
+following way
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1884,8 +1886,8 @@ Function & Description \\
 \code{pop_size} & returns the population size (fixed or not)\\
 \code{confint} & returns the confidence interval for the target variable(s) \\
 \code{nobs} & returns the number of observations for both samples\\
-\code{summary} & returns a `nonprob\_summary` class with additional information\\
-\code{update} & returns an `updated` object\\
+\code{summary} & returns a \code{nonprob_summary} class with additional information\\
+\code{update} & returns an \code{updated} object\\
 \code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 
 \end{tabular}
