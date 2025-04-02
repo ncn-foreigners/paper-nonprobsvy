@@ -6,6 +6,36 @@ options(prompt = 'R> ', continue = '+ ')
 # install.packages("nonprobsvy")
 
 library(nonprobsvy) ## for estimation
+```
+
+```
+## Loading required package: survey
+```
+
+```
+## Loading required package: grid
+```
+
+```
+## Loading required package: Matrix
+```
+
+```
+## Loading required package: survival
+```
+
+```
+## 
+## Attaching package: 'survey'
+```
+
+```
+## The following object is masked from 'package:graphics':
+## 
+##     dotchart
+```
+
+``` r
 library(ggplot2)    ## for visualisation
 
 data(jvs)
@@ -482,39 +512,27 @@ sessionInfo()
 ## [7] methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.5.1    nonprobsvy_0.2.0 survey_4.4-2    
-## [4] survival_3.8-3   Matrix_1.7-3    
+## [1] ggplot2_3.5.1    nonprobsvy_0.2.0 survey_4.4-2     survival_3.8-3  
+## [5] Matrix_1.7-3    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] sandwich_3.1-1       generics_0.1.3      
-##  [3] lattice_0.22-6       digest_0.6.37       
-##  [5] magrittr_2.0.3       evaluate_1.0.3      
-##  [7] nleqslv_3.3.5        iterators_1.0.14    
-##  [9] pkgload_1.4.0        fastmap_1.2.0       
-## [11] foreach_1.5.2        doParallel_1.0.17   
-## [13] operator.tools_1.6.3 DBI_1.2.3           
-## [15] scales_1.3.0         codetools_0.2-20    
-## [17] cli_3.6.4            mitools_2.4         
-## [19] rlang_1.1.5          miscTools_0.6-28    
-## [21] litedown_0.6         commonmark_1.9.5    
-## [23] munsell_0.5.1        splines_4.4.2       
-## [25] withr_3.0.2          RANN_2.6.2          
-## [27] yaml_2.3.10          tools_4.4.2         
-## [29] parallel_4.4.2       ncvreg_3.15.0       
-## [31] dplyr_1.1.4          colorspace_2.1-1    
-## [33] maxLik_1.5-2.1       mime_0.13           
-## [35] vctrs_0.6.5          R6_2.6.1            
-## [37] zoo_1.8-13           lifecycle_1.0.4     
-## [39] rticles_0.27         MASS_7.3-65         
-## [41] pkgconfig_2.0.3      pillar_1.10.1       
-## [43] gtable_0.3.6         rsconnect_1.3.4     
-## [45] glue_1.8.0           Rcpp_1.0.14         
-## [47] highr_0.11           xfun_0.51           
-## [49] tibble_3.2.1         tidyselect_1.2.1    
-## [51] rstudioapi_0.17.1    knitr_1.50          
-## [53] farver_2.1.2         htmltools_0.5.8.1   
-## [55] rmarkdown_2.29       labeling_0.4.3      
-## [57] formula.tools_1.7.1  compiler_4.4.2      
-## [59] markdown_2.0
+##  [1] sandwich_3.1-1       generics_0.1.3       lattice_0.22-6      
+##  [4] digest_0.6.37        magrittr_2.0.3       evaluate_1.0.3      
+##  [7] nleqslv_3.3.5        iterators_1.0.14     fastmap_1.2.0       
+## [10] foreach_1.5.2        doParallel_1.0.17    operator.tools_1.6.3
+## [13] DBI_1.2.3            scales_1.3.0         codetools_0.2-20    
+## [16] cli_3.6.4            mitools_2.4          rlang_1.1.5         
+## [19] miscTools_0.6-28     munsell_0.5.1        splines_4.4.2       
+## [22] withr_3.0.2          RANN_2.6.2           yaml_2.3.10         
+## [25] tools_4.4.2          parallel_4.4.2       ncvreg_3.15.0       
+## [28] dplyr_1.1.4          colorspace_2.1-1     maxLik_1.5-2.1      
+## [31] vctrs_0.6.5          R6_2.6.1             zoo_1.8-13          
+## [34] lifecycle_1.0.4      rticles_0.27         MASS_7.3-65         
+## [37] pkgconfig_2.0.3      pillar_1.10.1        gtable_0.3.6        
+## [40] rsconnect_1.3.4      glue_1.8.0           Rcpp_1.0.14         
+## [43] xfun_0.51            tibble_3.2.1         tidyselect_1.2.1    
+## [46] rstudioapi_0.17.1    knitr_1.50           farver_2.1.2        
+## [49] htmltools_0.5.8.1    rmarkdown_2.29       labeling_0.4.3      
+## [52] formula.tools_1.7.1  compiler_4.4.2
 ```
 

@@ -19,6 +19,7 @@ The authors' work has been financed by the National Science Centre in Poland, OP
 ## Code for reproduction of results
 
 ```{r}
+b <- Sys.time()
 file.copy("nonprobsvy-paper/nonprobsvy-paper.pdf", "submission/nonprobsvy-paper.pdf", overwrite= TRUE)
 knitr::purl("nonprobsvy-paper/nonprobsvy-paper.Rmd", "submission/code-new.R", documentation = 0)
 file.append("submission/code-new.R", "submission/session-info.R") 
@@ -26,5 +27,5 @@ knitr::spin("submission/code-new.R")
 file.rename(c("submission/code-new.R", "code-new.md", "code-new.html"),
             paste0("submission/", c("code.R", "code.md", "code.html")))
 unlink("figure", recursive = TRUE)
-
+Sys.time() - b
 ```
