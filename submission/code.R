@@ -98,9 +98,7 @@ dr_est2 <- nonprob(
   family_outcome = "binomial",
   control_inference = control_inf(bias_correction = TRUE,
                                   vars_combine = TRUE,
-                                  vars_selection = TRUE),
-  control_selection = control_sel(nfolds = 4, nlambda = 10),
-  control_outcome = control_out(nfolds = 4)
+                                  vars_selection = TRUE)
 )
 dr_est2
 

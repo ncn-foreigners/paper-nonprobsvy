@@ -42,7 +42,7 @@ title:
   # For running headers, if needed
   short:     "\\pkg{nonprobsvy} for non-probability surveys"
 abstract: >
-  The following paper presents \pkg{nonprobsvy} -- an \proglang{R} package for inference based on non-probability samples. The package implements various approaches that can be categorized into three groups: prediction-based approach, inverse probability weighting and doubly robust approach. Contrary to the existing packages \pkg{nonprobsvy} assumes existence of either full population or probability-based population information and laverage the \pkg{survey} package for inference. The package implements both analytical and bootstrap variance estimation for all of the proposed estimators. In the paper we present the theory behind the package, its functionalities and case study that showcases the usage of the package. The package is aimed at official statisticans, public opinion or market researchers who whould like to use non-probability samples (e.g. big data, opt-in web panels, social media) to accurately estimate popualtion characteristics. 
+  The following paper presents \pkg{nonprobsvy} -- an \proglang{R} package for inference based on non-probability samples. The package implements various approaches that can be categorized into three groups: prediction-based approach, inverse probability weighting and doubly robust approach. In the package, we assume the existence of either population-level data or probability-based population information and leverage the \pkg{survey} package for inference. The package implements both analytical and bootstrap variance estimation for the proposed estimators. In the paper we present the theory behind the package, its functionalities and case study that showcases the usage of the package. The package is aimed at scientistcs or researchers who whould like to use non-probability samples (e.g. big data, opt-in web panels, social media) to accurately estimate population characteristics. 
 keywords:
   # at least one keyword must be supplied
   formatted: [data integration, doubly robust estimation, propensity score estimation, mass imputation, "\\pkg{survey}"]
@@ -156,7 +156,7 @@ Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\che
 \end{table}
 
 
-The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy}, offers various techniques, such as IPW or prediction approaches (e.g. model-calibrated). Users can choose several different settings for IPW weights, variable selection and can estimate variance using the leave-one-out Jackknife procedure. Unfortunately, the package is no longer developed (it was last updated in 2022) and some of the techniques are either outdated or have been shown to be inappropriate for non-probability samples. While the package contains functions designed for specific methods, it does not allow users to leverage the \pkg{survey} package for estimation. The \pkg{balance} package is solely dedicated to the PS approach. It assumes that the the population totals are known and the authors have implemented the variance estimator of the weighted mean as a measure of uncertainty for the IPW estimator. The  weights for the IPW estimator are constructed using the approach proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the use of unit-level data from a probability sample or the population, implements IPW, MI and DR estimators, and offers users the possibility of selecting variables but is still at a very early stage of development. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM} package is the only package that offers functions to estimate sample selection models used widely for correcting selection bias in observational studies (including the not-missing-at-random mechanism). Unfortunately, to best of our knowledge, there is no theory on how this approach can be used for estimating population quantities or conducting statistical inference. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} package with variable selection specified by an appropriate prior. 
+The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy}, offers various techniques, such as IPW or prediction approaches (e.g. model-calibrated). Users can choose several different settings for IPW weights, variable selection and can estimate variance using the leave-one-out Jackknife procedure. Unfortunately, the package is no longer actively developed and some of the techniques are either outdated or have been shown to be inappropriate for non-probability samples. While the package contains functions designed for specific methods, it does not allow users to leverage the \pkg{survey} package for estimation. The \pkg{balance} package is solely dedicated to the PS approach. It assumes that the the population totals are known and the authors have implemented the variance estimator of the weighted mean as a measure of uncertainty for the IPW estimator. The  weights for the IPW estimator are constructed using the approach proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the use of unit-level data from a probability sample or the population, implements IPW, MI and DR estimators, and offers users the possibility of selecting variables but is still at a very early stage of development. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM} package is the only package that offers functions to estimate sample selection models used widely for correcting selection bias in observational studies (including the not-missing-at-random mechanism). Unfortunately, to best of our knowledge, there is no theory on how this approach can be used for estimating population quantities or conducting statistical inference. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} package with variable selection specified by an appropriate prior. 
 
 The \pkg{nonprobsvy} package has several advantages over those presented above. Firstly, it implements state-of-the-art methods recently proposed in the literature, along with valid statistical inference procedures. Secondly, it offers other approaches, such as calibrated IPW (where PS weights match either the population or estimated totals), NN and PMM matching, various IPW and DR estimators using generalized linear models with different link functions for probability estimation. Thirdly, it supports the functions included in the \pkg{survey} package to account for the design of the probability sample. Finally, we provide a user-friendly API that mimics \code{glm}, \code{survey::svydesign} and other functions known in \proglang{R}, together with the main function to specify the approach and estimators. As far as we know, the \pkg{nonprobsvy} is the only software (open-access or commercial) that offers such functionalities. 
 
@@ -603,14 +603,14 @@ library(ggplot2)    ## for visualisation
 The goal of the case study was to integrate survey (\code{jvs}) and administrative (\code{admin}) data about job vacancies in Poland. The first source, the Job Vacancy Survey (JVS), contains 6,523 units. The JVS provides a probability sample drawn according to a stratified sampling design. More details can be found in \cite{jvs2022}. The dataset contains information about the NACE code (14 levels, the \code{nace} column), \code{region} (16 levels), sector (2 levels, the \code{private} column), company size (3 levels: Small up to 9, Medium 10-49 and Large 50+) and the final weight (i.e. the design weight corrected for non-contact and non-response), which is treated as the $d$ weight.
 
 
-```{r, out.width="80%"}
+```{r jvs-head, out.width="80%"}
 data(jvs)
 head(jvs)
 ```
 
 Since the \pkg{nonprobsvy} package relies on the functionalities of the \pkg{survey} package, we need to define the \code{svydesign2} object via the \code{svydesign} function, as shown below. The dataset does not contain the true stratification variable, so we use a simplified version by specifying `~ size + nace + region`; similarly, since we do not have information regarding non-response and its correction, we simply assume that the `weight` sums up to the population size.
 
-```{r}
+```{r jvs-survey}
 jvs_svy <- svydesign(ids = ~ 1, 
                      weights = ~ weight,
                      strata = ~ size + nace + region,
@@ -619,7 +619,7 @@ jvs_svy <- svydesign(ids = ~ 1,
 
 Our second source (\code{admin}), the Central Job Offers Database (CJOD), is a register containing all vacancies submitted to Public Employment Offices (see \url{https://oferty.praca.gov.pl}). We treat this register as a \textit{non-probability sample} since it contains administrative data provided on a voluntary basis, so the inclusion mechanism is unknown. This dataset was prepared in such a way that records deemed to be out of scope (either in terms of the definition of vacancy or the population of entities) were excluded. In addition to the same variables found in the JVS, the dataset contains one called \code{single\_shift}, which is our target variable, defined as: \texttt{whether a company seeks at least one employee for a single-shift job}. The goal of this case study is to estimate \textit{the share of companies that seek employees for a single-shift job} in Poland in a given quarter. 
 
-```{r}
+```{r admin-data}
 data(admin)
 head(admin)
 ```
@@ -632,7 +632,7 @@ One should keep in mind that this paper does not aim to provide a complete tutor
 
 First, we start with the IPW approach, which offers the choice between two estimation methods: MLE (default) and GEE (calibrated to the estimated survey totals). We start by calling the \code{nonprob} function, where we define the \code{selection} argument indicating which variables are to be included, the \code{target} argument, which specifies the variable of interest, i.e. \code{single_shift}. The remaining arguments specify the \code{svydesign} object, the dataset and the link function (\code{method_selection}).
 
-```{r}
+```{r ipw-estim1}
 ipw_est1 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
@@ -644,19 +644,19 @@ ipw_est1 <- nonprob(
 
 In order to get the basic information about the estimated target quantity we can use the \code{print} method to display the object. It provides information about the methods, source of auxiliary variable, variable selection, the naive (uncorrected estimator) and the corrected along with the standard error and confidence interval. The the last line, i.e. \code{selected estimator}, is limited to the maximum of 5 variables.
 
-```{r}
+```{r ipw-estim1-print}
 ipw_est1
 ```
 
 If we want to see detailed information about the approach, we can use the \code{summary} method. This function provides information on the sample sizes, sum of the IPW weights along with the distribution of IPW weights (for non-probability sample) and propensity scores (denoted as IPW probabilities) for both samples. A more advanced user may be interested in inspecting the details of the fit by accessing the \code{selection} element (i.e. \code{ipw_est1$selection}).
 
-```{r}
+```{r ipw-estim1-summar}
 summary(ipw_est1)
 ```
 
 If we want to use the calibrated IPW approach, it is necessary to define the `control_sel` function in the `control_selection` argument by setting the `est_method` argument equal to `gee` (the default is `mle`) and the value of `gee_h_fun`.
 
-```{r}
+```{r ipw-estim2}
 ipw_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
@@ -669,13 +669,13 @@ ipw_est2 <- nonprob(
 
 Results are comparable to the standard IPW point estimate (`r round(ipw_est2$output$mean*100,1)` vs `r round(ipw_est1$output$mean*100,1)`) while the standard error is slightly higher. 
 
-```{r}
+```{r ipw-estim2-print}
 ipw_est2
 ```
 
 The calibrated IPW significantly improves the balance, which can be accessed via the `check_balance` function:
 
-```{r}
+```{r ipw-estim-comparison}
 data.frame(ipw_mle=check_balance(~size, ipw_est1, 1)$balance,
            ipw_gee=check_balance(~size, ipw_est2, 1)$balance)
 ```
@@ -686,7 +686,7 @@ Notice that neither in the package nor in this paper do we provide a detailed de
 
 If the user is interested in the prediction-based approach, in particular involving MI estimators, then, they should specify the argument `outcome` as a formula (as in the case of the `glm` function). We allow a single outcome (specified as `y ~ x1 + x2 + ... + xk`) and multiple outcomes (as `y1 + y2 + y3 ~ x1 + x2 + ... + xk`). Note that if the `outcome` argument is specified, then there is no need to specify the `target` argument. By default, the GLM type of an MI estimator is used (i.e. `method_outcome="glm"`). In the code below we show how this type of an MI estimator can be declared.
 
-```{r}
+```{r mi-estim1}
 mi_est1 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -701,7 +701,7 @@ mi_est1
 
 In order to employ an MI estimator based on NN matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, `method_outcome = "pmm"` to use PMM or `method_outcome = "npar"` to use non-parametric approach. For the NN and PMM estimators, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
-```{r}
+```{r mi-estim-nn-pmm}
 set.seed(2024)
 
 mi_est2 <- nonprob(
@@ -725,7 +725,7 @@ mi_est3 <- nonprob(
 
 Results of both estimators are more or less similar, but it should be noted that the NN version suffers from the curse of dimensionality, so the PMM version seems to be more reliable.
 
-```{r}
+```{r mi-estim-comparison}
 rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
 ```
 
@@ -735,7 +735,7 @@ As discussed in Section \ref{sec-methods}, IPW and MI estimators are asymptotica
 
 In order to choose doubly robust estimation the user needs to specify both the `selection` and `outcome` arguments. These formulas can be specified with the same or varying number of auxiliary variables. As in the MI approach, we also allow multiple outcomes. In the following example code we have specified the non-calibrated IPW and the MI-GLM estimator. 
 
-```{r}
+```{r dr-estim1}
 dr_est1 <- nonprob(
   selection = ~ region + private + nace + size,
   outcome = single_shift ~ region + private + nace + size,
@@ -750,13 +750,13 @@ dr_est1
 
 Detailed results can be displayed by using the `summary` function, which prints both information about the distribution of the IPW weights as well as the outcome residuals and predictions. For more details one can access the \code{ "outcome"} and \code{"selection"} fields in the `nonprob` object.
 
-```{r}
+```{r dr-estim1-summary}
 summary(dr_est1)
 ```
 
 Finally, we can use the bias minimisation approach, as proposed by \citet{yang_doubly_2020}, by specifying the `control_inference = control_inf(bias_correction = TRUE)` argument together with the `vars_combine=TRUE` and  `vars_selection=TRUE` as this approach requires variable selection followed by variable union from both equations. 
 
-```{r bias-correction}
+```{r dr-estim-bias-correction}
 set.seed(2024)
 dr_est2 <- nonprob(
   selection = ~ region + private + nace + size,
@@ -768,9 +768,7 @@ dr_est2 <- nonprob(
   family_outcome = "binomial",
   control_inference = control_inf(bias_correction = TRUE,
                                   vars_combine = TRUE,
-                                  vars_selection = TRUE),
-  control_selection = control_sel(nfolds = 4, nlambda = 10),
-  control_outcome = control_out(nfolds = 4)
+                                  vars_selection = TRUE)
 )
 dr_est2
 ```
@@ -819,7 +817,7 @@ In the package we allow the user to estimate the variance of the mean analytical
 The bootstrap approach is specified via the \code{control_inf()} function with `var_method = "bootstrap"`. The bootstrap method for the probability sample is controlled via the `rep_type` argument, which passes the method to the `as.svrepdesign` function. The number of iterations is set in the `num_boot` argument (100 by default). If the samples are large or the estimation method is complicated (e.g. involves variable selection) one can set `verbose=TRUE` to track progress. By default bootstrap results are stored in the `boot_sample` element of the resulting list (to disable this option, `keep_boot` should be set to `FALSE`). The following code is an example of applying the IPW approach with the bootstrap approach specified by the argument `control_inference` of the `nonprob` function. 
 
 
-```{r}
+```{r ipw-estim-bootstrap}
 set.seed(2024)
 ipw_est1_boot <- nonprob(
   selection = ~ region + private + nace + size,
@@ -834,13 +832,13 @@ ipw_est1_boot <- nonprob(
 
 Next, we compare the estimated standard error of variance estimation for the analytical and the bootstrap approach.
 
-```{r}
+```{r ipw-estim-comp-boot}
 rbind("IPW analytic variance"=ipw_est1$output,
       "IPW bootstrap variance"=ipw_est1_boot$output)
 ```
 The boot samples can be accessed via the `boot_sample` element of the output list of the `nonprob` function. Note that the output is returned as a `matrix` because we allow multiple `target` variables.
 
-```{r}
+```{r ipw-estim-boot-head}
 head(ipw_est1_boot$boot_sample, n=3)
 ```
 
@@ -859,7 +857,7 @@ In this section we briefly show how to use variable selection algorithms. In ord
 
 In the case of the MI approach we rely on the \pkg{ncvreg} package \citep{ncvreg}, which is the only \proglang{R} package that employs the SCAD method. For the IPW and DR approaches, we have developed our own codes in \proglang{C++} via the \pkg{Rcpp} and \pkg{RcppArmadillo} packages. In the code below we apply variable selection for the MI-GLM estimator using only 5 folds, 25 possible values of $\lambda$ parameters and the LASSO penalty.
 
-```{r}
+```{r mi-estim-varsel}
 set.seed(2024)
 mi_est1_sel <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
@@ -875,7 +873,7 @@ mi_est1_sel <- nonprob(
 
 In this case study, the MI-GLM estimator with variable selection yields almost the same results as the approach without it. Point estimates and standard errors differ at the fourth and third digit, respectively.
 
-```{r}
+```{r mi-estim-varsel-comp}
 rbind("MI without var sel"= mi_est1$output,
       "MI with var sel"   = mi_est1_sel$output)
 ```
@@ -883,13 +881,13 @@ rbind("MI without var sel"= mi_est1$output,
 The result object of the \code{cv.ncvreg} class is stored in the \code{"outcome"} element of the result, and you can access the selected variables using the \code{coef} generic method as follows.
 
 
-```{r}
+```{r mi-estim-coefs}
 round(coef(mi_est1_sel$outcome$single_shift), 4)
 ```
 
 If a user is interested in viewing the PS estimation results, then access to the \code{"selection"} element is required. This is a \code{list} of all the results returned by the MLE or GEE estimation method. For example, the evaluation of coefficients can be done in the following way
 
-```{r}
+```{r ipw-estim-coefs}
 round(ipw_est1$selection$coefficients,4)
 ```
 
@@ -928,19 +926,19 @@ Function & Description \\
 
 The confidence interval for the target variable(s) can be estimated using the generic \code{confint} method. 
 
-```{r}
+```{r confint}
 confint(dr_est1, level = 0.99)
 ```
 
 If a user is interested in assessing the distribution of the IPW weights, we suggest using the \code{weights} method.
 
-```{r}
+```{r weights}
 summary(weights(dr_est1))
 ```
 
 In the case of mass imputation estimators it is possible to use special functions `method_glm` that are of class `nonprob_method`. An example is given below
 
-```{r}
+```{r method-glm}
 res_glm <- method_glm(
   y_nons = admin$single_shift,
   X_nons = model.matrix(~ region + private + nace + size, admin),
@@ -952,7 +950,7 @@ res_glm
 
 For the IPW we have created the function `method_ps`, which returns requested functions for a specific link. This approach is motivated by the following reasons: 1) we allow different estimation techniques, such as maximum likelihood and general estimation equations; 2) the IPW estimator is also used for the DR estimator; and 3) variance estimators depend on whether the IPW or the DR estimator is applied (with combination with the MI estimator).
 
-```{r}
+```{r method-ps}
 method_ps()
 ```
 

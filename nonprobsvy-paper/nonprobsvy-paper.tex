@@ -27,16 +27,15 @@ The following paper presents \pkg{nonprobsvy} -- an \proglang{R} package
 for inference based on non-probability samples. The package implements
 various approaches that can be categorized into three groups:
 prediction-based approach, inverse probability weighting and doubly
-robust approach. Contrary to the existing packages \pkg{nonprobsvy}
-assumes existence of either full population or probability-based
-population information and laverage the \pkg{survey} package for
-inference. The package implements both analytical and bootstrap variance
-estimation for all of the proposed estimators. In the paper we present
-the theory behind the package, its functionalities and case study that
-showcases the usage of the package. The package is aimed at official
-statisticans, public opinion or market researchers who whould like to
+robust approach. In the package, we assume the existence of either
+population-level data or probability-based population information and
+leverage the \pkg{survey} package for inference. The package implements
+both analytical and bootstrap variance estimation for the proposed
+estimators. In the paper we present the theory behind the package, its
+functionalities and case study that showcases the usage of the package.
+The package is aimed at scientistcs or researchers who whould like to
 use non-probability samples (e.g.~big data, opt-in web panels, social
-media) to accurately estimate popualtion characteristics.
+media) to accurately estimate population characteristics.
 }
 
 \Keywords{data integration, doubly robust estimation, propensity score
@@ -237,25 +236,25 @@ offers various techniques, such as IPW or prediction approaches
 (e.g.~model-calibrated). Users can choose several different settings for
 IPW weights, variable selection and can estimate variance using the
 leave-one-out Jackknife procedure. Unfortunately, the package is no
-longer developed (it was last updated in 2022) and some of the
-techniques are either outdated or have been shown to be inappropriate
-for non-probability samples. While the package contains functions
-designed for specific methods, it does not allow users to leverage the
-\pkg{survey} package for estimation. The \pkg{balance} package is solely
-dedicated to the PS approach. It assumes that the the population totals
-are known and the authors have implemented the variance estimator of the
-weighted mean as a measure of uncertainty for the IPW estimator. The
-weights for the IPW estimator are constructed using the approach
-proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the
-use of unit-level data from a probability sample or the population,
-implements IPW, MI and DR estimators, and offers users the possibility
-of selecting variables but is still at a very early stage of
-development. It also implements kernel weighting and a simple bootstrap
-approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither
-\pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics}
-module \citep{Diallo2021}. The \pkg{GJRM} package is the only package
-that offers functions to estimate sample selection models used widely
-for correcting selection bias in observational studies (including the
+longer actively developed and some of the techniques are either outdated
+or have been shown to be inappropriate for non-probability samples.
+While the package contains functions designed for specific methods, it
+does not allow users to leverage the \pkg{survey} package for
+estimation. The \pkg{balance} package is solely dedicated to the PS
+approach. It assumes that the the population totals are known and the
+authors have implemented the variance estimator of the weighted mean as
+a measure of uncertainty for the IPW estimator. The weights for the IPW
+estimator are constructed using the approach proposed by
+\citet{Schonlau2017}. The \pkg{inps} package supports the use of
+unit-level data from a probability sample or the population, implements
+IPW, MI and DR estimators, and offers users the possibility of selecting
+variables but is still at a very early stage of development. It also
+implements kernel weighting and a simple bootstrap approach via the
+\pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor
+\pkg{ips} supports the use of the \pkg{samplics} module
+\citep{Diallo2021}. The \pkg{GJRM} package is the only package that
+offers functions to estimate sample selection models used widely for
+correcting selection bias in observational studies (including the
 not-missing-at-random mechanism). Unfortunately, to best of our
 knowledge, there is no theory on how this approach can be used for
 estimating population quantities or conducting statistical inference.
@@ -1568,9 +1567,7 @@ R> dr_est2 <- nonprob(
 +   family_outcome = "binomial",
 +   control_inference = control_inf(bias_correction = TRUE,
 +                                   vars_combine = TRUE,
-+                                   vars_selection = TRUE),
-+   control_selection = control_sel(nfolds = 4, nlambda = 10),
-+   control_outcome = control_out(nfolds = 4)
++                                   vars_selection = TRUE)
 + )
 R> dr_est2
 \end{CodeInput}
