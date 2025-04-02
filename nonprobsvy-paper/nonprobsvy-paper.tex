@@ -1847,7 +1847,7 @@ class. All available \code{S3methods} can be obtained by calling
 \code{check_balance} function, already mentioned in the case study, is
 used to view the balance by checking how the PS weights reproduce known
 or estimated population totals; the \code{nobs} function returns the
-sample size of the probability and non-probability samples:
+sample size of the probability and non-probability samples.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1856,16 +1856,6 @@ R> nobs(dr_est1)
 \begin{CodeOutput}
    prob nonprob 
    6523    9344 
-\end{CodeOutput}
-\end{CodeChunk}
-
-\begin{CodeChunk}
-\begin{CodeInput}
-R> c(N_fixed = pop_size(ipw_est1), N_ipw_weights = sum(weights(ipw_est1)))
-\end{CodeInput}
-\begin{CodeOutput}
-N_fixed.pop_size    N_ipw_weights 
-        51870.00         52898.13 
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1913,7 +1903,7 @@ weights, we suggest using the \code{weights} method.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> summary(weights(dr_est1), breaks = "fd")
+R> summary(weights(dr_est1))
 \end{CodeInput}
 \begin{CodeOutput}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 

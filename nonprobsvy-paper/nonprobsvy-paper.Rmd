@@ -897,15 +897,12 @@ In the future versions we plan to align the selection and outcome models to retu
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
-The package contains the main class \code{nonprob} and the supplementary class \code{nonprob_method} and the related \code{nonprob_summary} class. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples:
+The package contains the main class \code{nonprob} and the supplementary class \code{nonprob_method} and the related \code{nonprob_summary} class. All available \code{S3methods} can be obtained by calling \code{methods(class="nonprobsvy")}. For instance, the \code{check_balance} function, already mentioned in the case study, is used to view the balance by checking how the PS weights reproduce known or estimated population totals; the \code{nobs} function returns the sample size of the probability and non-probability samples.
 
 ```{r method-nobs}
 nobs(dr_est1)
 ```
 
-```{r}
-c(N_fixed = pop_size(ipw_est1), N_ipw_weights = sum(weights(ipw_est1)))
-```
 
 Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} class. We have intentionally limited the number of implemented methods as the goal of the package is to provide point and interval estimates. If users are interested in assessing the quality of the models or the covariate balance, they should use existing \proglang{R} packages.
 
@@ -938,7 +935,7 @@ confint(dr_est1, level = 0.99)
 If a user is interested in assessing the distribution of the IPW weights, we suggest using the \code{weights} method.
 
 ```{r}
-summary(weights(dr_est1), breaks = "fd")
+summary(weights(dr_est1))
 ```
 
 In the case of mass imputation estimators it is possible to use special functions `method_glm` that are of class `nonprob_method`. An example is given below
