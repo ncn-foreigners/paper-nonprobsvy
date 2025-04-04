@@ -193,7 +193,7 @@ Let $R_i^A=I(i \in S_A)$ and $R_i^B=I(i \in S_B)$ be indicators of inclusion in 
 The goal is to estimate the finite population mean $\mu_y=N^{-1}\sum_{i=1}^{N} y_{i}$ of the target variable $y$. As values of $y_{i}$ are not observed in the probability sample, they cannot be used to estimate the target quantity. Instead, one could try combining the non-probability and probability samples to estimate $\mu_y$. Given the absence of a universally accepted method for achieving this objective, assumptions vary considerably, as outlined by \cite{wu2022statistical}. However, the following are the main assumptions that apply to the majority of methods presented in this section: 
 
 \begin{itemize}
-\item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\bx_i$ (i.e., $\left(R_i^A \perp y_i\right) \mid \bx_i$; the MAR mechanism).
+\item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\bx_i$ (the MAR mechanism).
 \item[A2] All the units in the target population have non-zero PS, i.e., $\pi_i^A>0$, $i=1,2, \ldots, N$ (i.e. no coverage error).
 \item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\bx_1, \bx_2, \ldots, \bx_N\right)$ (i.e. no clustering).
 \end{itemize}
@@ -227,7 +227,7 @@ Under linear models, where $m(\bx_i, \bbeta)=\bx_i^{\prime}\bbeta$, the two esti
 
 where $\mu_{\bx} = N^{-1}\sum_{i=1}^N\bx_i$ is the vector of the population means of the $\bx$ variables and $\overline{\bx}_A=n_A^{-1}\sum_{i \in S_A}\bx_i$ is the vector of the simple means of $\bx$ from the non-probability $S_A$ sample. If the linear model contains an intercept and $\hat{\bbeta}$ is the ordinary least square estimator, then $\hat{\mu}_{y,PR1}=\hat{\mu}_{y,PR2}$. 
 
-This form is appealing as it only requires the non-probability sample $S_A$ and reference population means (or totals and population size $N$). If the population means are unknown, they can be replaced by estimates provided by the reference probability sample $S_B$, i.e. $\sum_{i=1}^N \hat{m}_i$ is replaced with $\sum_{i \in S_B} d_i^B\hat{m}_i$ for \eqref{eq-pred-two-estimators} and $\mu_{\bx}$ is replaced by $\hat{\mu}_{\bx}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\bx_i$ for \eqref{eq-pred-two-estimators-simplified} where $\hat{N}_B=\sum_{i \in S_B}d_i^B$. 
+Form \eqref{eq-pred-two-estimators-simplified} is appealing as it only requires the non-probability sample $S_A$ and reference population means (or totals and population size $N$). If the population means are unknown, they can be replaced by estimates provided by the reference probability sample $S_B$, i.e. $\sum_{i=1}^N \hat{m}_i$ is replaced with $\sum_{i \in S_B} d_i^B\hat{m}_i$ for \eqref{eq-pred-two-estimators} and $\mu_{\bx}$ is replaced by $\hat{\mu}_{\bx}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\bx_i$ for \eqref{eq-pred-two-estimators-simplified} where $\hat{N}_B=\sum_{i \in S_B}d_i^B$. 
 
 
 ### Mass imputation estimators

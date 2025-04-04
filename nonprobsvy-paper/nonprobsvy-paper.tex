@@ -352,7 +352,7 @@ assumptions that apply to the majority of methods presented in this
 section:
 
 \begin{itemize}
-\item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$ (i.e., $\left(R_i^A \perp y_i\right) \mid \boldsymbol{x}_i$; the MAR mechanism).
+\item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$ (the MAR mechanism).
 \item[A2] All the units in the target population have non-zero PS, i.e., $\pi_i^A>0$, $i=1,2, \ldots, N$ (i.e. no coverage error).
 \item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$ (i.e. no clustering).
 \end{itemize}
@@ -420,13 +420,14 @@ non-probability \(S_A\) sample. If the linear model contains an
 intercept and \(\hat{\boldsymbol{\beta}}\) is the ordinary least square
 estimator, then \(\hat{\mu}_{y,PR1}=\hat{\mu}_{y,PR2}\).
 
-This form is appealing as it only requires the non-probability sample
-\(S_A\) and reference population means (or totals and population size
-\(N\)). If the population means are unknown, they can be replaced by
-estimates provided by the reference probability sample \(S_B\),
-i.e.~\(\sum_{i=1}^N \hat{m}_i\) is replaced with
-\(\sum_{i \in S_B} d_i^B\hat{m}_i\) for \eqref{eq-pred-two-estimators}
-and \(\mu_{\boldsymbol{x}}\) is replaced by
+Form \eqref{eq-pred-two-estimators-simplified} is appealing as it only
+requires the non-probability sample \(S_A\) and reference population
+means (or totals and population size \(N\)). If the population means are
+unknown, they can be replaced by estimates provided by the reference
+probability sample \(S_B\), i.e.~\(\sum_{i=1}^N \hat{m}_i\) is replaced
+with \(\sum_{i \in S_B} d_i^B\hat{m}_i\) for
+\eqref{eq-pred-two-estimators} and \(\mu_{\boldsymbol{x}}\) is replaced
+by
 \(\hat{\mu}_{\boldsymbol{x}}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\boldsymbol{x}_i\)
 for \eqref{eq-pred-two-estimators-simplified} where
 \(\hat{N}_B=\sum_{i \in S_B}d_i^B\).
