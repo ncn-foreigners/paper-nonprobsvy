@@ -1,26 +1,35 @@
-#  "nonprobsvy -- An R package for modern methods for non-probability surveys"
+# "nonprobsvy -- An R package for modern methods for non-probability surveys"
 
-+ [the current version of the paper](nonprobsvy-paper/nonprobsvy-paper.pdf)
-+ [Arxiv version]()
+-   [the current version of the paper](nonprobsvy-paper/nonprobsvy-paper.pdf)
+-   [Arxiv version](https://arxiv.org/abs/2504.04255)
 
 ## How to cite
 
-Arxiv version: `TBA`
+Arxiv version: 
 
-```tex
-TBA
+``` tex
+@misc{chrostowski2025,
+      title={nonprobsvy -- An R package for modern methods for non-probability surveys}, 
+      author={Łukasz Chrostowski and Piotr Chlebicki and Maciej Beręsewicz},
+      year={2025},
+      eprint={2504.04255},
+      archivePrefix={arXiv},
+      primaryClass={stat.ME},
+      url={https://arxiv.org/abs/2504.04255}, 
+}
 ```
-
 
 ## Acknowledgements
 
-The authors' work has been financed by the National Science Centre in Poland, OPUS 20, grant no. 2020/39/B/HS4/00941. 
+The authors' work has been financed by the National Science Centre in
+Poland, OPUS 20, grant no. 2020/39/B/HS4/00941.
 
 ## Code for reproduction of results
 
-The code runs about 5 minutes on my laptop (`Time difference of 4.945334 mins`)
+The code runs about 5 minutes on my laptop
+(`Time difference of 4.945334 mins`)
 
-```r
+``` r
 b <- Sys.time()
 file.copy("nonprobsvy-paper/nonprobsvy-paper.pdf", "submission/nonprobsvy-paper.pdf", overwrite= TRUE)
 knitr::purl("nonprobsvy-paper/nonprobsvy-paper.Rmd", "submission/code-new.R", documentation = 0)
@@ -32,7 +41,7 @@ unlink("figure", recursive = TRUE)
 Sys.time() - b
 ```
 
-```r
+``` r
 > sessionInfo()
 R version 4.4.2 (2024-10-31)
 Platform: aarch64-apple-darwin20
@@ -44,5 +53,4 @@ LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlap
 
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-
 ```

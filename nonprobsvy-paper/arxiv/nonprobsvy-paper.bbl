@@ -1,0 +1,340 @@
+\begin{thebibliography}{45}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem[{Abadie and Imbens(2006)}]{abadie2006large}
+Abadie A, Imbens GW (2006).
+\newblock \enquote{Large sample properties of matching estimators for average
+  treatment effects.}
+\newblock \emph{Econometrica}, \textbf{74}(1), 235--267.
+
+\bibitem[{Beaumont(2020)}]{beaumont2020probability}
+Beaumont JF (2020).
+\newblock \enquote{Are probability surveys bound to disappear for the
+  production of official statistics.}
+\newblock \emph{Survey Methodology}, \textbf{46}(1), 1--28.
+
+\bibitem[{Ber{\k{e}}sewicz(2017)}]{berkesewicz2017two}
+Ber{\k{e}}sewicz M (2017).
+\newblock \enquote{A two-step procedure to measure representativeness of
+  internet data sources.}
+\newblock \emph{International Statistical Review}, \textbf{85}(3), 473--493.
+
+\bibitem[{Beręsewicz \emph{et~al.}(2025)Beręsewicz, Szymkowiak, and
+  Chlebicki}]{beresewicz2025}
+Beręsewicz M, Szymkowiak M, Chlebicki P (2025).
+\newblock \enquote{Quantile balancing inverse probability weighting for
+  non-probability samples.}
+\newblock \emph{Forthcomming to the Survey Methodology}, \textbf{51}, 0--0.
+
+\bibitem[{Biffignandi and Bethlehem(2021)}]{biffignandi2021handbook}
+Biffignandi S, Bethlehem J (2021).
+\newblock \emph{Handbook of Web Surveys}.
+\newblock John Wiley \& Sons.
+\newblock ISBN 9781119371687.
+\newblock \doi{10.1002/9781119371717}.
+
+\bibitem[{Breheny and Huang(2011)}]{ncvreg}
+Breheny P, Huang J (2011).
+\newblock \enquote{Coordinate descent algorithms for nonconvex penalized
+  regression, with applications to biological feature selection.}
+\newblock \emph{Annals of Applied Statistics}, \textbf{5}(1), 232--253.
+\newblock \doi{10.1214/10-AOAS388}.
+\newblock \urlprefix\url{https://doi.org/10.1214/10-AOAS388}.
+
+\bibitem[{Castro(2024)}]{castro2024inps}
+Castro LM (2024).
+\newblock \emph{INPS: Inference from Non-Probability Samples}.
+\newblock \urlprefix\url{https://pypi.org/project/inps/}.
+
+\bibitem[{Chen \emph{et~al.}(2018)Chen, Valliant, and Elliott}]{chen2018}
+Chen J, Valliant R, Elliott M (2018).
+\newblock \enquote{Model-assisted calibration of non-probability sample survey
+  data using adaptive {LASSO}.}
+\newblock \emph{Survey Methodology}, \textbf{44}(1), 117--144.
+
+\bibitem[{Chen \emph{et~al.}(2022)Chen, Yang, and
+  Kim}]{chen_nonparametric_2022}
+Chen S, Yang S, Kim JK (2022).
+\newblock \enquote{Nonparametric {Mass} {Imputation} for {Data} {Integration}.}
+\newblock \emph{Journal of Survey Statistics and Methodology}, \textbf{10}(1),
+  1--24.
+\newblock ISSN 2325-0984, 2325-0992.
+\newblock \doi{10.1093/jssam/smaa036}.
+\newblock
+  \urlprefix\url{https://academic.oup.com/jssam/article/10/1/1/5983829}.
+
+\bibitem[{Chen \emph{et~al.}(2020)Chen, Li, and Wu}]{chen2020doubly}
+Chen Y, Li P, Wu C (2020).
+\newblock \enquote{Doubly robust inference with nonprobability survey samples.}
+\newblock \emph{Journal of the American Statistical Association},
+  \textbf{115}(532), 2011--2021.
+
+\bibitem[{Chlebicki \emph{et~al.}(2024)Chlebicki, Chrostowski, and
+  Beręsewicz}]{chlebicki2025}
+Chlebicki P, Chrostowski {\L}, Beręsewicz M (2024).
+\newblock \enquote{Data integration of non-probability and probability samples
+  with predictive mean matching.}
+\newblock \eprint{2403.13750},
+  \urlprefix\url{https://arxiv.org/abs/2403.13750}.
+
+\bibitem[{Chrostowski(2024)}]{chrostowski2024statistical}
+Chrostowski {\L} (2024).
+\newblock \enquote{Statistical inference with non-probability samples.}
+\newblock Master's thesis, Adam Mickiewicz Universith,
+  \urlprefix\url{https://github.com/ncn-foreigners/graduation-theses/blob/main/2024-Chrostowski.pdf}.
+
+\bibitem[{Citro(2014)}]{citro2014multiple}
+Citro CF (2014).
+\newblock \enquote{From multiple modes for surveys to multiple data sources for
+  estimates.}
+\newblock \emph{Survey Methodology}, \textbf{40}(2), 137--162.
+
+\bibitem[{Cobo \emph{et~al.}(2024)Cobo, Ferri-García, Rueda-Sánchez, and
+  Rueda}]{cobo2024software}
+Cobo B, Ferri-García R, Rueda-Sánchez JL, Rueda MdM (2024).
+\newblock \enquote{Software review for inference with non-probability surveys.}
+\newblock \emph{The Survey Statistician}, \textbf{90}, 40--47.
+
+\bibitem[{Daas \emph{et~al.}(2015)Daas, Puts, Buelens, and Hurk}]{daas2015big}
+Daas PJ, Puts MJ, Buelens B, Hurk PAvd (2015).
+\newblock \enquote{Big data as a source for official statistics.}
+\newblock \emph{Journal of Official Statistics}, \textbf{31}(2), 249--262.
+
+\bibitem[{Diallo(2021)}]{Diallo2021}
+Diallo MS (2021).
+\newblock \enquote{samplics: a Python Package for selecting, weighting and
+  analyzing data from complex sampling designs.}
+\newblock \emph{Journal of Open Source Software}, \textbf{6}(68), 3376.
+\newblock \doi{10.21105/joss.03376}.
+\newblock \urlprefix\url{https://doi.org/10.21105/joss.03376}.
+
+\bibitem[{Elliott and Valliant(2017)}]{elliott_inference_2017}
+Elliott MR, Valliant R (2017).
+\newblock \enquote{Inference for {Nonprobability} {Samples}.}
+\newblock \emph{Statistical Science}, \textbf{32}(2).
+\newblock ISSN 0883-4237.
+\newblock \doi{10.1214/16-STS598}.
+\newblock
+  \urlprefix\url{https://projecteuclid.org/journals/statistical-science/volume-32/issue-2/Inference-for-Nonprobability-Samples/10.1214/16-STS598.full}.
+
+\bibitem[{Gelman(1997)}]{gelman1997poststratification}
+Gelman A (1997).
+\newblock \enquote{Poststratification into many categories using hierarchical
+  logistic regression.}
+\newblock \emph{Survey Methodology}, \textbf{23}, 127.
+
+\bibitem[{Goodrich \emph{et~al.}(2024)Goodrich, Gabry, Ali, and
+  Brilleman}]{rstanarm}
+Goodrich B, Gabry J, Ali I, Brilleman S (2024).
+\newblock \emph{\pkg{rstanarm}: {Bayesian} applied regression modeling via
+  {Stan}.}
+\newblock \proglang{R} package version 2.32.1,
+  \urlprefix\url{https://mc-stan.org/rstanarm/}.
+
+\bibitem[{Greifer(2024)}]{cobalt}
+Greifer N (2024).
+\newblock \emph{\pkg{cobalt}: Covariate Balance Tables and Plots}.
+\newblock \proglang{R} package version 4.5.5,
+  \urlprefix\url{https://CRAN.R-project.org/package=cobalt}.
+
+\bibitem[{Grow \emph{et~al.}(2022)Grow, Perrotta, Del~Fava, Cimentada,
+  Rampazzo, Gil-Clavel, Zagheni, Flores, Ventura, and Weber}]{Grow2022}
+Grow A, Perrotta D, Del~Fava E, Cimentada J, Rampazzo F, Gil-Clavel S, Zagheni
+  E, Flores RD, Ventura I, Weber I (2022).
+\newblock \enquote{Is Facebook's Advertising Data Accurate Enough for Use in
+  Social Science Research? Insights from a Cross-National Online Survey.}
+\newblock \emph{Journal of the Royal Statistical Society Series A: Statistics
+  in Society}, \textbf{185}(2), 343--363.
+\newblock ISSN 0964-1998.
+\newblock \doi{10.1111/rssa.12948}.
+\newblock \urlprefix\url{https://doi.org/10.1111/rssa.12948}.
+
+\bibitem[{Hayfield and Racine(2008)}]{nppkg}
+Hayfield T, Racine JS (2008).
+\newblock \enquote{Nonparametric Econometrics: The np Package.}
+\newblock \emph{Journal of Statistical Software}, \textbf{27}(5), 1--32.
+\newblock \doi{10.18637/jss.v027.i05}.
+\newblock
+  \urlprefix\url{https://www.jstatsoft.org/index.php/jss/article/view/v027i05}.
+
+\bibitem[{Jefferis \emph{et~al.}(2024)Jefferis, Kemp, Arya, and
+  Mount}]{rann-pkg}
+Jefferis G, Kemp SE, Arya S, Mount D (2024).
+\newblock \emph{\pkg{RANN}: Fast Nearest Neighbour Search (Wraps ANN Library)
+  Using L2 Metric}.
+\newblock \proglang{R} package version 2.6.2,
+  \urlprefix\url{https://CRAN.R-project.org/package=RANN}.
+
+\bibitem[{Kim and Haziza(2014)}]{kim2014doubly}
+Kim JK, Haziza D (2014).
+\newblock \enquote{Doubly robust inference with missing data in survey
+  sampling.}
+\newblock \emph{Statistica Sinica}, \textbf{24}(1), 375--394.
+
+\bibitem[{Kim and Morikawa(2023)}]{kim2023empirical}
+Kim JK, Morikawa K (2023).
+\newblock \enquote{An Empirical Likelihood Approach to Reduce Selection Bias in
+  Voluntary Samples.}
+\newblock \emph{Calcutta Statistical Association Bulletin}, \textbf{75}(1),
+  8--27.
+\newblock \doi{10.1177/00080683231186488}.
+
+\bibitem[{Kim \emph{et~al.}(2021)Kim, Park, Chen, and Wu}]{kim_combining_2021}
+Kim JK, Park S, Chen Y, Wu C (2021).
+\newblock \enquote{Combining {Non}-{Probability} and {Probability} {Survey}
+  {Samples} {Through} {Mass} {Imputation}.}
+\newblock \emph{Journal of the Royal Statistical Society Series A: Statistics
+  in Society}, \textbf{184}(3), 941--963.
+\newblock ISSN 0964-1998, 1467-985X.
+\newblock \doi{10.1111/rssa.12696}.
+\newblock
+  \urlprefix\url{https://academic.oup.com/jrsssa/article/184/3/941/7068406}.
+
+\bibitem[{Kim and Riddles(2012)}]{kim_theory_2012}
+Kim JK, Riddles MK (2012).
+\newblock \enquote{Some theory for propensity-score-adjustment estimators in
+  survey sampling.}
+\newblock \emph{Survey Methodology}, \textbf{38}(2), 157--165.
+
+\bibitem[{Lee(2006)}]{lee2006propensity}
+Lee S (2006).
+\newblock \enquote{Propensity score adjustment as a weighting scheme for
+  volunteer panel web surveys.}
+\newblock \emph{Journal of official statistics}, \textbf{22}(2), 329.
+
+\bibitem[{Lee and Valliant(2009)}]{lee2009estimation}
+Lee S, Valliant R (2009).
+\newblock \enquote{Estimation for volunteer panel web surveys using propensity
+  score adjustment and calibration adjustment.}
+\newblock \emph{Sociological Methods \& Research}, \textbf{37}(3), 319--343.
+
+\bibitem[{Marra and Rodicw(2023)}]{GJRM}
+Marra G, Rodicw R (2023).
+\newblock \emph{\pkg{GJRM}: Generalized Joint Regression Modelling}.
+
+\bibitem[{Martín \emph{et~al.}(2020)Martín, García, and Rueda}]{NonProbEst}
+Martín LC, García RF, Rueda MdM (2020).
+\newblock \emph{\pkg{NonProbEst}: Estimation in Nonprobability Sampling}.
+
+\bibitem[{Meng(2018)}]{meng2018statistical}
+Meng XL (2018).
+\newblock \enquote{Statistical Paradises and Paradoxes in Big Data ({I}): {Law}
+  of {Large} {Populations}, {Big} {Data} {Paradox}, and the 2016 {US}
+  {Presidential} {Election}.}
+\newblock \emph{Annals of Applied Statistics}, \textbf{12}, 685--726.
+\newblock \doi{10.1214/18-AOAS1161SF}.
+
+\bibitem[{Rivers(2007)}]{rivers2007sampling}
+Rivers D (2007).
+\newblock \enquote{Sampling for web surveys.}
+\newblock In \emph{Proceedings of the Survey Research Methods Section, Joint
+  Statistical Meetings}, pp. 1--26. American Statistical Association,
+  Alexandria, VA.
+
+\bibitem[{Robins \emph{et~al.}(1994)Robins, Rotnitzky, and
+  Zhao}]{robins1994estimation}
+Robins JM, Rotnitzky A, Zhao LP (1994).
+\newblock \enquote{Estimation of regression coefficients when some regressors
+  are not always observed.}
+\newblock \emph{Journal of the American statistical Association},
+  \textbf{89}(427), 846--866.
+
+\bibitem[{Sarig \emph{et~al.}(2023)Sarig, Galili, and
+  Eilat}]{sarig2023balancepythonpackage}
+Sarig T, Galili T, Eilat R (2023).
+\newblock \enquote{\pkg{balance} -- a \proglang{Python} package for balancing
+  biased data samples.}
+\newblock \eprint{2307.06024},
+  \urlprefix\url{https://arxiv.org/abs/2307.06024}.
+
+\bibitem[{S{\"a}rndal and Lundstr{\"o}m(2005)}]{sarndal2005estimation}
+S{\"a}rndal CE, Lundstr{\"o}m S (2005).
+\newblock \emph{Estimation in surveys with nonresponse}.
+\newblock John Wiley \& Sons.
+
+\bibitem[{Schonlau and Couper(2017)}]{Schonlau2017}
+Schonlau M, Couper MP (2017).
+\newblock \enquote{{Options for Conducting Web Surveys}.}
+\newblock \emph{Statistical Science}, \textbf{32}(2), 279 -- 292.
+\newblock \doi{10.1214/16-STS597}.
+\newblock \urlprefix\url{https://doi.org/10.1214/16-STS597}.
+
+\bibitem[{{Statistics Poland}(2021)}]{jvs2022}
+{Statistics Poland} (2021).
+\newblock \enquote{{The Demand for :abour: Methodological report}.}
+\newblock \emph{Methodological report}, Statistical Office in Bydgoszcz,
+  Bydgoszcz, Warsaw.
+\newblock
+  \urlprefix\url{https://stat.gov.pl/obszary-tematyczne/rynek-pracy/popyt-na-prace/zeszyt-metodologiczny-popyt-na-prace,3,1.html}.
+
+\bibitem[{Tibshirani(1996)}]{tibshirani1996regression}
+Tibshirani R (1996).
+\newblock \enquote{Regression shrinkage and selection via the lasso.}
+\newblock \emph{Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, \textbf{58}(1), 267--288.
+
+\bibitem[{Virtanen \emph{et~al.}(2020)Virtanen, Gommers, Oliphant, Haberland,
+  Reddy, Cournapeau, Burovski, Peterson, Weckesser, Bright, {van der Walt},
+  Brett, Wilson, Millman, Mayorov, Nelson, Jones, Kern, Larson, Carey, Polat,
+  Feng, Moore, {VanderPlas}, Laxalde, Perktold, Cimrman, Henriksen, Quintero,
+  Harris, Archibald, Ribeiro, Pedregosa, {van Mulbregt}, and {SciPy 1.0
+  Contributors}}]{scipy2020}
+Virtanen P, Gommers R, Oliphant TE, Haberland M, Reddy T, Cournapeau D,
+  Burovski E, Peterson P, Weckesser W, Bright J, {van der Walt} SJ, Brett M,
+  Wilson J, Millman KJ, Mayorov N, Nelson ARJ, Jones E, Kern R, Larson E, Carey
+  CJ, Polat {\.I}, Feng Y, Moore EW, {VanderPlas} J, Laxalde D, Perktold J,
+  Cimrman R, Henriksen I, Quintero EA, Harris CR, Archibald AM, Ribeiro AH,
+  Pedregosa F, {van Mulbregt} P, {SciPy 10 Contributors} (2020).
+\newblock \enquote{{{\pkg{SciPy}} 1.0: Fundamental Algorithms for Scientific
+  Computing in Python}.}
+\newblock \emph{Nature Methods}, \textbf{17}, 261--272.
+\newblock \doi{10.1038/s41592-019-0686-2}.
+
+\bibitem[{Wand(2025)}]{KernSmooth}
+Wand M (2025).
+\newblock \emph{\pkg{KernSmooth}: Functions for Kernel Smoothing Supporting
+  Wand and Jones (1995)}.
+\newblock \proglang{R} package version 2.23-26,
+  \urlprefix\url{https://CRAN.R-project.org/package=KernSmooth}.
+
+\bibitem[{Wu(2022)}]{wu2022statistical}
+Wu C (2022).
+\newblock \enquote{Statistical inference with non-probability survey samples.}
+\newblock \emph{Survey Methodology}, \textbf{48}, 283--311.
+
+\bibitem[{Yang and Kim(2020)}]{yang_asymptotic_2020}
+Yang S, Kim JK (2020).
+\newblock \enquote{Asymptotic theory and inference of predictive mean matching
+  imputation using a superpopulation model framework.}
+\newblock \emph{Scandinavian Journal of Statistics}, \textbf{47}(3), 839--861.
+\newblock ISSN 0303-6898, 1467-9469.
+\newblock \doi{10.1111/sjos.12429}.
+\newblock
+  \urlprefix\url{https://onlinelibrary.wiley.com/doi/10.1111/sjos.12429}.
+
+\bibitem[{Yang \emph{et~al.}(2021)Yang, Kim, and Hwang}]{yang2021integration}
+Yang S, Kim JK, Hwang Y (2021).
+\newblock \enquote{Integration of data from probability surveys and big found
+  data for finite population inference using mass imputation.}
+\newblock \emph{Survey Methodology}, \textbf{47}, 29--58.
+
+\bibitem[{Yang \emph{et~al.}(2020)Yang, Kim, and Song}]{yang_doubly_2020}
+Yang S, Kim JK, Song R (2020).
+\newblock \enquote{Doubly {Robust} {Inference} when {Combining} {Probability}
+  and {Non}-{Probability} {Samples} with {High} {Dimensional} {Data}.}
+\newblock \emph{Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, \textbf{82}(2), 445--465.
+\newblock ISSN 1369-7412, 1467-9868.
+\newblock \doi{10.1111/rssb.12354}.
+\newblock
+  \urlprefix\url{https://academic.oup.com/jrsssb/article/82/2/445/7056072}.
+
+\end{thebibliography}
