@@ -1356,8 +1356,8 @@ accessed via the \texttt{check\_balance} function:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> data.frame(ipw_mle=check_balance(~size, ipw_est1, 1)$balance,
-+            ipw_gee=check_balance(~size, ipw_est2, 1)$balance)
+R> data.frame(ipw_mle=check_balance(~size-1, ipw_est1, 1)$balance,
++            ipw_gee=check_balance(~size-1, ipw_est2, 1)$balance)
 \end{CodeInput}
 \begin{CodeOutput}
       ipw_mle ipw_gee
@@ -1458,7 +1458,7 @@ the PMM version seems to be more reliable.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
+R> rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 \end{CodeInput}
 \begin{CodeOutput}
          mean         SE
@@ -1605,17 +1605,12 @@ a certain degree of confidence in their bias correction capabilities.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
-+                     cbind(ipw_est2$output, ipw_est2$confidence_interval),
-+                     cbind(mi_est1$output, mi_est1$confidence_interval),
-+                     cbind(mi_est2$output, mi_est2$confidence_interval),
-+                     cbind(mi_est3$output, mi_est3$confidence_interval),
-+                     cbind(dr_est1$output, dr_est1$confidence_interval),
-+                     cbind(dr_est2$output, dr_est2$confidence_interval))
-R> rownames(df_s) <- NULL
+R> df_s <- rbind(extract(ipw_est1), extract(ipw_est2), extract(mi_est1),
++               extract(mi_est2), extract(mi_est3), extract(dr_est1), 
++               extract(dr_est2))
 R> 
 R> df_s$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
-+                     "MI (PMM)", "DR", "DR (BM)")
++               "MI (PMM)", "DR", "DR (BM)")
 R> 
 R> ggplot(data = df_s, 
 +        aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
@@ -1688,8 +1683,8 @@ the analytical and the bootstrap approach.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("IPW analytic variance"=ipw_est1$output,
-+       "IPW bootstrap variance"=ipw_est1_boot$output)
+R> rbind("IPW analytic variance"= extract(ipw_est1)[, 2:3],
++       "IPW bootstrap variance"= extract(ipw_est1_boot)[, 2:3])
 \end{CodeInput}
 \begin{CodeOutput}
                             mean         SE
@@ -1773,8 +1768,8 @@ standard errors differ at the fourth and third digit, respectively.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("MI without var sel"= mi_est1$output,
-+       "MI with var sel"   = mi_est1_sel$output)
+R> rbind("MI without var sel"= extract(mi_est1)[, 2:3],
++       "MI with var sel"   = extract(mi_est1_sel)[, 2:3])
 \end{CodeInput}
 \begin{CodeOutput}
                         mean         SE
@@ -1789,7 +1784,7 @@ variables using the \code{coef} generic method as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> round(coef(mi_est1_sel$outcome$single_shift), 4)
+R> round(drop(coef(mi_est1_sel)$coef_out), 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
@@ -1808,14 +1803,11 @@ R> round(coef(mi_est1_sel$outcome$single_shift), 4)
 \end{CodeChunk}
 
 If a user is interested in viewing the PS estimation results, then
-access to the \code{"selection"} element is required. This is a
-\code{list} of all the results returned by the MLE or GEE estimation
-method. For example, the evaluation of coefficients can be done in the
-following way
+access to the \code{"selection"} element is required.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> round(ipw_est1$selection$coefficients,4)
+R> round(drop(coef(ipw_est1)$coef_sel), 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
@@ -1832,9 +1824,6 @@ R> round(ipw_est1$selection$coefficients,4)
     -0.3641     -1.0292 
 \end{CodeOutput}
 \end{CodeChunk}
-
-In the future versions we plan to align the selection and outcome models
-to return the same type of elements and objects.
 
 \section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
 
@@ -1870,11 +1859,14 @@ the models or the covariate balance, they should use existing
 \hline 
 Function & Description \\
 \hline
-\code{check_balance} & returns a list of totals for IPW and DR estimators; \\
+\code{check_balance} & returns a \code{list} of totals for IPW and DR estimators; \\
+\code{extract} & returns a \code{data.frame} with estimation results; \\
 \code{pop_size} & returns the population size (fixed or not)\\
 \code{confint} & returns the confidence interval for the target variable(s) \\
+\code{coef} & returns a list of coefficients for outcome or selection model \\
 \code{nobs} & returns the number of observations for both samples\\
 \code{summary} & returns a \code{nonprob_summary} class with additional information\\
+\code{plot} & plots a comparison of naive (uncorrected) and estimated mean along with CI\\
 \code{update} & returns an \code{updated} object\\
 \code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 
