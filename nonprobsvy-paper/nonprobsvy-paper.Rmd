@@ -15,12 +15,12 @@ author:
       | Albano hus 1
       | 106 91 Stockholm, Sweden
     email: \email{piotr.chlebicki@math.su.se}
-    url: https://github.com/Kertoo, https://www.su.se/profiles/pich3772
+    url: https://www.su.se/profiles/pich3772
     orcid: 0009-0006-4867-7434
   - name: Maciej Beręsewicz
     orcid: 0000-0002-8281-4301
     email: \email{maciej.beresewicz@ue.poznan.pl}
-    url: https://github.com/BERENZ, https://ue.poznan.pl/en/people/dr-maciej-beresewicz/
+    url: https://berenz.github.io/
     affiliation: |
       | Poznań University of Economics and Business 
       | Statistical Office in Poznań
@@ -128,6 +128,10 @@ To address this problem, several approaches have been proposed, which rely on th
 Most approaches assume that population data is available in order to reduce the bias of non-probability sampling by reweighting to reproduce known population totals/means (i.e. IPW estimators); by modelling the target variable using various techniques (i.e. MI estimators); or by combining both approaches (e.g. DR estimators, cf. \citet{chen2020doubly}; see also Multilevel Regression and Post-stratification, MRP; \textit{Mister-P}, cf. \citet{gelman1997poststratification}). This topic has become very popular and a number of new methods have been proposed; for instance non-parametric approaches based on nearest neighbours \citep{yang2021integration}, kernel density estimation \citep{chen_nonparametric_2022}, empirical likelihood \citep{kim2023empirical}, model-calibration with LASSO \citep{chen2018} or quantile balanced IPW \citep{beresewicz2025} to name a few. It should be highlighted that, in contrast to probability samples, there is no single method that can be used for non-probability samples. Based on the methods available in the literature several statistical software solutions have been developed. These pieces of software will be presented and compared with \pkg{nonprobsvy} in the next section.
 
 ## Software for non-probability samples {#sec-software}
+
+<!----
+add reference to Stata
+--->
 
 Table \ref{tab-comparisons} presents a comparison of selected packages in terms of the availability of various inference methods. We focus on packages available through CRAN or PyPI (for non-CRAN or non-PyPI software see \citet{cobo2024software}). The comparison includes four packages that particularly focus on non-probability samples: in \proglang{R} -- \pkg{NonProbEst} \citep{NonProbEst} and our \pkg{nonprobsvy}, and in \proglang{Python} -- \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps}. In addition, we have included two \proglang{R} packages that implement specific methods: \pkg{rstanarm} (MRP; \citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models; \citet{GJRM}). 
 
@@ -654,6 +658,12 @@ If we want to see detailed information about the approach, we can use the \code{
 summary(ipw_est1)
 ```
 
+To extract the point estimate along with its standard error and 95\% confidence interval in a form of \code{data.frame} we can use the \code{extract} method as shown below.
+
+```{r extract-example}
+extract(ipw_est1)
+```
+
 If we want to use the calibrated IPW approach, it is necessary to define the `control_sel` function in the `control_selection` argument by setting the `est_method` argument equal to `gee` (the default is `mle`) and the value of `gee_h_fun`.
 
 ```{r ipw-estim2}
@@ -723,7 +733,7 @@ mi_est3 <- nonprob(
 )
 ```
 
-Results of both estimators are more or less similar, but it should be noted that the NN version suffers from the curse of dimensionality, so the PMM version seems to be more reliable.
+Results of both estimators are more or less similar, but it should be noted that the NN version suffers from the curse of dimensionality, so the PMM version seems to be more reliable. 
 
 ```{r mi-estim-comparison}
 rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
@@ -828,8 +838,8 @@ ipw_est1_boot <- nonprob(
 Next, we compare the estimated standard error of variance estimation for the analytical and the bootstrap approach.
 
 ```{r ipw-estim-comp-boot}
-rbind("IPW analytic variance"= extract(ipw_est1)[, 2:3],
-      "IPW bootstrap variance"= extract(ipw_est1_boot)[, 2:3])
+rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
+      "IPW bootstrap variance" = extract(ipw_est1_boot)[, 2:3])
 ```
 The boot samples can be accessed via the `boot_sample` element of the output list of the `nonprob` function. Note that the output is returned as a `matrix` because we allow multiple `target` variables.
 
@@ -869,21 +879,21 @@ mi_est1_sel <- nonprob(
 In this case study, the MI-GLM estimator with variable selection yields almost the same results as the approach without it. Point estimates and standard errors differ at the fourth and third digit, respectively.
 
 ```{r mi-estim-varsel-comp}
-rbind("MI without var sel"= extract(mi_est1)[, 2:3],
-      "MI with var sel"   = extract(mi_est1_sel)[, 2:3])
+rbind("MI without var sel" = extract(mi_est1)[, 2:3],
+      "MI with var sel"    = extract(mi_est1_sel)[, 2:3])
 ```
 
 The result object of the \code{cv.ncvreg} class is stored in the \code{"outcome"} element of the result, and you can access the selected variables using the \code{coef} generic method as follows.
 
 
 ```{r mi-estim-coefs}
-round(drop(coef(mi_est1_sel)$coef_out), 4)
+round(coef(mi_est1_sel)$coef_out[, 1], 4)
 ```
 
 If a user is interested in viewing the PS estimation results, then access to the \code{"selection"} element is required. 
 
 ```{r ipw-estim-coefs}
-round(drop(coef(ipw_est1)$coef_sel), 4)
+round(coef(ipw_est1)$coef_sel[, 1], 4)
 ```
 
 
@@ -900,18 +910,18 @@ Table \ref{tab-s3methods} presents methods implemented for the \code{nonprobsy} 
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{11cm}}
+\begin{tabular}{p{3cm}p{12cm}}
 \hline 
 Function & Description \\
 \hline
-\code{check_balance} & returns a \code{list} of totals for IPW and DR estimators; \\
-\code{extract} & returns a \code{data.frame} with estimation results; \\
-\code{pop_size} & returns the population size (fixed or not)\\
-\code{confint} & returns the confidence interval for the target variable(s) \\
+\code{check_balance} & returns a \code{list} of totals for IPW and DR estimators \\
 \code{coef} & returns a list of coefficients for outcome or selection model \\
+\code{confint} & returns the confidence interval for the target variable(s) \\
+\code{extract} & returns a \code{data.frame} with estimation results \\
 \code{nobs} & returns the number of observations for both samples\\
-\code{summary} & returns a \code{nonprob_summary} class with additional information\\
 \code{plot} & plots a comparison of naive (uncorrected) and estimated mean along with CI\\
+\code{pop_size} & returns the population size (fixed or not)\\
+\code{summary} & returns a \code{nonprob_summary} class with additional information\\
 \code{update} & returns an \code{updated} object\\
 \code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 

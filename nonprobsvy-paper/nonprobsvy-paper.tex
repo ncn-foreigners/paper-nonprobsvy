@@ -1312,6 +1312,20 @@ A nonprob_summary object
 \end{CodeOutput}
 \end{CodeChunk}
 
+To extract the point estimate along with its standard error and 95\%
+confidence interval in a form of \code{data.frame} we can use the
+\code{extract} method as shown below.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> extract(ipw_est1)
+\end{CodeInput}
+\begin{CodeOutput}
+        target      mean         SE lower_bound upper_bound
+1 single_shift 0.7223628 0.04207711   0.6398932   0.8048324
+\end{CodeOutput}
+\end{CodeChunk}
+
 If we want to use the calibrated IPW approach, it is necessary to define
 the \texttt{control\_sel} function in the \texttt{control\_selection}
 argument by setting the \texttt{est\_method} argument equal to
@@ -1683,8 +1697,8 @@ the analytical and the bootstrap approach.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("IPW analytic variance"= extract(ipw_est1)[, 2:3],
-+       "IPW bootstrap variance"= extract(ipw_est1_boot)[, 2:3])
+R> rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
++       "IPW bootstrap variance" = extract(ipw_est1_boot)[, 2:3])
 \end{CodeInput}
 \begin{CodeOutput}
                             mean         SE
@@ -1768,8 +1782,8 @@ standard errors differ at the fourth and third digit, respectively.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> rbind("MI without var sel"= extract(mi_est1)[, 2:3],
-+       "MI with var sel"   = extract(mi_est1_sel)[, 2:3])
+R> rbind("MI without var sel" = extract(mi_est1)[, 2:3],
++       "MI with var sel"    = extract(mi_est1_sel)[, 2:3])
 \end{CodeInput}
 \begin{CodeOutput}
                         mean         SE
@@ -1784,7 +1798,7 @@ variables using the \code{coef} generic method as follows.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> round(drop(coef(mi_est1_sel)$coef_out), 4)
+R> round(coef(mi_est1_sel)$coef_out[, 1], 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
@@ -1807,7 +1821,7 @@ access to the \code{"selection"} element is required.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> round(drop(coef(ipw_est1)$coef_sel), 4)
+R> round(coef(ipw_est1)$coef_sel[, 1], 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
@@ -1855,18 +1869,18 @@ the models or the covariate balance, they should use existing
 
 \begin{table}[ht!]
 \centering
-\begin{tabular}{p{4cm}p{11cm}}
+\begin{tabular}{p{3cm}p{12cm}}
 \hline 
 Function & Description \\
 \hline
-\code{check_balance} & returns a \code{list} of totals for IPW and DR estimators; \\
-\code{extract} & returns a \code{data.frame} with estimation results; \\
-\code{pop_size} & returns the population size (fixed or not)\\
-\code{confint} & returns the confidence interval for the target variable(s) \\
+\code{check_balance} & returns a \code{list} of totals for IPW and DR estimators \\
 \code{coef} & returns a list of coefficients for outcome or selection model \\
+\code{confint} & returns the confidence interval for the target variable(s) \\
+\code{extract} & returns a \code{data.frame} with estimation results \\
 \code{nobs} & returns the number of observations for both samples\\
-\code{summary} & returns a \code{nonprob_summary} class with additional information\\
 \code{plot} & plots a comparison of naive (uncorrected) and estimated mean along with CI\\
+\code{pop_size} & returns the population size (fixed or not)\\
+\code{summary} & returns a \code{nonprob_summary} class with additional information\\
 \code{update} & returns an \code{updated} object\\
 \code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 
@@ -1994,11 +2008,11 @@ up to version 0.1.0. Parts of this paper are based on Łukasz's Master's
 thesis (available at
 \url{https://github.com/ncn-foreigners/graduation-theses}). Piotr
 Chlebicki has contributed to the package and has implemented MI-PMM
-estimators. Maciej Beręsewicz came up with the initial idea and is
-responsible for the design of the package and for testing, reviewing and
-contributing to the source code. He also prepared the manuscript. He was
-also responsible for a significant restructuring of the package between
-versions 0.1.0 and 0.2.0.
+estimators. Maciej Beręsewicz was responsible for the design of the
+package and for testing, reviewing and contributing to the source code.
+He also prepared the manuscript. He was also responsible for a
+significant restructuring of the package between versions 0.1.0 and
+0.2.0.
 
 \clearpage
 
