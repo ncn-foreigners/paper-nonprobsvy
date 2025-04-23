@@ -121,6 +121,17 @@ summary(ipw_est1)
 ```
 
 ``` r
+extract(ipw_est1)
+```
+
+```
+##         target      mean         SE lower_bound
+## 1 single_shift 0.7223628 0.04207711   0.6398932
+##   upper_bound
+## 1   0.8048324
+```
+
+``` r
 ipw_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
@@ -146,8 +157,8 @@ ipw_est2
 ```
 
 ``` r
-data.frame(ipw_mle=check_balance(~size, ipw_est1, 1)$balance,
-           ipw_gee=check_balance(~size, ipw_est2, 1)$balance)
+data.frame(ipw_mle=check_balance(~size-1, ipw_est1, 1)$balance,
+           ipw_gee=check_balance(~size-1, ipw_est2, 1)$balance)
 ```
 
 ```
@@ -208,7 +219,7 @@ mi_est3 <- nonprob(
 ```
 
 ``` r
-rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
+rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 ```
 
 ```
@@ -305,17 +316,12 @@ dr_est2
 ```
 
 ``` r
-df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
-                    cbind(ipw_est2$output, ipw_est2$confidence_interval),
-                    cbind(mi_est1$output, mi_est1$confidence_interval),
-                    cbind(mi_est2$output, mi_est2$confidence_interval),
-                    cbind(mi_est3$output, mi_est3$confidence_interval),
-                    cbind(dr_est1$output, dr_est1$confidence_interval),
-                    cbind(dr_est2$output, dr_est2$confidence_interval))
-rownames(df_s) <- NULL
+df_s <- rbind(extract(ipw_est1), extract(ipw_est2), extract(mi_est1),
+              extract(mi_est2), extract(mi_est3), extract(dr_est1), 
+              extract(dr_est2))
 
 df_s$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
-                    "MI (PMM)", "DR", "DR (BM)")
+              "MI (PMM)", "DR", "DR (BM)")
 
 ggplot(data = df_s, 
        aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
@@ -341,8 +347,8 @@ ipw_est1_boot <- nonprob(
   verbose = FALSE
 )
 
-rbind("IPW analytic variance"=ipw_est1$output,
-      "IPW bootstrap variance"=ipw_est1_boot$output)
+rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
+      "IPW bootstrap variance" = extract(ipw_est1_boot)[, 2:3])
 ```
 
 ```
@@ -385,8 +391,8 @@ mi_est1_sel <- nonprob(
 ```
 
 ``` r
-rbind("MI without var sel"= mi_est1$output,
-      "MI with var sel"   = mi_est1_sel$output)
+rbind("MI without var sel" = extract(mi_est1)[, 2:3],
+      "MI with var sel"    = extract(mi_est1_sel)[, 2:3])
 ```
 
 ```
@@ -396,7 +402,7 @@ rbind("MI without var sel"= mi_est1$output,
 ```
 
 ``` r
-round(coef(mi_est1_sel$outcome$single_shift), 4)
+round(coef(mi_est1_sel)$coef_out[, 1], 4)
 ```
 
 ```
@@ -419,7 +425,7 @@ round(coef(mi_est1_sel$outcome$single_shift), 4)
 ```
 
 ``` r
-round(ipw_est1$selection$coefficients,4)
+round(coef(ipw_est1)$coef_sel[, 1], 4)
 ```
 
 ```
@@ -499,7 +505,7 @@ sessionInfo()
 ```
 ## R version 4.4.2 (2024-10-31)
 ## Platform: aarch64-apple-darwin20
-## Running under: macOS Sequoia 15.4
+## Running under: macOS Sequoia 15.4.1
 ## 
 ## Matrix products: default
 ## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
@@ -516,36 +522,66 @@ sessionInfo()
 ## [6] datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.5.1    nonprobsvy_0.2.0 survey_4.4-2    
+## [1] ggplot2_3.5.2    nonprobsvy_0.2.1 survey_4.4-2    
 ## [4] survival_3.8-3   Matrix_1.7-3    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] sandwich_3.1-1       generics_0.1.3      
-##  [3] lattice_0.22-6       digest_0.6.37       
-##  [5] magrittr_2.0.3       evaluate_1.0.3      
-##  [7] nleqslv_3.3.5        iterators_1.0.14    
-##  [9] fastmap_1.2.0        foreach_1.5.2       
-## [11] doParallel_1.0.17    operator.tools_1.6.3
-## [13] DBI_1.2.3            scales_1.3.0        
-## [15] codetools_0.2-20     cli_3.6.4           
-## [17] mitools_2.4          rlang_1.1.5         
-## [19] miscTools_0.6-28     munsell_0.5.1       
-## [21] splines_4.4.2        withr_3.0.2         
-## [23] RANN_2.6.2           yaml_2.3.10         
-## [25] tools_4.4.2          parallel_4.4.2      
-## [27] ncvreg_3.15.0        dplyr_1.1.4         
-## [29] colorspace_2.1-1     maxLik_1.5-2.1      
-## [31] vctrs_0.6.5          R6_2.6.1            
-## [33] zoo_1.8-13           lifecycle_1.0.4     
-## [35] rticles_0.27         MASS_7.3-65         
-## [37] pkgconfig_2.0.3      pillar_1.10.1       
-## [39] gtable_0.3.6         rsconnect_1.3.4     
-## [41] glue_1.8.0           Rcpp_1.0.14         
-## [43] xfun_0.51            tibble_3.2.1        
-## [45] tidyselect_1.2.1     rstudioapi_0.17.1   
-## [47] knitr_1.50           farver_2.1.2        
-## [49] htmltools_0.5.8.1    rmarkdown_2.29      
-## [51] labeling_0.4.3       formula.tools_1.7.1 
-## [53] compiler_4.4.2
+##   [1] DBI_1.2.3            Rdpack_2.6.4        
+##   [3] gridExtra_2.3        inline_0.3.21       
+##   [5] sandwich_3.1-1       rlang_1.1.6         
+##   [7] magrittr_2.0.3       matrixStats_1.5.0   
+##   [9] compiler_4.4.2       brglm2_0.9.2        
+##  [11] loo_2.8.0            vctrs_0.6.5         
+##  [13] reshape2_1.4.4       ncvreg_3.15.0       
+##  [15] stringr_1.5.1        pkgconfig_2.0.3     
+##  [17] fastmap_1.2.0        backports_1.5.0     
+##  [19] labeling_0.4.3       threejs_0.3.3       
+##  [21] promises_1.3.2       rmarkdown_2.29      
+##  [23] markdown_2.0         nloptr_2.2.1        
+##  [25] miscTools_0.6-28     xfun_0.52           
+##  [27] jsonlite_2.0.0       later_1.4.2         
+##  [29] parallel_4.4.2       R6_2.6.1            
+##  [31] dygraphs_1.1.1.6     stringi_1.8.7       
+##  [33] StanHeaders_2.32.10  boot_1.3-31         
+##  [35] numDeriv_2016.8-1.1  iterators_1.0.14    
+##  [37] Rcpp_1.0.14          rstan_2.32.7        
+##  [39] knitr_1.50           zoo_1.8-14          
+##  [41] base64enc_0.1-3      bayesplot_1.12.0    
+##  [43] httpuv_1.6.16        splines_4.4.2       
+##  [45] nnet_7.3-20          igraph_2.1.4        
+##  [47] tidyselect_1.2.1     rstudioapi_0.17.1   
+##  [49] abind_1.4-8          yaml_2.3.10         
+##  [51] doParallel_1.0.17    maxLik_1.5-2.1      
+##  [53] codetools_0.2-20     miniUI_0.1.1.1      
+##  [55] curl_6.2.2           pkgbuild_1.4.7      
+##  [57] lattice_0.22-7       tibble_3.2.1        
+##  [59] enrichwith_0.3.1     plyr_1.8.9          
+##  [61] withr_3.0.2          shiny_1.10.0        
+##  [63] posterior_1.6.1      evaluate_1.0.3      
+##  [65] RcppParallel_5.1.10  xts_0.14.1          
+##  [67] lpSolve_5.6.23       pillar_1.10.2       
+##  [69] rsconnect_1.3.4      tensorA_0.36.2.1    
+##  [71] foreach_1.5.2        checkmate_2.3.2     
+##  [73] DT_0.33              stats4_4.4.2        
+##  [75] rticles_0.27         reformulas_0.4.0    
+##  [77] shinyjs_2.1.0        distributional_0.5.0
+##  [79] generics_0.1.3       nleqslv_3.3.5       
+##  [81] rstantools_2.4.0     munsell_0.5.1       
+##  [83] scales_1.3.0         minqa_1.2.8         
+##  [85] gtools_3.9.5         xtable_1.8-4        
+##  [87] sampling_2.10        glue_1.8.0          
+##  [89] tools_4.4.2          shinystan_2.6.0     
+##  [91] lme4_1.1-37          colourpicker_1.3.0  
+##  [93] RANN_2.6.2           mitools_2.4         
+##  [95] rbibutils_2.3        QuickJSR_1.7.0      
+##  [97] crosstalk_1.2.1      colorspace_2.1-1    
+##  [99] formula.tools_1.7.1  nlme_3.1-168        
+## [101] cli_3.6.4            dplyr_1.1.4         
+## [103] V8_6.0.3             gtable_0.3.6        
+## [105] digest_0.6.37        operator.tools_1.6.3
+## [107] farver_2.1.2         htmlwidgets_1.6.4   
+## [109] htmltools_0.5.8.1    lifecycle_1.0.4     
+## [111] mime_0.13            rstanarm_2.32.1     
+## [113] shinythemes_1.2.0    MASS_7.3-65
 ```
 

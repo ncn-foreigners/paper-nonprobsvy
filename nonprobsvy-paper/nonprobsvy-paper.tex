@@ -64,8 +64,7 @@ score estimation, mass imputation, survey}
 Albano hus 1\\
 106 91 Stockholm, Sweden\\
   E-mail: \email{piotr.chlebicki@math.su.se}\\
-  URL: \url{https://github.com/Kertoo},
-\url{https://www.su.se/profiles/pich3772}\\~\\
+  URL: \url{https://www.su.se/profiles/pich3772}\\~\\
       Maciej Beręsewicz\\
     Poznań University of Economics and Business\\
 Statistical Office in Poznań\\
@@ -81,8 +80,7 @@ Statistical Office in Poznań\\
 ul. Wojska Polskiego 27/29\\
 60-624 Poznań, Poland\\
   E-mail: \email{maciej.beresewicz@ue.poznan.pl}\\
-  URL: \url{https://github.com/BERENZ},
-\url{https://ue.poznan.pl/en/people/dr-maciej-beresewicz/}\\~\\
+  URL: \url{https://berenz.github.io/}\\~\\
   }
 
 
@@ -195,38 +193,43 @@ presented and compared with \pkg{nonprobsvy} in the next section.
 \subsection{Software for non-probability samples}\label{sec-software}
 
 Table \ref{tab-comparisons} presents a comparison of selected packages
-in terms of the availability of various inference methods. We focus on
-packages available through CRAN or PyPI (for non-CRAN or non-PyPI
-software see \citet{cobo2024software}). The comparison includes four
-packages that particularly focus on non-probability samples: in
-\proglang{R} -- \pkg{NonProbEst} \citep{NonProbEst} and our
-\pkg{nonprobsvy}, and in \proglang{Python} -- \pkg{balance}
-\citep{sarig2023balancepythonpackage}, \pkg{inps}
-\citep{castro2024inps}. In addition, we have included two \proglang{R}
-packages that implement specific methods: \pkg{rstanarm} (MRP;
-\citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models;
-\citet{GJRM}).
+in terms of the availability of different inference methods. The reason
+for this is the availability of software designed for inference based on
+non-probability samples, not a general way to estimate propensity scores
+or model \(E(Y|X)\). For such reviews, one can refer to the
+\citet[chapter 6]{valliant2018survey} who discussed weighting and
+matching in this context in \proglang{Stata} \citep{Stata2025} using
+\code{logit}, \code{svy} and \code{teffects nnmatch} commands or
+\citet[eg. chapter 8]{lohr2021sas} who covers \proglang{SAS} software
+(\citet{sas94}; e.g.~\code{PROC LOGISTIC} procedure).
+
+We focus on packages available as open source or via CRAN or PyPI (for
+non-CRAN or non-PyPI software see \citet{cobo2024software}). Our
+comparison includes five packages that focus specifically on
+non-probability sampling: in \proglang{R} -- \pkg{NonProbEst}
+\citep{NonProbEst} and our \pkg{nonprobsvy}, and in \proglang{Python} --
+\pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps}
+\citep{castro2024inps}, and in \proglang{Stan} \citep{carpenter2017stan}
+(e.g.~through the \proglang{R} package \pkg{rstanarm}, which allows you
+to easily apply the \citep{rstanarm} MRP method).
 
 \begin{table}[ht!]
 \centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}{p{4cm}cccccc}
+\begin{tabular}{lccccc}
 \hline
-\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{balance} & \pkg{inps} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{nonprobsvy} \\
+\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{balance} & \pkg{inps} & \pkg{stan} & \pkg{nonprobsvy} \\
 \hline
-IPW  & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & ? & $\checkmark$ \\
-Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
-MI & $\checkmark$ & -- & -- & -- & -- & $\checkmark$ \\
-DR & -- & -- & $\checkmark$ & -- & -- & $\checkmark$\\
-MRP & -- & -- & -- & $\checkmark$ & -- & -- \\
-Sample selection & -- & -- & -- & -- & $\checkmark$ & -- \\
-Variable selection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
-Bootstrap variance & $\checkmark$ & -- & -- & -- & -- & $\checkmark$\\
-Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\checkmark$\\
+IPW  & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ \\
+Calibrated IPW  & -- & -- & -- & -- &$\checkmark$ \\
+MI & $\checkmark$ & -- & -- & -- & $\checkmark$ \\
+DR & -- & -- & $\checkmark$ & -- & $\checkmark$\\
+MRP & -- & -- & -- & $\checkmark$ & --\\
+Variable selection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+Analytical variance & -- & -- & -- & -- &  $\checkmark$\\
+Bootstrap variance & $\checkmark$ & -- & -- & -- & $\checkmark$\\
+Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & $\checkmark$\\
 \hline
 \end{tabular}
-}
 \caption{A comparison of packages and implemented methods}
 \label{tab-comparisons}
 \end{table}
@@ -252,14 +255,9 @@ variables but is still at a very early stage of development. It also
 implements kernel weighting and a simple bootstrap approach via the
 \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor
 \pkg{ips} supports the use of the \pkg{samplics} module
-\citep{Diallo2021}. The \pkg{GJRM} package is the only package that
-offers functions to estimate sample selection models used widely for
-correcting selection bias in observational studies (including the
-not-missing-at-random mechanism). Unfortunately, to best of our
-knowledge, there is no theory on how this approach can be used for
-estimating population quantities or conducting statistical inference.
-Finally, the MRP approach is implemented solely in the \pkg{rstanarm}
-package with variable selection specified by an appropriate prior.
+\citep{Diallo2021}. Finally, the MRP approach is implemented solely in
+the \pkg{rstanarm} package with variable selection specified by an
+appropriate prior.
 
 The \pkg{nonprobsvy} package has several advantages over those presented
 above. Firstly, it implements state-of-the-art methods recently proposed
@@ -896,6 +894,8 @@ user to select other link functions for the \(\pi_i^A\), implemented
 other penalty functions and extended the possibility of selecting
 variables to MI and IPW estimators. In the next section we discuss how
 to define the approaches presented above.
+
+\clearpage
 
 \section{The main function and the package
 functionalities}\label{sec-package}

@@ -129,38 +129,34 @@ Most approaches assume that population data is available in order to reduce the 
 
 ## Software for non-probability samples {#sec-software}
 
-<!----
-add reference to Stata
---->
 
-Table \ref{tab-comparisons} presents a comparison of selected packages in terms of the availability of various inference methods. We focus on packages available through CRAN or PyPI (for non-CRAN or non-PyPI software see \citet{cobo2024software}). The comparison includes four packages that particularly focus on non-probability samples: in \proglang{R} -- \pkg{NonProbEst} \citep{NonProbEst} and our \pkg{nonprobsvy}, and in \proglang{Python} -- \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps}. In addition, we have included two \proglang{R} packages that implement specific methods: \pkg{rstanarm} (MRP; \citet{rstanarm}) and \pkg{GJRM} (generalized sample selection models; \citet{GJRM}). 
+Table \ref{tab-comparisons} presents a comparison of selected packages in terms of the availability of different inference methods. The reason for this is the availability of software designed for inference based on non-probability samples, not a general way to estimate propensity scores or model $E(Y|X)$. For such reviews, one can refer to the \citet[chapter 6]{valliant2018survey} who discussed weighting and matching in this context in \proglang{Stata} \citep{Stata2025} using \code{logit}, \code{svy} and \code{teffects nnmatch} commands or \citet[eg. chapter 8]{lohr2021sas} who covers \proglang{SAS} software (\citet{sas94}; e.g. \code{PROC LOGISTIC} procedure).
+
+We focus on packages available as open source or via CRAN or PyPI (for non-CRAN or non-PyPI software see \citet{cobo2024software}). Our comparison includes five packages that focus specifically on non-probability sampling: in \proglang{R} -- \pkg{NonProbEst} \citep{NonProbEst} and our \pkg{nonprobsvy}, and in \proglang{Python} -- \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps} \citep{castro2024inps}, and in \proglang{Stan} \citep{carpenter2017stan} (e.g. through the \proglang{R} package \pkg{rstanarm}, which allows you to easily apply the \citep{rstanarm} MRP method).
 
 \begin{table}[ht!]
 \centering
-\resizebox{\linewidth}{!}{
-\begin{tabular}{p{4cm}cccccc}
+\begin{tabular}{lccccc}
 \hline
-\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{balance} & \pkg{inps} & \pkg{rstanarm} & \pkg{GJRM} & \pkg{nonprobsvy} \\
+\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{balance} & \pkg{inps} & \pkg{stan} & \pkg{nonprobsvy} \\
 \hline
-IPW  & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & ? & $\checkmark$ \\
-Calibrated IPW  & -- & -- & -- & -- & -- & $\checkmark$ \\
-MI & $\checkmark$ & -- & -- & -- & -- & $\checkmark$ \\
-DR & -- & -- & $\checkmark$ & -- & -- & $\checkmark$\\
-MRP & -- & -- & -- & $\checkmark$ & -- & -- \\
-Sample selection & -- & -- & -- & -- & $\checkmark$ & -- \\
-Variable selection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
-Analytical variance & -- & -- & -- & -- & -- & $\checkmark$\\
-Bootstrap variance & $\checkmark$ & -- & -- & -- & -- & $\checkmark$\\
-Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & -- & $\checkmark$\\
+IPW  & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ \\
+Calibrated IPW  & -- & -- & -- & -- &$\checkmark$ \\
+MI & $\checkmark$ & -- & -- & -- & $\checkmark$ \\
+DR & -- & -- & $\checkmark$ & -- & $\checkmark$\\
+MRP & -- & -- & -- & $\checkmark$ & --\\
+Variable selection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+Analytical variance & -- & -- & -- & -- &  $\checkmark$\\
+Bootstrap variance & $\checkmark$ & -- & -- & -- & $\checkmark$\\
+Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & $\checkmark$\\
 \hline
 \end{tabular}
-}
 \caption{A comparison of packages and implemented methods}
 \label{tab-comparisons}
 \end{table}
 
 
-The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy}, offers various techniques, such as IPW or prediction approaches (e.g. model-calibrated). Users can choose several different settings for IPW weights, variable selection and can estimate variance using the leave-one-out Jackknife procedure. Unfortunately, the package is no longer actively developed and some of the techniques are either outdated or have been shown to be inappropriate for non-probability samples. While the package contains functions designed for specific methods, it does not allow users to leverage the \pkg{survey} package for estimation. The \pkg{balance} package is solely dedicated to the PS approach. It assumes that the the population totals are known and the authors have implemented the variance estimator of the weighted mean as a measure of uncertainty for the IPW estimator. The  weights for the IPW estimator are constructed using the approach proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the use of unit-level data from a probability sample or the population, implements IPW, MI and DR estimators, and offers users the possibility of selecting variables but is still at a very early stage of development. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics} module \citep{Diallo2021}. The \pkg{GJRM} package is the only package that offers functions to estimate sample selection models used widely for correcting selection bias in observational studies (including the not-missing-at-random mechanism). Unfortunately, to best of our knowledge, there is no theory on how this approach can be used for estimating population quantities or conducting statistical inference. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} package with variable selection specified by an appropriate prior. 
+The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy}, offers various techniques, such as IPW or prediction approaches (e.g. model-calibrated). Users can choose several different settings for IPW weights, variable selection and can estimate variance using the leave-one-out Jackknife procedure. Unfortunately, the package is no longer actively developed and some of the techniques are either outdated or have been shown to be inappropriate for non-probability samples. While the package contains functions designed for specific methods, it does not allow users to leverage the \pkg{survey} package for estimation. The \pkg{balance} package is solely dedicated to the PS approach. It assumes that the the population totals are known and the authors have implemented the variance estimator of the weighted mean as a measure of uncertainty for the IPW estimator. The  weights for the IPW estimator are constructed using the approach proposed by \citet{Schonlau2017}. The \pkg{inps} package supports the use of unit-level data from a probability sample or the population, implements IPW, MI and DR estimators, and offers users the possibility of selecting variables but is still at a very early stage of development. It also implements kernel weighting and a simple bootstrap approach via the \pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor \pkg{ips} supports the use of the \pkg{samplics} module \citep{Diallo2021}. Finally, the MRP approach is implemented solely in the \pkg{rstanarm} package with variable selection specified by an appropriate prior. 
 
 The \pkg{nonprobsvy} package has several advantages over those presented above. Firstly, it implements state-of-the-art methods recently proposed in the literature, along with valid statistical inference procedures. Secondly, it offers other approaches, such as calibrated IPW (where PS weights match either the population or estimated totals), NN and PMM matching, various IPW and DR estimators using generalized linear models with different link functions for probability estimation. Thirdly, it supports the functions included in the \pkg{survey} package to account for the design of the probability sample. Finally, we provide a user-friendly API that mimics \code{glm}, \code{survey::svydesign} and other functions known in \proglang{R}, together with the main function to specify the approach and estimators. As far as we know, the \pkg{nonprobsvy} is the only software (open-access or commercial) that offers such functionalities. 
 
@@ -434,6 +430,8 @@ $\bx_i \pi_i(\bx_i, \bgamma)^{-1}$ & $\sum_{j=1}^p\left(\sum_{i=1}^N\left[\frac{
 \end{table}
 
 where $R_i^A$ and $R_i^B$ are indicator functions defining the fact of being included in the non-probability sample $S_A$ and the probability sample $S_B$, respectively. \citet{yang_doubly_2020} only discussed the SCAD penalty and the $\bh(\bx_i, \bgamma)=\bx_i$ function for the DR estimator. In the \pkg{nonprobsvy} package we have extended this approach to the first variant of $\bh(\bx_i, \bgamma)$, shown in the first row of Table \eqref{tab-varsel-loss-ipw}, and have allowed the user to select other link functions for the $\pi_i^A$, implemented other penalty functions and extended the possibility of selecting variables to MI and IPW estimators. In the next section we discuss how to define the approaches presented above.
+
+\clearpage
 
 # The main function and the package functionalities {#sec-package}
 

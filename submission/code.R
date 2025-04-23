@@ -28,6 +28,8 @@ ipw_est1
 
 summary(ipw_est1)
 
+extract(ipw_est1)
+
 ipw_est2 <- nonprob(
   selection = ~ region + private + nace + size,
   target = ~ single_shift,
@@ -39,8 +41,8 @@ ipw_est2 <- nonprob(
 
 ipw_est2
 
-data.frame(ipw_mle=check_balance(~size, ipw_est1, 1)$balance,
-           ipw_gee=check_balance(~size, ipw_est2, 1)$balance)
+data.frame(ipw_mle=check_balance(~size-1, ipw_est1, 1)$balance,
+           ipw_gee=check_balance(~size-1, ipw_est2, 1)$balance)
 
 mi_est1 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
@@ -72,7 +74,7 @@ mi_est3 <- nonprob(
   control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
 )
 
-rbind("NN"=mi_est2$output, "PMM"=mi_est3$output)
+rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 
 dr_est1 <- nonprob(
   selection = ~ region + private + nace + size,
@@ -102,17 +104,12 @@ dr_est2 <- nonprob(
 )
 dr_est2
 
-df_s <- rbind(cbind(ipw_est1$output, ipw_est1$confidence_interval),
-                    cbind(ipw_est2$output, ipw_est2$confidence_interval),
-                    cbind(mi_est1$output, mi_est1$confidence_interval),
-                    cbind(mi_est2$output, mi_est2$confidence_interval),
-                    cbind(mi_est3$output, mi_est3$confidence_interval),
-                    cbind(dr_est1$output, dr_est1$confidence_interval),
-                    cbind(dr_est2$output, dr_est2$confidence_interval))
-rownames(df_s) <- NULL
+df_s <- rbind(extract(ipw_est1), extract(ipw_est2), extract(mi_est1),
+              extract(mi_est2), extract(mi_est3), extract(dr_est1), 
+              extract(dr_est2))
 
 df_s$est <- c("IPW (MLE)", "IPW (GEE)", "MI (GLM)", "MI (NN)", 
-                    "MI (PMM)", "DR", "DR (BM)")
+              "MI (PMM)", "DR", "DR (BM)")
 
 ggplot(data = df_s, 
        aes(y = est, x = mean, xmin = lower_bound, xmax = upper_bound)) + 
@@ -135,8 +132,8 @@ ipw_est1_boot <- nonprob(
   verbose = FALSE
 )
 
-rbind("IPW analytic variance"=ipw_est1$output,
-      "IPW bootstrap variance"=ipw_est1_boot$output)
+rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
+      "IPW bootstrap variance" = extract(ipw_est1_boot)[, 2:3])
 
 head(ipw_est1_boot$boot_sample, n=3)
 
@@ -152,12 +149,12 @@ mi_est1_sel <- nonprob(
   verbose = TRUE
 )
 
-rbind("MI without var sel"= mi_est1$output,
-      "MI with var sel"   = mi_est1_sel$output)
+rbind("MI without var sel" = extract(mi_est1)[, 2:3],
+      "MI with var sel"    = extract(mi_est1_sel)[, 2:3])
 
-round(coef(mi_est1_sel$outcome$single_shift), 4)
+round(coef(mi_est1_sel)$coef_out[, 1], 4)
 
-round(ipw_est1$selection$coefficients,4)
+round(coef(ipw_est1)$coef_sel[, 1], 4)
 
 nobs(dr_est1)
 
