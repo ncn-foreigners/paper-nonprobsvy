@@ -125,10 +125,8 @@ extract(ipw_est1)
 ```
 
 ```
-##         target      mean         SE lower_bound
-## 1 single_shift 0.7223628 0.04207711   0.6398932
-##   upper_bound
-## 1   0.8048324
+##         target      mean         SE lower_bound upper_bound
+## 1 single_shift 0.7223628 0.04207711   0.6398932   0.8048324
 ```
 
 ``` r
@@ -406,22 +404,18 @@ round(coef(mi_est1_sel)$coef_out[, 1], 4)
 ```
 
 ```
-## (Intercept)    region04    region06    region08 
-##      0.2817      0.0023      0.3272      0.3195 
-##    region10    region12    region14    region16 
-##      0.2118      0.1773      0.0142      0.0791 
-##    region18    region20    region22    region24 
-##      0.0000      0.0000      0.0046     -0.2555 
-##    region26    region28    region30    region32 
-##      0.1332      0.0000      0.0000      0.0000 
-##     private     naceD.E       naceF       naceG 
-##     -0.6087      0.1762      1.9175     -0.4556 
-##       naceH       naceI       naceJ     naceK.L 
-##     -0.5605     -1.0964      0.9216      1.0372 
-##       naceM       naceN       naceO       naceP 
-##      1.0027     -0.1839      1.4748      0.5371 
-##       naceQ     naceR.S       sizeM       sizeS 
-##     -0.7113     -0.8136      0.9971      1.5353
+## (Intercept)    region04    region06    region08    region10    region12 
+##      0.2817      0.0023      0.3272      0.3195      0.2118      0.1773 
+##    region14    region16    region18    region20    region22    region24 
+##      0.0142      0.0791      0.0000      0.0000      0.0046     -0.2555 
+##    region26    region28    region30    region32     private     naceD.E 
+##      0.1332      0.0000      0.0000      0.0000     -0.6087      0.1762 
+##       naceF       naceG       naceH       naceI       naceJ     naceK.L 
+##      1.9175     -0.4556     -0.5605     -1.0964      0.9216      1.0372 
+##       naceM       naceN       naceO       naceP       naceQ     naceR.S 
+##      1.0027     -0.1839      1.4748      0.5371     -0.7113     -0.8136 
+##       sizeM       sizeS 
+##      0.9971      1.5353
 ```
 
 ``` r
@@ -429,22 +423,18 @@ round(coef(ipw_est1)$coef_sel[, 1], 4)
 ```
 
 ```
-## (Intercept)    region04    region06    region08 
-##     -0.6528      0.8378      0.1995      0.1048 
-##    region10    region12    region14    region16 
-##     -0.1576     -0.6099     -0.8415      0.7639 
-##    region18    region20    region22    region24 
-##      1.1781      0.2225     -0.0375     -0.4067 
-##    region26    region28    region30    region32 
-##      0.2029      0.5786     -0.6102      0.3274 
-##     private     naceD.E       naceF       naceG 
-##      0.0590      0.7727     -0.3778     -0.3337 
-##       naceH       naceI       naceJ     naceK.L 
-##     -0.6517      0.4118     -1.4264      0.0617 
-##       naceM       naceN       naceO       naceP 
-##     -0.4068      0.8003     -0.6935      1.2510 
-##       naceQ     naceR.S       sizeM       sizeS 
-##      0.3029      0.2223     -0.3641     -1.0292
+## (Intercept)    region04    region06    region08    region10    region12 
+##     -0.6528      0.8378      0.1995      0.1048     -0.1576     -0.6099 
+##    region14    region16    region18    region20    region22    region24 
+##     -0.8415      0.7639      1.1781      0.2225     -0.0375     -0.4067 
+##    region26    region28    region30    region32     private     naceD.E 
+##      0.2029      0.5786     -0.6102      0.3274      0.0590      0.7727 
+##       naceF       naceG       naceH       naceI       naceJ     naceK.L 
+##     -0.3778     -0.3337     -0.6517      0.4118     -1.4264      0.0617 
+##       naceM       naceN       naceO       naceP       naceQ     naceR.S 
+##     -0.4068      0.8003     -0.6935      1.2510      0.3029      0.2223 
+##       sizeM       sizeS 
+##     -0.3641     -1.0292
 ```
 
 ``` r
@@ -518,70 +508,29 @@ sessionInfo()
 ## tzcode source: internal
 ## 
 ## attached base packages:
-## [1] grid      stats     graphics  grDevices utils    
-## [6] datasets  methods   base     
+## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+## [8] base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.5.2    nonprobsvy_0.2.1 survey_4.4-2    
-## [4] survival_3.8-3   Matrix_1.7-3    
+## [1] ggplot2_3.5.2    nonprobsvy_0.2.1 survey_4.4-2     survival_3.8-3  
+## [5] Matrix_1.7-3    
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] DBI_1.2.3            Rdpack_2.6.4        
-##   [3] gridExtra_2.3        inline_0.3.21       
-##   [5] sandwich_3.1-1       rlang_1.1.6         
-##   [7] magrittr_2.0.3       matrixStats_1.5.0   
-##   [9] compiler_4.4.2       brglm2_0.9.2        
-##  [11] loo_2.8.0            vctrs_0.6.5         
-##  [13] reshape2_1.4.4       ncvreg_3.15.0       
-##  [15] stringr_1.5.1        pkgconfig_2.0.3     
-##  [17] fastmap_1.2.0        backports_1.5.0     
-##  [19] labeling_0.4.3       threejs_0.3.3       
-##  [21] promises_1.3.2       rmarkdown_2.29      
-##  [23] markdown_2.0         nloptr_2.2.1        
-##  [25] miscTools_0.6-28     xfun_0.52           
-##  [27] jsonlite_2.0.0       later_1.4.2         
-##  [29] parallel_4.4.2       R6_2.6.1            
-##  [31] dygraphs_1.1.1.6     stringi_1.8.7       
-##  [33] StanHeaders_2.32.10  boot_1.3-31         
-##  [35] numDeriv_2016.8-1.1  iterators_1.0.14    
-##  [37] Rcpp_1.0.14          rstan_2.32.7        
-##  [39] knitr_1.50           zoo_1.8-14          
-##  [41] base64enc_0.1-3      bayesplot_1.12.0    
-##  [43] httpuv_1.6.16        splines_4.4.2       
-##  [45] nnet_7.3-20          igraph_2.1.4        
-##  [47] tidyselect_1.2.1     rstudioapi_0.17.1   
-##  [49] abind_1.4-8          yaml_2.3.10         
-##  [51] doParallel_1.0.17    maxLik_1.5-2.1      
-##  [53] codetools_0.2-20     miniUI_0.1.1.1      
-##  [55] curl_6.2.2           pkgbuild_1.4.7      
-##  [57] lattice_0.22-7       tibble_3.2.1        
-##  [59] enrichwith_0.3.1     plyr_1.8.9          
-##  [61] withr_3.0.2          shiny_1.10.0        
-##  [63] posterior_1.6.1      evaluate_1.0.3      
-##  [65] RcppParallel_5.1.10  xts_0.14.1          
-##  [67] lpSolve_5.6.23       pillar_1.10.2       
-##  [69] rsconnect_1.3.4      tensorA_0.36.2.1    
-##  [71] foreach_1.5.2        checkmate_2.3.2     
-##  [73] DT_0.33              stats4_4.4.2        
-##  [75] rticles_0.27         reformulas_0.4.0    
-##  [77] shinyjs_2.1.0        distributional_0.5.0
-##  [79] generics_0.1.3       nleqslv_3.3.5       
-##  [81] rstantools_2.4.0     munsell_0.5.1       
-##  [83] scales_1.3.0         minqa_1.2.8         
-##  [85] gtools_3.9.5         xtable_1.8-4        
-##  [87] sampling_2.10        glue_1.8.0          
-##  [89] tools_4.4.2          shinystan_2.6.0     
-##  [91] lme4_1.1-37          colourpicker_1.3.0  
-##  [93] RANN_2.6.2           mitools_2.4         
-##  [95] rbibutils_2.3        QuickJSR_1.7.0      
-##  [97] crosstalk_1.2.1      colorspace_2.1-1    
-##  [99] formula.tools_1.7.1  nlme_3.1-168        
-## [101] cli_3.6.4            dplyr_1.1.4         
-## [103] V8_6.0.3             gtable_0.3.6        
-## [105] digest_0.6.37        operator.tools_1.6.3
-## [107] farver_2.1.2         htmlwidgets_1.6.4   
-## [109] htmltools_0.5.8.1    lifecycle_1.0.4     
-## [111] mime_0.13            rstanarm_2.32.1     
-## [113] shinythemes_1.2.0    MASS_7.3-65
+##  [1] gtable_0.3.6         dplyr_1.1.4          compiler_4.4.2      
+##  [4] ncvreg_3.15.0        tidyselect_1.2.1     Rcpp_1.0.14         
+##  [7] nleqslv_3.3.5        parallel_4.4.2       splines_4.4.2       
+## [10] scales_1.3.0         lattice_0.22-7       R6_2.6.1            
+## [13] labeling_0.4.3       maxLik_1.5-2.1       generics_0.1.3      
+## [16] knitr_1.50           iterators_1.0.14     MASS_7.3-65         
+## [19] operator.tools_1.6.3 tibble_3.2.1         munsell_0.5.1       
+## [22] DBI_1.2.3            pillar_1.10.2        formula.tools_1.7.1 
+## [25] rlang_1.1.6          RANN_2.6.2           xfun_0.52           
+## [28] doParallel_1.0.17    cli_3.6.4            withr_3.0.2         
+## [31] magrittr_2.0.3       digest_0.6.37        foreach_1.5.2       
+## [34] rstudioapi_0.17.1    sandwich_3.1-1       lifecycle_1.0.4     
+## [37] miscTools_0.6-28     vctrs_0.6.5          evaluate_1.0.3      
+## [40] glue_1.8.0           farver_2.1.2         zoo_1.8-14          
+## [43] codetools_0.2-20     mitools_2.4          colorspace_2.1-1    
+## [46] tools_4.4.2          pkgconfig_2.0.3
 ```
 
