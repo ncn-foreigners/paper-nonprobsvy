@@ -518,7 +518,7 @@ MI-NN with the \code{bd} algorithm &
 \code{nonprob(outcome = y1 ~ x1 + x2, \newline
 data = df, svydesign=prob, \newline
 control_outcome = control_out(treetype = "bd"))}\\
-MI-PMM A with $k=3$ & 
+MI-PMM B with $k=3$ & 
 \code{nonprob(outcome = y1 ~ x1 + x2,  \newline
 data = df, svydesign=prob, \newline
 control_outcome = control_out(k=3, pmm_match_type=2))}\\
@@ -707,11 +707,9 @@ mi_est1
 ```
 
 
-In order to employ an MI estimator based on NN matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, `method_outcome = "pmm"` to use PMM or `method_outcome = "npar"` to use non-parametric approach. For the NN and PMM estimators, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator can be only estimated using bootstrap approach suggested by \citet{chlebicki2025}. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
+In order to employ an MI estimator based on NN matching, one can specify `method_outcome = "nn"` for the nearest neighbours search using all variables specified in the `outcome` argument, `method_outcome = "pmm"` to use PMM or `method_outcome = "npar"` to use non-parametric approach. For the NN and PMM estimators, we employ $k=5$ nearest neighbours (i.e. `control_out(k=5)`) but the variance of the PMM estimator should be estimated using bootstrap approach suggested by \citet{chlebicki2025}. However, in this example we have decided not to use bootstrapping as all variables are categorical and this results in a large number of NNs having the same distance and the numerical approximation defined in `glm.control` may give slightly different results between platforms. Therefore the reported variance is based on the probability sample $S_B$ only. In the case of the MI-NN estimator there is no need to specify the `family_outcome` argument as no model is estimated underneath. 
 
 ```{r mi-estim-nn-pmm}
-set.seed(2024)
-
 mi_est2 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -726,8 +724,7 @@ mi_est3 <- nonprob(
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5),
-  control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
+  control_outcome = control_out(k=5)
 )
 ```
 

@@ -6,36 +6,6 @@ options(prompt = 'R> ', continue = '+ ')
 # install.packages("nonprobsvy")
 
 library(nonprobsvy) ## for estimation
-```
-
-```
-## Loading required package: survey
-```
-
-```
-## Loading required package: grid
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## Loading required package: survival
-```
-
-```
-## 
-## Attaching package: 'survey'
-```
-
-```
-## The following object is masked from 'package:graphics':
-## 
-##     dotchart
-```
-
-``` r
 library(ggplot2)    ## for visualisation
 
 data(jvs)
@@ -187,12 +157,10 @@ mi_est1
 ##  - variance estimator: analytic
 ##  - population size fixed: false
 ##  - naive (uncorrected) estimator: 0.6605
-##  - selected estimator: 0.7032 (se=0.0112, ci=(0.6812, 0.7252))
+##  - selected estimator: 0.7032 (se=0.0112, ci=(0.6813, 0.7252))
 ```
 
 ``` r
-set.seed(2024)
-
 mi_est2 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -207,23 +175,16 @@ mi_est3 <- nonprob(
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5),
-  control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
+  control_outcome = control_out(k=5)
 )
-```
 
-```
-## Bootstrap variance only for the `pmm` method, analytical version during implementation.
-```
-
-``` r
 rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 ```
 
 ```
 ##          mean         SE
 ## NN  0.6799537 0.01568503
-## PMM 0.7337228 0.02231178
+## PMM 0.7458724 0.01526712
 ```
 
 ``` r
@@ -395,8 +356,8 @@ rbind("MI without var sel" = extract(mi_est1)[, 2:3],
 
 ```
 ##                         mean         SE
-## MI without var sel 0.7031991 0.01120162
-## MI with var sel    0.7019285 0.01102080
+## MI without var sel 0.7032089 0.01120237
+## MI with var sel    0.7019291 0.01102109
 ```
 
 ``` r
@@ -405,17 +366,17 @@ round(coef(mi_est1_sel)$coef_out[, 1], 4)
 
 ```
 ## (Intercept)    region04    region06    region08    region10    region12 
-##      0.2817      0.0023      0.3272      0.3195      0.2118      0.1773 
+##      0.2820      0.0025      0.3274      0.3196      0.2120      0.1775 
 ##    region14    region16    region18    region20    region22    region24 
-##      0.0142      0.0791      0.0000      0.0000      0.0046     -0.2555 
+##      0.0143      0.0792      0.0000      0.0000      0.0047     -0.2554 
 ##    region26    region28    region30    region32     private     naceD.E 
-##      0.1332      0.0000      0.0000      0.0000     -0.6087      0.1762 
+##      0.1333      0.0000      0.0000      0.0000     -0.6090      0.1759 
 ##       naceF       naceG       naceH       naceI       naceJ     naceK.L 
-##      1.9175     -0.4556     -0.5605     -1.0964      0.9216      1.0372 
+##      1.9173     -0.4558     -0.5607     -1.0966      0.9214      1.0370 
 ##       naceM       naceN       naceO       naceP       naceQ     naceR.S 
-##      1.0027     -0.1839      1.4748      0.5371     -0.7113     -0.8136 
+##      1.0025     -0.1840      1.4744      0.5368     -0.7116     -0.8138 
 ##       sizeM       sizeS 
-##      0.9971      1.5353
+##      0.9972      1.5354
 ```
 
 ``` r
@@ -452,7 +413,7 @@ confint(dr_est1, level = 0.99)
 
 ```
 ##         target lower_bound upper_bound
-## 1 single_shift   0.6734515   0.7334882
+## 1 single_shift   0.6734503   0.7334886
 ```
 
 ``` r
@@ -495,7 +456,7 @@ sessionInfo()
 ```
 ## R version 4.4.2 (2024-10-31)
 ## Platform: aarch64-apple-darwin20
-## Running under: macOS Sequoia 15.4.1
+## Running under: macOS Sequoia 15.5
 ## 
 ## Matrix products: default
 ## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
@@ -508,29 +469,32 @@ sessionInfo()
 ## tzcode source: internal
 ## 
 ## attached base packages:
-## [1] grid      stats     graphics  grDevices utils     datasets  methods  
-## [8] base     
+## [1] grid      stats     graphics  grDevices utils     datasets 
+## [7] methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.5.2    nonprobsvy_0.2.1 survey_4.4-2     survival_3.8-3  
+## [1] ggplot2_3.5.2    nonprobsvy_0.2.2 survey_4.4-2     survival_3.8-3  
 ## [5] Matrix_1.7-3    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6         dplyr_1.1.4          compiler_4.4.2      
-##  [4] ncvreg_3.15.0        tidyselect_1.2.1     Rcpp_1.0.14         
-##  [7] nleqslv_3.3.5        parallel_4.4.2       splines_4.4.2       
-## [10] scales_1.3.0         lattice_0.22-7       R6_2.6.1            
-## [13] labeling_0.4.3       maxLik_1.5-2.1       generics_0.1.3      
-## [16] knitr_1.50           iterators_1.0.14     MASS_7.3-65         
-## [19] operator.tools_1.6.3 tibble_3.2.1         munsell_0.5.1       
-## [22] DBI_1.2.3            pillar_1.10.2        formula.tools_1.7.1 
-## [25] rlang_1.1.6          RANN_2.6.2           xfun_0.52           
-## [28] doParallel_1.0.17    cli_3.6.4            withr_3.0.2         
-## [31] magrittr_2.0.3       digest_0.6.37        foreach_1.5.2       
-## [34] rstudioapi_0.17.1    sandwich_3.1-1       lifecycle_1.0.4     
-## [37] miscTools_0.6-28     vctrs_0.6.5          evaluate_1.0.3      
-## [40] glue_1.8.0           farver_2.1.2         zoo_1.8-14          
-## [43] codetools_0.2-20     mitools_2.4          colorspace_2.1-1    
-## [46] tools_4.4.2          pkgconfig_2.0.3
+##  [1] sandwich_3.1-1       generics_0.1.4       lattice_0.22-7      
+##  [4] digest_0.6.37        magrittr_2.0.3       evaluate_1.0.3      
+##  [7] RColorBrewer_1.1-3   nleqslv_3.3.5        iterators_1.0.14    
+## [10] fastmap_1.2.0        foreach_1.5.2        doParallel_1.0.17   
+## [13] operator.tools_1.6.3 DBI_1.2.3            scales_1.4.0        
+## [16] codetools_0.2-20     cli_3.6.5            mitools_2.4         
+## [19] rlang_1.1.6          miscTools_0.6-28     litedown_0.7        
+## [22] commonmark_1.9.5     splines_4.4.2        withr_3.0.2         
+## [25] RANN_2.6.2           yaml_2.3.10          tools_4.4.2         
+## [28] parallel_4.4.2       ncvreg_3.15.0        dplyr_1.1.4         
+## [31] maxLik_1.5-2.1       mime_0.13            vctrs_0.6.5         
+## [34] R6_2.6.1             zoo_1.8-14           lifecycle_1.0.4     
+## [37] rticles_0.27         MASS_7.3-65          pkgconfig_2.0.3     
+## [40] pillar_1.10.2        gtable_0.3.6         glue_1.8.0          
+## [43] Rcpp_1.0.14          xfun_0.52            tibble_3.2.1        
+## [46] tidyselect_1.2.1     rstudioapi_0.17.1    knitr_1.50          
+## [49] farver_2.1.2         htmltools_0.5.8.1    rmarkdown_2.29      
+## [52] labeling_0.4.3       formula.tools_1.7.1  compiler_4.4.2      
+## [55] markdown_2.0
 ```
 

@@ -54,8 +54,6 @@ mi_est1 <- nonprob(
 
 mi_est1
 
-set.seed(2024)
-
 mi_est2 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
@@ -70,8 +68,7 @@ mi_est3 <- nonprob(
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5),
-  control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
+  control_outcome = control_out(k=5)
 )
 
 rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])

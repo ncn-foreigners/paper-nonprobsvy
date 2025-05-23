@@ -1022,7 +1022,7 @@ MI-NN with the \code{bd} algorithm &
 \code{nonprob(outcome = y1 ~ x1 + x2, \newline
 data = df, svydesign=prob, \newline
 control_outcome = control_out(treetype = "bd"))}\\
-MI-PMM A with $k=3$ & 
+MI-PMM B with $k=3$ & 
 \code{nonprob(outcome = y1 ~ x1 + x2,  \newline
 data = df, svydesign=prob, \newline
 control_outcome = control_out(k=3, pmm_match_type=2))}\\
@@ -1423,7 +1423,7 @@ A nonprob object
  - variance estimator: analytic
  - population size fixed: false
  - naive (uncorrected) estimator: 0.6605
- - selected estimator: 0.7032 (se=0.0112, ci=(0.6812, 0.7252))
+ - selected estimator: 0.7032 (se=0.0112, ci=(0.6813, 0.7252))
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1434,15 +1434,18 @@ using all variables specified in the \texttt{outcome} argument,
 \texttt{method\_outcome\ =\ "npar"} to use non-parametric approach. For
 the NN and PMM estimators, we employ \(k=5\) nearest neighbours
 (i.e.~\texttt{control\_out(k=5)}) but the variance of the PMM estimator
-can be only estimated using bootstrap approach suggested by
-\citet{chlebicki2025}. In the case of the MI-NN estimator there is no
-need to specify the \texttt{family\_outcome} argument as no model is
-estimated underneath.
+should be estimated using bootstrap approach suggested by
+\citet{chlebicki2025}. However, in this example we have decided not to
+use bootstrapping as all variables are categorical and this results in a
+large number of NNs having the same distance and the numerical
+approximation defined in \texttt{glm.control} may give slightly
+different results between platforms. Therefore the reported variance is
+based on the probability sample \(S_B\) only. In the case of the MI-NN
+estimator there is no need to specify the \texttt{family\_outcome}
+argument as no model is estimated underneath.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> set.seed(2024)
-R> 
 R> mi_est2 <- nonprob(
 +   outcome = single_shift ~ region + private + nace + size,
 +   svydesign = jvs_svy,
@@ -1457,13 +1460,9 @@ R> mi_est3 <- nonprob(
 +   data = admin,
 +   method_outcome = "pmm",
 +   family_outcome = "binomial", 
-+   control_outcome = control_out(k=5),
-+   control_inference = control_inf(var_method = "bootstrap", num_boot = 50)
++   control_outcome = control_out(k=5)
 + )
 \end{CodeInput}
-\begin{CodeOutput}
-Bootstrap variance only for the `pmm` method, analytical version during implementation.
-\end{CodeOutput}
 \end{CodeChunk}
 
 Results of both estimators are more or less similar, but it should be
@@ -1477,7 +1476,7 @@ R> rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 \begin{CodeOutput}
          mean         SE
 NN  0.6799537 0.01568503
-PMM 0.7337228 0.02231178
+PMM 0.7458724 0.01526712
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1787,8 +1786,8 @@ R> rbind("MI without var sel" = extract(mi_est1)[, 2:3],
 \end{CodeInput}
 \begin{CodeOutput}
                         mean         SE
-MI without var sel 0.7031991 0.01120162
-MI with var sel    0.7019285 0.01102080
+MI without var sel 0.7032089 0.01120237
+MI with var sel    0.7019291 0.01102109
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1802,17 +1801,17 @@ R> round(coef(mi_est1_sel)$coef_out[, 1], 4)
 \end{CodeInput}
 \begin{CodeOutput}
 (Intercept)    region04    region06    region08    region10    region12 
-     0.2817      0.0023      0.3272      0.3195      0.2118      0.1773 
+     0.2820      0.0025      0.3274      0.3196      0.2120      0.1775 
    region14    region16    region18    region20    region22    region24 
-     0.0142      0.0791      0.0000      0.0000      0.0046     -0.2555 
+     0.0143      0.0792      0.0000      0.0000      0.0047     -0.2554 
    region26    region28    region30    region32     private     naceD.E 
-     0.1332      0.0000      0.0000      0.0000     -0.6087      0.1762 
+     0.1333      0.0000      0.0000      0.0000     -0.6090      0.1759 
       naceF       naceG       naceH       naceI       naceJ     naceK.L 
-     1.9175     -0.4556     -0.5605     -1.0964      0.9216      1.0372 
+     1.9173     -0.4558     -0.5607     -1.0966      0.9214      1.0370 
       naceM       naceN       naceO       naceP       naceQ     naceR.S 
-     1.0027     -0.1839      1.4748      0.5371     -0.7113     -0.8136 
+     1.0025     -0.1840      1.4744      0.5368     -0.7116     -0.8138 
       sizeM       sizeS 
-     0.9971      1.5353 
+     0.9972      1.5354 
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -1898,7 +1897,7 @@ R> confint(dr_est1, level = 0.99)
 \end{CodeInput}
 \begin{CodeOutput}
         target lower_bound upper_bound
-1 single_shift   0.6734515   0.7334882
+1 single_shift   0.6734503   0.7334886
 \end{CodeOutput}
 \end{CodeChunk}
 
