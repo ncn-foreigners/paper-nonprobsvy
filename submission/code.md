@@ -6,6 +6,36 @@ options(prompt = 'R> ', continue = '+ ')
 # install.packages("nonprobsvy")
 
 library(nonprobsvy) ## for estimation
+```
+
+```
+## Loading required package: survey
+```
+
+```
+## Loading required package: grid
+```
+
+```
+## Loading required package: Matrix
+```
+
+```
+## Loading required package: survival
+```
+
+```
+## 
+## Attaching package: 'survey'
+```
+
+```
+## The following object is masked from 'package:graphics':
+## 
+##     dotchart
+```
+
+``` r
 library(ggplot2)    ## for visualisation
 
 data(jvs)
@@ -483,18 +513,16 @@ sessionInfo()
 ## [10] fastmap_1.2.0        foreach_1.5.2        doParallel_1.0.17   
 ## [13] operator.tools_1.6.3 DBI_1.2.3            scales_1.4.0        
 ## [16] codetools_0.2-20     cli_3.6.5            mitools_2.4         
-## [19] rlang_1.1.6          miscTools_0.6-28     litedown_0.7        
-## [22] commonmark_1.9.5     splines_4.4.2        withr_3.0.2         
-## [25] RANN_2.6.2           yaml_2.3.10          tools_4.4.2         
-## [28] parallel_4.4.2       ncvreg_3.15.0        dplyr_1.1.4         
-## [31] maxLik_1.5-2.1       mime_0.13            vctrs_0.6.5         
-## [34] R6_2.6.1             zoo_1.8-14           lifecycle_1.0.4     
-## [37] rticles_0.27         MASS_7.3-65          pkgconfig_2.0.3     
-## [40] pillar_1.10.2        gtable_0.3.6         glue_1.8.0          
-## [43] Rcpp_1.0.14          xfun_0.52            tibble_3.2.1        
-## [46] tidyselect_1.2.1     rstudioapi_0.17.1    knitr_1.50          
-## [49] farver_2.1.2         htmltools_0.5.8.1    rmarkdown_2.29      
-## [52] labeling_0.4.3       formula.tools_1.7.1  compiler_4.4.2      
-## [55] markdown_2.0
+## [19] rlang_1.1.6          miscTools_0.6-28     splines_4.4.2       
+## [22] withr_3.0.2          RANN_2.6.2           yaml_2.3.10         
+## [25] tools_4.4.2          parallel_4.4.2       ncvreg_3.15.0       
+## [28] dplyr_1.1.4          maxLik_1.5-2.1       vctrs_0.6.5         
+## [31] R6_2.6.1             zoo_1.8-14           lifecycle_1.0.4     
+## [34] rticles_0.27         MASS_7.3-65          pkgconfig_2.0.3     
+## [37] pillar_1.10.2        gtable_0.3.6         glue_1.8.0          
+## [40] Rcpp_1.0.14          xfun_0.52            tibble_3.2.1        
+## [43] tidyselect_1.2.1     rstudioapi_0.17.1    knitr_1.50          
+## [46] farver_2.1.2         htmltools_0.5.8.1    rmarkdown_2.29      
+## [49] labeling_0.4.3       formula.tools_1.7.1  compiler_4.4.2
 ```
 

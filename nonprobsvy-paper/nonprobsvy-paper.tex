@@ -1436,9 +1436,9 @@ the NN and PMM estimators, we employ \(k=5\) nearest neighbours
 (i.e.~\texttt{control\_out(k=5)}) but the variance of the PMM estimator
 should be estimated using bootstrap approach suggested by
 \citet{chlebicki2025}. However, in this example we have decided not to
-use bootstrapping as all variables are categorical and this results in a
+use bootstrap as all variables are categorical and this results in a
 large number of NNs having the same distance and the numerical
-approximation defined in \texttt{glm.control} may give slightly
+approximation defined in \texttt{control\_out(eps)} may give slightly
 different results between platforms. Therefore the reported variance is
 based on the probability sample \(S_B\) only. In the case of the MI-NN
 estimator there is no need to specify the \texttt{family\_outcome}
