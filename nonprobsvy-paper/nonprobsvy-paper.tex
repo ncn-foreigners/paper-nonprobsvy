@@ -23,8 +23,8 @@ non-probability surveys}
 
 
 \Abstract{
-The following paper presents \pkg{nonprobsvy} -- an \proglang{R} package
-for inference based on non-probability samples. The package implements
+The paper presents \pkg{nonprobsvy} -- an \proglang{R} package for
+inference based on non-probability samples. The package implements
 various approaches that can be categorized into three groups:
 prediction-based approach, inverse probability weighting and doubly
 robust approach. In the package, we assume the existence of either
@@ -32,10 +32,10 @@ population-level data or probability-based population information and
 leverage the \pkg{survey} package for inference. The package implements
 both analytical and bootstrap variance estimation for the proposed
 estimators. In the paper we present the theory behind the package, its
-functionalities and case study that showcases the usage of the package.
-The package is aimed at scientists and researchers who would like to use
-non-probability samples (e.g.~big data, opt-in web panels, social media)
-to accurately estimate population characteristics.
+functionalities and a case study that showcases the usage of the
+package. The package is aimed at scientists and researchers who would
+like to use non-probability samples (e.g., big data, opt-in web panels,
+social media) to accurately estimate population characteristics.
 }
 
 \Keywords{data integration, doubly robust estimation, propensity score
@@ -80,7 +80,7 @@ Statistical Office in Poznań\\
 ul. Wojska Polskiego 27/29\\
 60-624 Poznań, Poland\\
   E-mail: \email{maciej.beresewicz@ue.poznan.pl}\\
-  URL: \url{https://berenz.github.io/}\\~\\
+  URL: \url{https://maciejberesewicz.com}\\~\\
   }
 
 
@@ -115,8 +115,9 @@ statistics \citep{citro2014multiple, daas2015big}, public opinion
 studies \citep{Schonlau2017} or market research \citep[cf.][]{Grow2022}.
 Since the selection mechanism underlying these sources is unknown,
 standard design-based inference methods cannot be directly applied and,
-in the case of large datasets, can lead to the \textit{big data paradox}
-described by \citet{meng2018statistical}.
+in the case of large datasets, can lead to the big data paradox, i.e.,
+the larger the sample, the larger the bias, as described by
+\citet{meng2018statistical}.
 
 Table \ref{tab-comparison-characteristics} compares basic
 characteristics of probability and non-probability samples. In
@@ -124,13 +125,12 @@ particular, it shows the advantages and disadvantages of each type with
 respect to the selection mechanism, the population coverage, bias,
 variance, costs and timeliness. In general, the quality of
 non-probability samples suffers from an unknown selection mechanism
-(i.e.~unknown probabilities of inclusion) and under-coverage of certain
-groups from the population (e.g.~older people). As a result, direct
+(i.e., unknown probabilities of inclusion) and under-coverage of certain
+groups from the population (e.g., older people). As a result, direct
 estimates based on non-probability samples are biased and, in most
-cases, are characterised by small variance owing to their size, which is
-known as the \textit{big data paradox}, i.e.~the larger the sample, the
-larger the bias. Certainly, the costs and timeliness of these surveys
-are significantly smaller than those of probability samples.
+cases, are characterized by small variance owing to their size.
+Certainly, the costs and timeliness of these surveys are significantly
+smaller than those of probability samples.
 
 \begin{table}[ht!]
     \centering
@@ -146,37 +146,39 @@ are significantly smaller than those of probability samples.
     Timeliness & Long delay& Very short delay \\
     \hline
     \end{tabular}
-    \caption{A comparison of probability and non-probability samples and their characteristics}
+    \caption{A comparison of probability and non-probability samples and their characteristics.}
     \label{tab-comparison-characteristics}
 \end{table}
 
 To address this problem, several approaches have been proposed, which
-rely on the estimation of propensity scores (i.e.~inclusion
+rely on the estimation of propensity scores (PS; i.e., inclusion
 probabilities) for deriving inverse probability weights (IPW; also known
 as propensity score weighting/adjustment,
 cf.~\citet{lee2006propensity, lee2009estimation}), on model-based
 prediction (in particular, mass imputation estimators; MI) and on the
 doubly robust (DR) approach involving IPW and MI estimators. Two main
-scenarios are usually considered: 1) only population-level means or
-totals are available, and 2) unit-level data are available either in the
-form of registers covering the whole population or in the form of
-probability surveys \citep[cf.][]{elliott_inference_2017}.
+scenarios are usually considered:
+
+\begin{enumerate}
+\item only population-level means or totals are available, 
+\item unit-level data are available either in the form of registers covering the whole population or in the form of probability surveys \citep[cf.][]{elliott_inference_2017}. 
+\end{enumerate}
+
 \citet{wu2022statistical} classified these approaches into three groups
-that require a joint randomization framework involving a
-\textit{probability sampling design} (denoted as \(p\)) and an outcome
-regression model (denoted as \(\xi\)) or a propensity score model
-(denoted as \(q\)). According to this classification, IPW estimators
-represent the \(qp\) framework, MI estimators represent the \(\xi p\)
-framework, and DR estimators can represent either the \(qp\) or the
-\(\xi p\) framework.
+that require a joint randomization framework involving a probability
+sampling design (denoted as \(p\)) and an outcome regression model
+(denoted as \(\xi\)) or a PS model (denoted as \(q\)). According to this
+classification, IPW estimators represent the \(qp\) framework, MI
+estimators represent the \(\xi p\) framework, and DR estimators can
+represent either the \(qp\) or the \(\xi p\) framework.
 
 Most approaches assume that population data is available in order to
 reduce the bias of non-probability sampling by reweighting to reproduce
-known population totals/means (i.e.~IPW estimators); by modelling the
-target variable using various techniques (i.e.~MI estimators); or by
-combining both approaches (e.g.~DR estimators,
+known population totals/means (i.e., IPW estimators); by modeling the
+target variable using various techniques (i.e., MI estimators); or by
+combining both approaches (e.g., DR estimators,
 cf.~\citet{chen2020doubly}; see also Multilevel Regression and
-Post-stratification, MRP; \textit{Mister-P},
+Post-stratification, MRP; Mister-P,
 cf.~\citet{gelman1997poststratification}). This topic has become very
 popular and a number of new methods have been proposed; for instance
 non-parametric approaches based on nearest neighbours
@@ -185,8 +187,8 @@ non-parametric approaches based on nearest neighbours
 \citep{kim2023empirical}, model-calibration with LASSO \citep{chen2018}
 or quantile balanced IPW \citep{beresewicz2025} to name a few. It should
 be highlighted that, in contrast to probability samples, there is no
-single method that can be used for non-probability samples. Based on the
-methods available in the literature several statistical software
+single method that can be used for all non-probability samples. Based on
+the methods available in the literature several statistical software
 solutions have been developed. These pieces of software will be
 presented and compared with \pkg{nonprobsvy} in the next section.
 
@@ -197,11 +199,11 @@ in terms of the availability of different inference methods. The reason
 for this is the availability of software designed for inference based on
 non-probability samples, not a general way to estimate propensity scores
 or model \(E(Y|X)\). For such reviews, one can refer to the
-\citet[chapter 6]{valliant2018survey} who discussed weighting and
+\citet[Chapter 6]{valliant2018survey} who discussed weighting and
 matching in this context in \proglang{Stata} \citep{Stata2025} using
 \code{logit}, \code{svy} and \code{teffects nnmatch} commands or
-\citet[eg. chapter 8]{lohr2021sas} who covers \proglang{SAS} software
-(\citet{sas94}; e.g.~\code{PROC LOGISTIC} procedure).
+\citet[e.g., Chapter 8]{lohr2021sas} who covers \proglang{SAS} software
+(\citet{sas94}; e.g., \code{PROC LOGISTIC} procedure).
 
 We focus on packages available as open source or via CRAN or PyPI (for
 non-CRAN or non-PyPI software see \citet{cobo2024software}). Our
@@ -210,54 +212,56 @@ non-probability sampling: in \proglang{R} -- \pkg{NonProbEst}
 \citep{NonProbEst} and our \pkg{nonprobsvy}, and in \proglang{Python} --
 \pkg{balance} \citep{sarig2023balancepythonpackage}, \pkg{inps}
 \citep{castro2024inps}, and in \proglang{Stan} \citep{carpenter2017stan}
-(e.g.~through the \proglang{R} package \pkg{rstanarm}, which allows you
-to easily apply the \citep{rstanarm} MRP method).
+e.g., through the \proglang{R} package \pkg{rstanarm}, which allows you
+to easily apply the \pkg{rstanarm}'s MRP method; \citep{rstanarm}.
 
 \begin{table}[ht!]
 \centering
 \begin{tabular}{lccccc}
 \hline
-\textbf{Functionalities} & \pkg{NonProbEst} & \pkg{balance} & \pkg{inps} & \pkg{stan} & \pkg{nonprobsvy} \\
+ & & \multicolumn{2}{c}{\proglang{Python}} & \multicolumn{2}{c}{\proglang{R}} \\
+\cline{3-4} \cline{5-6}
+\textbf{Functionalities} & \proglang{Stan} & \pkg{balance} & \pkg{inps} & \pkg{NonProbEst} & \pkg{nonprobsvy} \\
 \hline
-IPW  & $\checkmark$ & $\checkmark$ & $\checkmark$ & -- & $\checkmark$ \\
+IPW  & -- & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
 Calibrated IPW  & -- & -- & -- & -- &$\checkmark$ \\
-MI & $\checkmark$ & -- & -- & -- & $\checkmark$ \\
+MI & -- & -- & -- & $\checkmark$ & $\checkmark$ \\
 DR & -- & -- & $\checkmark$ & -- & $\checkmark$\\
-MRP & -- & -- & -- & $\checkmark$ & --\\
+MRP & $\checkmark$ & -- & -- & -- & --\\
 Variable selection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
 Analytical variance & -- & -- & -- & -- &  $\checkmark$\\
-Bootstrap variance & $\checkmark$ & -- & -- & -- & $\checkmark$\\
+Bootstrap variance & -- & -- & -- & $\checkmark$ & $\checkmark$\\
 Integration with \pkg{survey} or \pkg{samplics} & -- & -- & -- & -- & $\checkmark$\\
 \hline
 \end{tabular}
-\caption{A comparison of packages and implemented methods}
+\caption{A comparison of packages and implemented methods.}
 \label{tab-comparisons}
 \end{table}
 
 The \pkg{NonProbEst} package, while more limited than \pkg{nonprobsvy},
-offers various techniques, such as IPW or prediction approaches
-(e.g.~model-calibrated). Users can choose several different settings for
-IPW weights, variable selection and can estimate variance using the
-leave-one-out Jackknife procedure. Unfortunately, the package is no
-longer actively developed and some of the techniques are either outdated
-or have been shown to be inappropriate for non-probability samples.
-While the package contains functions designed for specific methods, it
-does not allow users to leverage the \pkg{survey} package for
-estimation. The \pkg{balance} package is solely dedicated to the PS
-approach. It assumes that the the population totals are known and the
-authors have implemented the variance estimator of the weighted mean as
-a measure of uncertainty for the IPW estimator. The weights for the IPW
-estimator are constructed using the approach proposed by
-\citet{Schonlau2017}. The \pkg{inps} package supports the use of
-unit-level data from a probability sample or the population, implements
-IPW, MI and DR estimators, and offers users the possibility of selecting
-variables but is still at a very early stage of development. It also
-implements kernel weighting and a simple bootstrap approach via the
-\pkg{scipy.stats} module \citep{scipy2020}. Neither \pkg{balance} nor
-\pkg{ips} supports the use of the \pkg{samplics} module
-\citep{Diallo2021}. Finally, the MRP approach is implemented solely in
-the \pkg{rstanarm} package with variable selection specified by an
-appropriate prior.
+offers various techniques, such as PS or prediction approaches (e.g.,
+model-calibrated). Users can choose several different settings for PS
+weights, variable selection and can estimate variance of the mean using
+the leave-one-out Jackknife procedure. Unfortunately, the package is no
+longer actively developed (as of August 2025) and some of the techniques
+are either outdated or have been shown to be inappropriate for
+non-probability samples. While the package contains functions designed
+for specific methods, it does not allow users to leverage the
+\pkg{survey} package for estimation. The \pkg{balance} package is solely
+dedicated to the PS approach (as of version 0.10.0). It assumes that the
+reference probability sample is available and the authors have
+implemented the variance estimator of the weighted mean as a measure of
+uncertainty for the IPW estimator. The weights for the IPW estimator are
+constructed using the approach proposed by \citet{Schonlau2017}. The
+\pkg{inps} package supports the use of unit-level data from a
+probability sample or the population, implements IPW, MI and DR
+estimators, and offers users the possibility of selecting variables but
+is still at a very early stage of development. It also implements kernel
+weighting and a simple bootstrap approach via the \pkg{scipy.stats}
+package \citep{scipy2020}. Neither \pkg{balance} nor \pkg{inps} supports
+the use of the \pkg{samplics} package \citep{Diallo2021}. Finally, the
+MRP approach is implemented solely in the \pkg{rstanarm} package with
+variable selection specified by an appropriate prior.
 
 The \pkg{nonprobsvy} package has several advantages over those presented
 above. Firstly, it implements state-of-the-art methods recently proposed
@@ -265,105 +269,111 @@ in the literature, along with valid statistical inference procedures.
 Secondly, it offers other approaches, such as calibrated IPW (where PS
 weights match either the population or estimated totals), NN and PMM
 matching, various IPW and DR estimators using generalized linear models
-with different link functions for probability estimation. Thirdly, it
-supports the functions included in the \pkg{survey} package to account
-for the design of the probability sample. Finally, we provide a
-user-friendly API that mimics \code{glm}, \code{survey::svydesign} and
-other functions known in \proglang{R}, together with the main function
-to specify the approach and estimators. As far as we know, the
+(GLM) with different link functions for probability estimation. Thirdly,
+it supports the functions included in the \pkg{survey} package to
+account for the design of the probability sample. Finally, we provide a
+user-friendly API that mimics \code{glm()}, \code{survey::calibrate()}
+and other functions known in \proglang{R}, together with the main
+function to specify the approach and estimators. As far as we know, the
 \pkg{nonprobsvy} is the only software (open-access or commercial) that
 offers such functionalities.
 
 The remaining part of the paper is structured as follows. Section
 \ref{sec-methods} is dedicated to the theory of statistical inference
-based on non-probability samples. We provide the basic setup and
-introduce specific methods in separate subsections. We follow the
-notation used by \citet{wu2022statistical} throughout the paper. Section
+based on non-probability samples. We provide the basic set-up and
+introduce specific methods in separate sections. We follow the notation
+used by \citet{wu2022statistical} throughout the paper. Section
 \ref{sec-package} describes the main function and the package
 functionalities. Section \ref{sec-data-analysis} presents an empirical
 study showcasing the process of integrating data from the Polish Job
 Vacancy Survey with voluntary administrative data from the Central Job
 Offers Database in order to estimate the number of companies with at
 least one vacancy offered on a single shift. Section \ref{sec-s3methods}
-presents classes and \code{S3Methods} implemented in the package. The
+presents classes and \code{S3} methods implemented in the package. The
 paper ends with a summary and plans for future development. The Appendix
-contains Table \ref{tab-list-of-symbols} showing a list of symbols used
-in the paper and Section \ref{sec-details}, which presents algorithms
-for selected MI estimators. The Replication Materials include additional
-codes for specific estimators described in the paper.
+contains Section \ref{sec-details}, which presents algorithms for
+selected MI estimators.
 
 \section{Methods for non-probability samples}\label{sec-methods}
 
 \subsection{Basic setup}\label{basic-setup}
 
 Let \(U=\{1,..., N\}\) denote the target population consisting of \(N\)
-labelled units. Each unit \(i\) has an associated vector of auxiliary
-variables \(\boldsymbol{x}_{i}\) and the study (target) variable
-\(y_{i}\). Let \(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\) be a
-non-probability sample \(S_A\) of size \(n_A\) and let
-\(\left\{\left(\boldsymbol{x}_i, \pi_{i}^B\right), i \in S_B\right\}\)
-be a probability sample \(S_B\) of size \(n_B\), where the only
-information known for all units in the population refers to auxiliary
-variables \(\boldsymbol{x}\) and inclusion probabilities \(\pi^B\). Each
-unit in the \(S_B\) sample has been assigned a design-based weight given
-by \(d_i^B = 1/\pi_i^B\).
+labeled units. Each unit \(i\) has an associated \(L\)-dimensional
+vector of auxiliary variables \(\boldsymbol{x}_{i}\) and the study
+(target) variable \(y_{i}\). Let
+\(\{ (y_i, \boldsymbol{x}_i), i \in \mathcal{I}_{\text{NP}}\}\) be a
+non-probability sample \(S_{\text{NP}}\) of size \(n_{\text{NP}}\),
+where \(\mathcal{I}_{\text{NP}}\) is an index set for \(S_{\text{NP}}\).
+Let
+\(\left\{\left(\boldsymbol{x}_i, \pi_{i}^{\text{P}}\right), i \in \mathcal{I}_{\text{P}}\right\}\)
+be a probability sample \(S_{\text{P}}\) of size \(n_{\text{P}}\), where
+\(\mathcal{I}_{\text{P}}\) is an index set for \(S_{\text{P}}\), and the
+only information known for all units in the population refers to
+auxiliary variables \(\boldsymbol{x}\) and inclusion probabilities
+\(\pi^{\text{P}}\). Each unit in the \(S_{\text{P}}\) sample has been
+assigned a design-based weight given by
+\(d_i^{\text{P}} = 1/\pi_i^{\text{P}}\).
 
-Let \(R_i^A=I(i \in S_A)\) and \(R_i^B=I(i \in S_B)\) be indicators of
-inclusion in the non-probability sample \(S_A\) and the probability
-sample \(S_B\), respectively, which are defined for all units in the
+Let \(R_i^{\text{NP}}=I(i \in S_{\text{NP}})\) and
+\(R_i^{\text{P}}=I(i \in S_{\text{P}})\) be indicators of inclusion in
+the non-probability sample \(S_{\text{NP}}\) and the probability sample
+\(S_{\text{P}}\), respectively, which are defined for all units in the
 target population. Let
-\(\pi_i^A=P(R_i^A=1 \mid \boldsymbol{x}_i, y_i)=P(R_i^A=1 \mid \boldsymbol{x}_i)\)
-be propensity scores (PS), which characterize the \(S_A\) sample's
-inclusion and participation mechanisms. Unlike \(\pi_i^B\), the
-\(\pi_i^A\) and \(d_i^A=1/\pi_i^A\) are unknown. The description of the
-data is presented in a more concise form in Table \ref{tab-two-sources}.
+\(\pi_i^{\text{NP}}=P(R_i^{\text{NP}}=1 \mid \boldsymbol{x}_i, y_i)=P(R_i^{\text{NP}}=1 \mid \boldsymbol{x}_i)\)
+be propensity scores, which characterize the \(S_{\text{NP}}\) sample's
+inclusion and participation mechanisms. Unlike \(\pi_i^{\text{P}}\), the
+\(\pi_i^{\text{NP}}\) and \(d_i^{\text{NP}}=1/\pi_i^{\text{NP}}\) are
+unknown. The description of the data is presented in a more concise form
+in Table \ref{tab-two-sources}.
 
 \begin{table}[ht!]
     \centering
     \resizebox{\linewidth}{!}{
     \begin{tabular}{llcccc} 
     \hline
-    Sample & ID & Inclusion ($R$) & Design weight ($d$) & Covariates ($\boldsymbol{x}$) & Study variable ($y$) \\
+    Sample & ID & Inclusion ($R^{\text{NP}}$) & Design weight ($d$) & Covariates ($\boldsymbol{x}$) & Study variable ($y$) \\
     \hline
     Non-probability  & 1 & 1 & ? & $\checkmark$ & $\checkmark$ \\ 
-    $S_A$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
-    & $n_A$ & 1 & ? & $\checkmark$ & $\checkmark$ \\
-    Probability  & 1 & 0 & $\checkmark$ & $\checkmark$ & ? \\
-    $S_B$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\ 
-    & $n_B$ & 0 & $\checkmark$ & $\checkmark$ & ? \\                                     
+    $S_{\text{NP}}$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+    & $n_{\text{NP}}$ & 1 & ? & $\checkmark$ & $\checkmark$ \\
+    Probability  & $n_{\text{NP}}+1$ & 0 & $\checkmark$ & $\checkmark$ & ? \\
+    $S_{\text{P}}$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\ 
+    & $n_{\text{NP}}+n_{\text{P}}$ & 0 & $\checkmark$ & $\checkmark$ & ? \\                                     
     \hline     
     \end{tabular}
     }
-    \caption{Two-sample setting}
+    \caption{Two-sample setting.}
     \label{tab-two-sources}
 \end{table}
 
 The goal is to estimate the finite population mean
-\(\mu_y=N^{-1}\sum_{i=1}^{N} y_{i}\) of the target variable \(y\). As
+\(\mu_y = N^{-1}\sum_{i=1}^{N} y_{i}\) of the target variable \(y\). As
 values of \(y_{i}\) are not observed in the probability sample, they
 cannot be used to estimate the target quantity. Instead, one could try
-combining the non-probability and probability samples to estimate
-\(\mu_y\). Given the absence of a universally accepted method for
-achieving this objective, assumptions vary considerably, as outlined by
-\cite{wu2022statistical}. However, the following are the main
-assumptions that apply to the majority of methods presented in this
-section:
+combining the non-probability and probability samples (or known
+population totals) to estimate \(\mu_y\). Given the absence of a
+universally accepted method for achieving this objective, assumptions
+vary considerably, as outlined by \citet{wu2022statistical}. However,
+the following are the main assumptions that apply to the majority of
+methods presented in this section:
 
 \begin{itemize}
-\item[A1] $R_i^A$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$ (the MAR mechanism).
-\item[A2] All the units in the target population have non-zero PS, i.e., $\pi_i^A>0$, $i=1,2, \ldots, N$ (i.e. no coverage error).
-\item[A3] The indicator variables $R_1, R_2, \ldots, R_N$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$ (i.e. no clustering).
+\item[A1] $R_i^{\text{NP}}$ and the study variable $y_i$ are independent given the set of covariates $\boldsymbol{x}_i$ (the missing at random mechanism).
+\item[A2] All the units in the target population have non-zero PS, i.e., $\pi_i^{NP}>0$, $i=1,2, \ldots, N$ (i.e., no coverage error).
+\item[A3] The indicator variables $R_1^{\text{NP}}, R_2^{\text{NP}}, \ldots, R_N^{\text{NP}}$ are independent given the set of auxiliary variables $\left(\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_N\right)$ (i.e., no clustering).
 \end{itemize}
 
-Currently, we ignore overlap between \(S_A\) and \(S_B\), and assume no
-measurement error in \(y_i\) and the fact that values of
-\(\boldsymbol{x}_i\) are known. The setting presented in Table
-\ref{tab-two-sources} can also be extended to calibrated \(d_i^B\)
-weights (i.e.~\(d_i^B\) adjusted for under-coverage, non-contact or
-non-response; cf.~\cite{sarndal2005estimation}) but this requires
-additional developments in the theory about the consistency of the MI,
-IPW and DR estimators. In the next sections we briefly present the
-methods implemented in the package.
+Currently, we ignore overlap between \(S_{\text{NP}}\) and
+\(S_{\text{P}}\), and assume no measurement error in \(y_i\) and the
+fact that values of \(\boldsymbol{x}_i\) are known. The setting
+presented in Table \ref{tab-two-sources} can also be extended to
+calibrated \(d_i^{\text{P}}\) weights (i.e., \(d_i^{\text{P}}\) adjusted
+for under-coverage, non-contact or non-response;
+cf.~\cite{sarndal2005estimation}) but this requires additional
+developments in the theory about the consistency of the MI, IPW and DR
+estimators. In the next sections we briefly present the methods
+implemented in the package.
 
 \subsection{Prediction-based approach}\label{sec-prediction}
 
@@ -378,17 +388,17 @@ E_{\xi}\left(y_i \mid \boldsymbol{x}_i\right)=m\left(\boldsymbol{x}_i, \boldsymb
 \end{equation}
 
 where the mean function \(m(\cdot,\cdot)\) and the variance \(v(\cdot)\)
-have known forms and \(y_i\) are also assumed to be conditionally
-independent given the \(\boldsymbol{x}_i\). The model in
-\eqref{eq-semipar-model} is assumed to hold for all units in the
-non-probability sample \(S_A\). The parameters of the model in
-\eqref{eq-semipar-model} can be estimated using the quasi maximum
+have known forms, \(\boldsymbol{\beta}\) and \(\sigma^2\) are model
+parameters and \(y_i\) are also assumed to be conditionally independent
+given the \(\boldsymbol{x}_i\). The model in Equation
+\ref{eq-semipar-model} is assumed to hold for all units in the
+non-probability sample \(S_{\text{NP}}\). The parameters of the model in
+Equation \ref{eq-semipar-model} can be estimated using the quasi maximum
 likelihood estimation method, which includes linear and non-linear
-models, such as generalized linear models (GLM). Let
-\(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be the true values of the
-model parameters \(\boldsymbol{\beta}\) and \(\sigma^2\) under the
-adopted model and \(\hat{\boldsymbol{\beta}}\) be the quasi maximum
-likelihood estimator of \(\boldsymbol{\beta}_0\). Let
+models, such as GLM. Let \(\boldsymbol{\beta}_0\) and \(\sigma^2_0\) be
+the true values of the model parameters \(\boldsymbol{\beta}\) and
+\(\sigma^2\) under the adopted model and \(\hat{\boldsymbol{\beta}}\) be
+the quasi maximum likelihood estimator of \(\boldsymbol{\beta}_0\). Let
 \(m_i=m(\boldsymbol{x}_i, \boldsymbol{\beta}_0)\) and
 \(\hat{m}_i=m(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}})\) be
 calculated for all units \(i=1,...,N\). Under this setting, as
@@ -396,114 +406,123 @@ calculated for all units \(i=1,...,N\). Under this setting, as
 estimators:
 
 \begin{equation}
-\hat{\mu}_{y,PR1}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y,PR2}=\frac{1}{N}\left\{\sum_{i \in S_A} y_i-\sum_{i \in S_A} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\}.
+\hat{\mu}_{y,\text{PR1}}=\frac{1}{N} \sum_{i=1}^N \hat{m}_i \quad \text { and } \quad \hat{\mu}_{y,\text{PR2}}=\frac{1}{N}\left\{\sum_{i \in S_{\text{NP}}} y_i-\sum_{i \in S_{\text{NP}}} \hat{m}_i+\sum_{i=1}^N \hat{m}_i\right\}.
 \label{eq-pred-two-estimators}
 \end{equation}
 
 Under linear models, where
-\(m(\boldsymbol{x}_i, \boldsymbol{\beta})=\boldsymbol{x}_i^{\prime}\boldsymbol{\beta}\),
-the two estimators \eqref{eq-pred-two-estimators} reduce to:
+\(m(\boldsymbol{x}_i, \boldsymbol{\beta})=\boldsymbol{x}_i^{\top}\boldsymbol{\beta}\),
+the two estimators in Equation \ref{eq-pred-two-estimators} reduce to:
 
 \begin{equation}
-\hat{\mu}_{y,PR1}=\mu_{\boldsymbol{x}}^{\prime} \hat{\boldsymbol{\beta}} \quad \text { and } \quad \hat{\mu}_{y,PR2}=\frac{n_A}{N}\left(\bar{y}_A-\overline{\boldsymbol{x}}_A^{\prime} \hat{\boldsymbol{\beta}}\right)+\mu_{\boldsymbol{x}}^{\prime} \hat{\boldsymbol{\beta}},
+\hat{\mu}_{y,\text{PR1}}=\mu_{\boldsymbol{x}}^{\top} \hat{\boldsymbol{\beta}} \quad \text { and } \quad \hat{\mu}_{y,\text{PR2}}=\frac{n_{\text{NP}}}{N}\left(\overline{y}_{\text{NP}}-\overline{\boldsymbol{x}}_{\text{NP}}^{\top} \hat{\boldsymbol{\beta}}\right)+\mu_{\boldsymbol{x}}^{\top} \hat{\boldsymbol{\beta}},
 \label{eq-pred-two-estimators-simplified}
 \end{equation}
 
 where \(\mu_{\boldsymbol{x}} = N^{-1}\sum_{i=1}^N\boldsymbol{x}_i\) is
 the vector of the population means of the \(\boldsymbol{x}\) variables
 and
-\(\overline{\boldsymbol{x}}_A=n_A^{-1}\sum_{i \in S_A}\boldsymbol{x}_i\)
+\(\overline{\boldsymbol{x}}_{\text{NP}}=n_{\text{NP}}^{-1}\sum_{i \in S_{\text{NP}}}\boldsymbol{x}_i\)
 is the vector of the simple means of \(\boldsymbol{x}\) from the
-non-probability \(S_A\) sample. If the linear model contains an
-intercept and \(\hat{\boldsymbol{\beta}}\) is the ordinary least square
-estimator, then \(\hat{\mu}_{y,PR1}=\hat{\mu}_{y,PR2}\).
+non-probability \(S_{\text{NP}}\) sample. If the linear model contains
+an intercept and \(\hat{\boldsymbol{\beta}}\) is the ordinary least
+squares estimator, then
+\(\hat{\mu}_{y,\text{PR1}}=\hat{\mu}_{y,\text{PR2}}\).
 
-Form \eqref{eq-pred-two-estimators-simplified} is appealing as it only
-requires the non-probability sample \(S_A\) and reference population
-means (or totals and population size \(N\)). If the population means are
-unknown, they can be replaced by estimates provided by the reference
-probability sample \(S_B\), i.e.~\(\sum_{i=1}^N \hat{m}_i\) is replaced
-with \(\sum_{i \in S_B} d_i^B\hat{m}_i\) for
-\eqref{eq-pred-two-estimators} and \(\mu_{\boldsymbol{x}}\) is replaced
-by
-\(\hat{\mu}_{\boldsymbol{x}}=\hat{N}_B^{-1}\sum_{i \in S_B}d_i^B\boldsymbol{x}_i\)
-for \eqref{eq-pred-two-estimators-simplified} where
-\(\hat{N}_B=\sum_{i \in S_B}d_i^B\).
+From Equation \ref{eq-pred-two-estimators-simplified} is appealing as it
+only requires the non-probability sample \(S_{\text{NP}}\) and reference
+population means (or totals and population size \(N\)). If the
+population means are unknown, they can be replaced by estimates provided
+by the reference probability sample \(S_{\text{P}}\), i.e.,
+\(\sum_{i=1}^N \hat{m}_i\) is replaced with
+\(\sum_{i \in S_{\text{P}}} d_i^{\text{P}}\hat{m}_i\) for Equation
+\ref{eq-pred-two-estimators} and \(\mu_{\boldsymbol{x}}\) is replaced by
+\(\hat{\mu}_{\boldsymbol{x}}=\hat{N}_{\text{P}}^{-1}\sum_{i \in S_{\text{P}}}d_i^{\text{P}}\boldsymbol{x}_i\)
+for Equation \ref{eq-pred-two-estimators-simplified} where
+\(\hat{N}_{\text{P}}=\sum_{i \in S_{\text{P}}}d_i^{\text{P}}\).
 
 \subsubsection{Mass imputation
 estimators}\label{mass-imputation-estimators}
 
-Model-based prediction estimators of \(\mu\) can be treated as
-\textit{mass imputation estimators}, since the information on \(y_i\) is
-missing entirely in the reference probability sample \(S_B\) (but
+Model-based prediction estimators of \(\mu\) can be treated as mass
+imputation estimators, since the information on \(y_i\) is missing
+entirely in the reference probability sample \(S_{\text{P}}\) (but
 \(\boldsymbol{x}_i\) is available) and \(y_i\) can be imputed based on
 the non-probability sample as values of
-\(\{ (y_i, \boldsymbol{x}_i), i \in S_A\}\) are known. The general form
-of the MI estimator is given by:
+\(\{ (y_i, \boldsymbol{x}_i), i \in \mathcal{I}_{\text{NP}}\}\) are
+known. The general form of the MI estimator is given by:
 
 \begin{equation}
-\hat{\mu}_{y,MI}=\frac{1}{\hat{N}_{B}} \sum_{i \in S_{B}} d_i^{B} y_i^*, 
+\hat{\mu}_{y,\text{MI}}=\frac{1}{\hat{N}_{\text{P}}} \sum_{i \in S_{\text{P}}} d_i^{\text{P}} y_i^*, 
 \end{equation}
 
-where \(y_i^*\) is the imputed value of \(y_i\) and \(\hat{N}_{B}\) is
-defined as previously. Under deterministic regression imputation, the
-\(\hat{\mu}_{y,MI}\) estimator reduces to the estimators in
-\eqref{eq-pred-two-estimators}.
+where \(y_i^*\) is the imputed value of \(y_i\) and
+\(\hat{N}_{\text{P}}\) is defined as previously. Under deterministic
+regression imputation, the \(\hat{\mu}_{y,\text{MI}}\) estimator reduces
+to the estimators in Equation \ref{eq-pred-two-estimators}.
 
 There are several ways of imputing \(y_i^*\) and in the package we have
 implemented the following MI estimators: the semi-parametric approach
-based on generalized linear models (MI-GLM), kernel smoothing (MI-NPAR),
-nearest neighbour matching (MI-NN) and predictive mean matching
-(MI-PMM).
+based on GLM (MI-GLM), kernel smoothing (MI-NPAR), nearest neighbour
+matching (MI-NN) and predictive mean matching (MI-PMM).
 
 The properties of the MI-GLM estimator, where \(y_i^*\) are imputed with
 \(\hat{m}_i\) from the semi-parametric model, were studied by
 \citet{kim_combining_2021}. In the \pkg{nonprobsvy} package, we account
-for the following GLM families: \code{gaussian}, \code{binomial} and
-\code{poisson}. The MI-NPAR estimator was proposed by
+for the following GLM families: \code{gaussian()}, \code{binomial()} and
+\code{poisson()}. The MI-NPAR estimator was proposed by
 \citet{chen_nonparametric_2022} who studied its finite population
 properties. Currently, we implement this approach using local polynomial
-regression using \code{stats::loess} method. In the next releases we
+regression using \code{stats::loess()} function. In the next releases we
 will allow users to use the \pkg{np} \citep{nppkg} or \pkg{KernSmooth}
 \citep{KernSmooth} packages.
 
 The MI-NN estimator was initially proposed by \citet{rivers2007sampling}
-under the name \textit{sample matching} and theoretical properties of
-the MI-NN estimator for large non-probability samples (big data,
-i.e.~covering a significant part of the target population) were studied
-by \citet{yang2021integration}. The basic idea of NN matching is as
-follows: 1) for each \(i\) unit in the probability sample \(S_B\) find a
-donor \(j\) (or donors) in the \(S_A\) sample based on some distance
-between \(\boldsymbol{x}_i\) and \(\boldsymbol{x}_j\); 2) use the
-matched values \(y_j\) from \(S_A\) to impute missing \(y_i\) values in
-the probability sample \(S_B\). Imputed values of \(y_i^*\) depend on
-the number of selected \(k\) neighbours: for \(k=1\), the closest one is
-selected, and for \(k>1\), one can calculate a simple average over a
-vector of selected \(y\) values. A detailed description of the procedure
-is presented in Algorithm \ref{algo-2} in the Appendix. The MI-NN
-estimator suffers from the curse of dimensionality, i.e.~asymptotic bias
-of the MI estimator increases as the number of covariates
-\(\boldsymbol{x}\) increases with a fixed \(k\)
-\citep{abadie2006large, yang_asymptotic_2020}. The PMM approach has been
-proposed to overcome this issue.
+under the name sample matching and theoretical properties of the MI-NN
+estimator for large non-probability samples (big data, i.e., covering a
+significant part of the target population) were studied by
+\citet{yang2021integration}. The basic idea of NN matching is as
+follows:
+
+\begin{enumerate}
+\item for each unit $i$ in the probability sample $S_{\text{P}}$ find a donor $j$ (or multiple donors) in the $S_{\text{NP}}$ sample based on some distance between $\boldsymbol{x}_i$ and $\boldsymbol{x}_j$,
+\item use the matched values $y_j$ from $S_{\text{NP}}$ to impute missing $y_i$ values in the probability sample $S_{\text{P}}$. 
+\end{enumerate}
+
+Imputed values of \(y_i^*\) depend on the number of selected \(k\)
+neighbours: for \(k=1\), the closest unit is selected, and for \(k>1\),
+one can calculate a simple average over a vector of selected \(y\)
+values. A detailed description of the procedure is presented in
+Algorithm \ref{algo-2} in the Appendix. The MI-NN estimator suffers from
+the curse of dimensionality, i.e., asymptotic bias of the MI estimator
+increases as the number of covariates \(\boldsymbol{x}\) increases with
+a fixed \(k\) \citep{abadie2006large, yang_asymptotic_2020}. The single
+imputation PMM approach has been proposed to overcome this issue
+\citep{chlebicki2025}.
 
 In the PMM approach, matching is done using predicted values of
 \(\hat{m}_i=m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\)
 instead of \(\boldsymbol{x}_i\), thus the NN algorithm is modified as
-follows: 1) fit the model
-\(m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\) to
-non-probability \(S_A\) sample, 2) assign predicted values \(\hat{m}_i\)
-to all units in \(S_A\) and \(S_B\); 3) match all units from the \(S_B\)
-sample to donor units from the \(S_A\) sample based on \(\hat{m}\)
-values. The MI-PMM estimator is the same as in the NN approach.
-\citet{chlebicki2025} studied properties of two variants of the MI-PMM
-estimator for non-probability samples: matching predicted to predicted
-(\(\hat{m}-\hat{m}\) matching; denoted as MI-PMM A) and matching
-predicted to observed (\(\hat{m}-y\) matching; denoted as MI-PMM B).
+follows:
+
+\begin{enumerate}
+\item fit the model $m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)$ to non-probability $S_{\text{NP}}$ sample, 
+\item assign predicted values $\hat{m}_i$ to all units in $S_{\text{NP}}$ and $S_{\text{P}}$, 
+\item match all units from the $S_{\text{P}}$ sample to donor units from the $S_{\text{NP}}$ sample based on $\hat{m}$ values. 
+\end{enumerate}
+
+The MI-PMM estimator is the same as in the NN approach but differs from
+the multiple imputation PMM implemented in the \pkg{mice} package
+\citep{mice}. In \pkg{nonprobsvy} we have implemented a single
+imputation method (i.e., one dataset is created). \citet{chlebicki2025}
+studied properties of two variants of the MI-PMM estimator for
+non-probability samples: matching predicted to predicted
+(\(\hat{m}-\hat{m}\) matching; denoted as MI-PMM-A) and matching
+predicted to observed (\(\hat{m}-y\) matching; denoted as MI-PMM-B).
 Details of the procedure can be found in Algorithm \ref{algo-3} and
 \ref{algo-4} in the Appendix. \citet{chlebicki2025} also prove the
-consistency of the MI-PMM A estimator under model mis-specification,
-i.e.~the assumed model may differ from the true one.
+consistency of the MI-PMM-A estimator under model misspecification,
+i.e., the assumed model may differ from the true one.
 
 \subsubsection{Variance estimators for the prediction
 approach}\label{variance-estimators-for-the-prediction-approach}
@@ -512,17 +531,17 @@ Variance of the MI estimators can be estimated analytically or using the
 bootstrap approach. The analytical estimator of the variance of the
 MI-GLM estimator proposed by \citet[p. 950]{kim_combining_2021} contains
 two components: \(\hat{V}_1\) (based on the information from both
-samples \(S_A\) and \(S_B\)) and \(\hat{V}_2\) (based exclusively on the
-probability sample \(S_B\)); for the MI-NN estimator
-\citet{yang2021integration} proposed a variance estimator for large
-\(S_A\) samples, which reduces to the part for the probability sample
-\(S_B\) (i.e.~the design-based variance estimator of the mean, which can
-easily be obtained from the \pkg{survey} package) and a version for
-smaller samples can be found in \citet{chlebicki2025}; with respect to
-the variance of MI-PMM estimators, \citet{chlebicki2025} propose
-formulas which are the same as those for the MI-NN estimators. The
-analytical variance estimator for the MI-NPAR was proposed by
-\citet{chen_nonparametric_2022}.
+samples \(S_{\text{NP}}\) and \(S_{\text{P}}\)) and \(\hat{V}_2\) (based
+exclusively on the probability sample \(S_{\text{P}}\)). For the MI-NN
+estimator \citet{yang2021integration} proposed a variance estimator for
+large \(S_{\text{NP}}\) samples, which reduces to the part for the
+probability sample \(S_{\text{P}}\) (i.e., the design-based variance
+estimator of the mean, which can easily be obtained from the
+\pkg{survey} package) and a version for smaller samples can be found in
+\citet{chlebicki2025}. With respect to the variance of MI-PMM
+estimators, \citet{chlebicki2025} propose formulas which are the same as
+those for the MI-NN estimators. The analytical variance estimator for
+the MI-NPAR was proposed by \citet{chen_nonparametric_2022}.
 
 In the bootstrap approach each bootstrap replication \(b=1,...,B\)
 consists of the following steps.
@@ -530,98 +549,105 @@ consists of the following steps.
 \begin{enumerate}
 \item Independently:
   \begin{itemize}
-  \item draw a simple random sampling with replacement from the non-probability sample $S_A$ (using \code{base::sample}),
-  \item draw a sample according to the declared sampling design from the probability sample $S_B$ (e.g. one can use the \code{as.svrepdesign} function from the \pkg{survey} package).
+  \item Draw a simple random sampling with replacement from the non-probability sample $S_{\text{NP}}$ (using \code{base::sample()} function).
+  \item Draw a sample according to the declared sampling design from the probability sample $S_{\text{P}}$ (e.g., one can use the \code{as.svrepdesign} function from the \pkg{survey} package).
   \end{itemize}
-\item Estimate $\mu_{y, MI}^b$ using an appropriate approach (e.g. MI-GLM, MI-NN or MI-PMM).
+\item Estimate $\mu_{y, \text{MI}}^b$ using an appropriate approach (e.g., MI-GLM, MI-NN or MI-PMM).
 \end{enumerate}
 
 After obtaining \(B\) bootstrap replicates, estimate variance using the
 following equation:
 
 \begin{equation}
-\hat{V}_{\text{boot}} = \frac{1}{B-1}\sum_{b=1}^B\left(\hat{\mu}^b_y - \hat{\mu}_y\right)^2,
+\hat{V}_{\text{boot}} = \frac{1}{B-1}\sum_{b=1}^B\left(\hat{\mu}^b_{y, \text{MI}} - \hat{\mu}_{y, \text{MI}}\right)^2.
 \label{eq-var-bootstrap}
 \end{equation}
 
-where \(\hat{\mu}_y\) is the mean estimated using either the MI-GLM,
-MI-NN or MI-PMM estimator.
-
 The above approaches are applied when unit-level data from the
-probability sample \(S_B\) are available. If this is not the case and
-only population means (or totals and population size) are available, we
-can estimate the variance of the \(\mu_{y,MI-GLM}\) estimator using the
-first component \(\hat{V}_1\) of the \citet{kim_combining_2021} variance
-estimator (replaced by the survey-based population quantities, if
-available). To estimate the variance of the MI-NN and MI-PMM estimators
-we only allow the bootstrap approach with known population means. Note
-that the current version of the \pkg{nonprobsvy} does not support the
-use of replicated weights in the probability sample \(S_B\) for any of
-the estimators discussed in this paper.
+probability sample \(S_{\text{P}}\) are available. If this is not the
+case and only population means (or totals and population size) are
+available, we can estimate the variance of the \(\mu_{y,\text{MI-GLM}}\)
+estimator using the first component \(\hat{V}_1\) of the
+\citet{kim_combining_2021} variance estimator (replaced by the
+survey-based population quantities, if available). To estimate the
+variance of the MI-NN and MI-PMM estimators we only allow the bootstrap
+approach with known population means. Note that the current version of
+the \pkg{nonprobsvy} does not support the use of replicated weights in
+the probability sample \(S_{\text{P}}\) for any of the estimators
+discussed in this paper.
 
-\subsection{Inverse Probability Weighting}\label{sec-ipw}
+\subsection{Inverse probability weighting}\label{sec-ipw}
 
-Inverse probability weighting (IPW), another popular estimation
-approach, involves estimating PS given by
-\(\pi_i^A=P\left(i \in S_A \right)\). As in the case of the
-prediction-based approach, there are two variants of the IPW estimator,
-given by:
+Inverse probability weighting, another popular estimation approach,
+involves estimating PS given by
+\(\pi_i^{\text{NP}}=P\left(i \in S_{\text{NP}} \right)\). As in the case
+of the prediction-based approach, there are two variants of the IPW
+estimator, given by:
 
 \begin{equation}
-  \hat{\mu}_{y,IPW1}=\frac{1}{N} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A} \quad \text { and } \quad 
-  \hat{\mu}_{y,IPW2}=\frac{1}{\hat{N}^A} \sum_{i \in S_A} \frac{y_i}{\hat{\pi}_i^A},
+  \hat{\mu}_{y,\text{IPW1}}=\frac{1}{N} \sum_{i \in S_{\text{NP}}} \frac{y_i}{\hat{\pi}_i^{\text{NP}}} \quad \text { and } \quad 
+  \hat{\mu}_{y,\text{IPW2}}=\frac{1}{\hat{N}_{\text{NP}}} \sum_{i \in S_{\text{NP}}} \frac{y_i}{\hat{\pi}_i^{\text{NP}}},
 \label{eq-ipw-estimators}
 \end{equation}
 
-where the \(\hat{\mu}_{y,IPW1}\) is an adjustment of the
-Horvitz-Thompson estimator, and the \(\hat{\mu}_{y,IPW2}\) is an
+where the \(\hat{\mu}_{y,\text{IPW1}}\) is an adjustment of the
+Horvitz-Thompson estimator, and the \(\hat{\mu}_{y,\text{IPW2}}\) is an
 adjustment of the Hájek estimator, where the estimated population size
-is given by \(\hat{N}^A = \sum_{i \in S_A} (\pi_i^A)^{-1}\). The use of
-this estimator with respect to non-probability samples is discussed by
-\citet{lee2006propensity} and
-\citet[chapter 13]{biffignandi2021handbook} and there are several
+is given by
+\(\hat{N}_{\text{NP}} = \sum_{i \in S_{\text{NP}}} (\pi_i^{NP})^{-1}\).
+The use of this estimator with respect to non-probability samples is
+discussed by \citet{lee2006propensity} and
+\citet[Chapter 13]{biffignandi2021handbook} and there are several
 approaches to using propensity scores along with alternative versions of
-the weights \citep[cf.][section 3]{elliott_inference_2017}. In a article
-by \citet{chen2020doubly} dedicated to the properties of the estimators
-in \eqref{eq-ipw-estimators}, the authors proved their consistency and
-derived their closed form versions.
-\citet[section 4.2]{wu2022statistical} argues that the
-\(\hat{\mu}_{y,IPW2}\) estimator performs better than
-\(\hat{\mu}_{y,IPW1}\) even if the population size is known.
+the weights \citep[cf.][Section 3]{elliott_inference_2017}. In an
+article by \citet{chen2020doubly} dedicated to the properties of the
+estimators in Equation \ref{eq-ipw-estimators}, the authors proved their
+consistency and derived their closed form versions.
+\citet[Section 4.2]{wu2022statistical} argues that the
+\(\hat{\mu}_{y,\text{IPW2}}\) estimator performs better than
+\(\hat{\mu}_{y,\text{IPW1}}\) even if the population size is known.
 
-The construction of the IPW estimator involves two steps: 1) estimating
-the PS; and 2) deriving \(d_i^A\), which, in our case, are equal to
-\(1/\pi_i^A\). To estimate the propensity scores
-\(\pi_i^A=\pi(\boldsymbol{x}_i, \boldsymbol{\gamma})\) one can use the
-likelihood approach assuming that the information about
+The construction of the IPW estimator involves two steps:
+
+\begin{enumerate}
+\item estimating the PS, 
+\item deriving $d_i^{\text{NP}}$ weights, 
+\end{enumerate}
+
+\noindent which, in our case, are equal to \(1/\pi_i^{NP}\). To estimate
+the propensity scores
+\(\pi_i^{NP}=\pi(\boldsymbol{x}_i, \boldsymbol{\gamma})\) one can use
+the likelihood approach assuming that the information about
 \(\boldsymbol{x}_i\) is available for each unit in the population given
-by \eqref{eq-ipw-loglik}.
+by Equation \ref{eq-ipw-loglik}.
 
 \begin{equation}
-\ell(\boldsymbol{\gamma}) = \log\left\{\prod_{i=1}^N \left(\pi_i^A\right)^{R_i}\left(1-\pi_i^A\right)^{1-R_i}\right\} =
-\sum_{i \in S_{A}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+\sum_{i=1}^N \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
+\begin{aligned}
+\ell(\boldsymbol{\gamma}) &= \log\left\{\prod_{i=1}^N \left(\pi_i^{\text{NP}}\right)^{R_i^{\text{NP}}}\left(1-\pi_i^{\text{NP}}\right)^{1-R_i^{\text{NP}}}\right\} \\
+&= \sum_{i \in S_{\text{NP}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+\sum_{i=1}^N \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
+\end{aligned}
 \label{eq-ipw-loglik}
 \end{equation}
 
 In practice, a function of this form cannot be used because not all
 units from the population are observed. A more realistic approach
-consists in using a reference probability sample \(S_B\), which means
-that the second component of the equation in \eqref{eq-ipw-loglik} is
-replaced, yielding a pseudo log-likelihood function given by
-\eqref{eq-ipw-pseudo-loglik}
+consists in using a reference probability sample \(S_{\text{P}}\), which
+means that the second component of the equation in Equation
+\ref{eq-ipw-loglik} is replaced, yielding a pseudo log-likelihood
+function given by Equation \ref{eq-ipw-pseudo-loglik}
 
 \begin{equation}
-\ell^*(\boldsymbol{\gamma}) = \sum_{i \in S_{A}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+ \sum_{i \in S_{B}} d_i^B \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
+\ell^*(\boldsymbol{\gamma}) = \sum_{i \in S_{\text{NP}}} \log \left\{\frac{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}\right\}+ \sum_{i \in S_{\text{P}}} d_i^{\text{P}} \log \left\{1-\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)\right\}.
 \label{eq-ipw-pseudo-loglik}
 \end{equation}
 
 The maximum pseudo-likelihood estimator \(\hat{\boldsymbol{\gamma}}\)
 can be obtained as the solution to the pseudo score equation, which,
-under the logit function assumed for \(\pi_i^A\), is given by
-\eqref{eq-ipw-solution-mle}
+under the logit function assumed for \(\pi_i^{NP}\), is given by
+Equation \ref{eq-ipw-solution-mle}
 
 \begin{equation}
-\boldsymbol{U}(\boldsymbol{\gamma}) = \sum_{i \in S_A} \boldsymbol{x}_i - \sum_{i \in S_B} d_i^B \pi(\boldsymbol{x}_i, \boldsymbol{\gamma}) \boldsymbol{x}_i.
+\boldsymbol{U}(\boldsymbol{\gamma}) = \sum_{i \in S_{\text{NP}}} \boldsymbol{x}_i - \sum_{i \in S_{\text{P}}} d_i^{\text{P}} \pi(\boldsymbol{x}_i, \boldsymbol{\gamma}) \boldsymbol{x}_i.
 \label{eq-ipw-solution-mle}
 \end{equation}
 
@@ -630,10 +656,10 @@ In general, pseudo score functions
 parameters \(\boldsymbol{\gamma}_0\) are unbiased under the joint
 \(q p\) randomization in the sense that
 \(E_{q p}\left\{\boldsymbol{U}\left(\boldsymbol{\gamma}_0\right)\right\}=\boldsymbol{0}\),
-which implies that the estimator \(\hat{\boldsymbol{\alpha}}\) is
-consistent for \(\boldsymbol{\alpha}_0\) \citep{wu2022statistical}.
+which implies that the estimator \(\hat{\boldsymbol{\gamma}}\) is
+consistent for \(\boldsymbol{\gamma}_0\) \citep{wu2022statistical}.
 
-The terms in equation \eqref{eq-ipw-solution-mle} can be replaced by
+The terms in Equation \ref{eq-ipw-solution-mle} can be replaced by
 general estimation equations. Let
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})\) be a
 user-specified vector of functions with the same dimension of
@@ -642,11 +668,11 @@ defined as
 
 \begin{equation}
 \label{gee}
-\boldsymbol{G}(\boldsymbol{\gamma})=\sum_{i \in S_A} \boldsymbol{h}\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)-\sum_{i \in S_B} d_i^B \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) \boldsymbol{h}\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right),
+\boldsymbol{G}(\boldsymbol{\gamma})=\sum_{i \in S_{\text{NP}}} \boldsymbol{h}\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)-\sum_{i \in S_{\text{P}}} d_i^{\text{P}} \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) \boldsymbol{h}\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right),
 \end{equation}
 
 then solving for \(\boldsymbol{G}(\boldsymbol{\gamma})=\boldsymbol{0}\)
-with the chosen parametric form of \(\pi_i^A\) and the chosen
+with the chosen parametric form of \(\pi_i^{NP}\) and the chosen
 \(\boldsymbol{h}(\boldsymbol{x},\boldsymbol{\gamma})\) produces the
 consistent estimator of \(\hat{\boldsymbol{\gamma}}\). In the
 literature, the most commonly considered functions are
@@ -655,38 +681,39 @@ and
 \(\boldsymbol{h}\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) = \boldsymbol{x}_i \pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)^{-1}\).
 Note that if the function \(\boldsymbol{h}_i=\boldsymbol{x}_i\), then
 \(\boldsymbol{G}\) reduces to \(\boldsymbol{U}\) and for the second
-variant of the \(\boldsymbol{h}\) function we get the following form of
-function \(\boldsymbol{G}\)
+variant of the \(\boldsymbol{h}\) function we get
 
 \begin{equation}
-\boldsymbol{G}(\boldsymbol{\theta}) = \sum_{i \in S_A} \frac{\boldsymbol{x}_i}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) }-\sum_{i \in S_B} d_i^B \boldsymbol{x}_i,
+\boldsymbol{G}(\boldsymbol{\gamma}) = \sum_{i \in S_{\text{NP}}} \frac{\boldsymbol{x}_i}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right) }-\sum_{i \in S_{\text{P}}} d_i^{\text{P}} \boldsymbol{x}_i,
 \label{eq-ipw-solution-gee}
 \end{equation}
 
-which can be viewed as \textit{calibrated} IPW and equation
-\eqref{eq-ipw-solution-gee} only requires the knowledge of population
+which can be viewed as calibrated IPW. Equation
+\ref{eq-ipw-solution-gee} only requires the knowledge of population
 totals for auxiliary variables \(\boldsymbol{x}\). Moreover, the use of
-equation \eqref{eq-ipw-solution-gee} yields a doubly robust estimator
+Equation \ref{eq-ipw-solution-gee} yields a doubly robust estimator
 under the assumption that the outcome model is linear
 \citep{kim_theory_2012}.
 
 \subsubsection{Variance estimators for the inverse probability weighting
 approach}\label{variance-estimators-for-the-inverse-probability-weighting-approach}
 
-\citet[section 3.2]{chen2020doubly} derived asymptotic variance
-estimators for both IPW estimators in \eqref{eq-ipw-estimators} and
-presented the plug-in variance estimator for the \(\hat{\mu}_{y,IPW2}\)
-estimator assuming logistic regression. In the package we have
-implemented this approach for \code{logit}, \code{probit} and
-\code{cloglog} link functions. We refer the reader to
-\citet[section 6.2]{wu2022statistical} and
-\citet[chapter 3]{chrostowski2024statistical} for more details on how
-this estimators are derived based on the general estimating equations
+\citet[Section 3.2]{chen2020doubly} derived asymptotic variance
+estimators for both IPW estimators in Equation \ref{eq-ipw-estimators}
+and presented the plug-in variance estimator for the
+\(\hat{\mu}_{y,\text{IPW2}}\) estimator assuming logistic regression. In
+the package we have implemented this approach for \code{"logit"},
+\code{"probit"} and \code{"cloglog"} link functions of the
+\code{binomial()} family. We refer the reader to
+\citet[Section 6.2]{wu2022statistical} and
+\citet[Chapter 3]{chrostowski2024statistical} for more details on how
+these estimators are derived based on the general estimating equations
 approach.
 
-Another approach is to use bootstrap, which is essentially the same as
-the one presented in \eqref{eq-var-bootstrap}, where \(\hat{\mu}_y\) is
-replaced by one of the estimators in \eqref{eq-ipw-estimators}.
+Another approach is to use a bootstrap, which is essentially the same as
+the one presented in Equation \ref{eq-var-bootstrap}, where
+\(\hat{\mu}_y\) is replaced by one of the estimators in Equation
+\ref{eq-ipw-estimators}.
 
 \subsection{Doubly robust approach}\label{sec-dr-approach}
 
@@ -695,55 +722,56 @@ PS and outcome regression models, respectively. The DR approach was
 proposed to improve robustness and efficiency
 \citep[cf.][]{robins1994estimation}. It incorporates a prediction model
 for the response variable \(y_i\) and a PS model for participation
-\(R_i^A\). This approach is doubly robust in the sense that the DR
-estimator remains consistent even if one of the models is mis-specified.
-We need to consider a joint randomization approach involving a
-non-probability sample \(S_A\) and a probability sample \(S_B\) and DR
-inference is conducted within the \(qp\) or \(\xi p\) framework without
-specifying which one is correct. The general formula for the for the DR
-estimator is given by
+\(R_i^{\text{NP}}\). This approach is doubly robust in the sense that
+the DR estimator remains consistent even if one of the models is
+misspecified. We need to consider a joint randomization approach
+involving a non-probability sample \(S_{\text{NP}}\) and a probability
+sample \(S_{\text{P}}\) and DR inference is conducted within the \(qp\)
+or \(\xi p\) framework without specifying which one is correct. The
+general formula for the DR estimator is given by
 
 \[
-\tilde{\mu}_{y,DR} = \frac{1}{N}\sum_{i \in S_A}\frac{y_i - m_i}{\pi_i^A} + \frac{1}{N}\sum_{i =1}^N m_i,
+\tilde{\mu}_{y,\text{DR}} = \frac{1}{N}\sum_{i \in S_{\text{NP}}}\frac{y_i - m_i}{\pi_i^{NP}} + \frac{1}{N}\sum_{i =1}^N m_i,
 \]
 
-where \(\pi_i^A\) and \(m_i\) are defined as previously. In the next
-subsections we discuss two approaches to the DR estimation.
+where \(\pi_i^{\text{NP}}\) and \(m_i\) are defined as previously. In
+the next sections we discuss two approaches to the DR estimation.
 
 \subsubsection{Parameters estimated
 separately}\label{parameters-estimated-separately}
 
-\citet{chen2020doubly} proposed two DR estimators given in
-\eqref{eq-dr-known-n} and \eqref{eq-dr-estimated-n} assuming that the
-population size is either known or estimated:
+\citet{chen2020doubly} proposed two DR estimators given in Equation
+\ref{eq-dr-known-n} and Equation \ref{eq-dr-estimated-n} assuming that
+the population size is either known or estimated:
 
 \begin{equation}
-\hat{\mu}_{y,DR1}=\frac{1}{N} \sum_{i \in S_{A}} d_i^{A}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{N} \sum_{i \in S_{B}} d_i^{B} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
+\hat{\mu}_{y,\text{DR1}}=\frac{1}{N} \sum_{i \in S_{\text{NP}}} d_i^{\text{NP}}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{N} \sum_{i \in S_{\text{P}}} d_i^{\text{P}} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
 \label{eq-dr-known-n}
 \end{equation}
 
 and
 
 \begin{equation}
-\hat{\mu}_{y,DR2}=\frac{1}{\hat{N}^{A}} \sum_{i \in S_{A}} d_i^{A}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{\hat{N}^{B}} \sum_{i \in S_{B}} d_i^{B} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
+\hat{\mu}_{y,\text{DR2}}=\frac{1}{\hat{N}_{\text{NP}}} \sum_{i \in S_{\text{NP}}} d_i^{\text{NP}}\left\{y_i-m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right)\right\}+\frac{1}{\hat{N}_{\text{P}}} \sum_{i \in S_{\text{P}}} d_i^{\text{P}} m\left(\boldsymbol{x}_i, \hat{\boldsymbol{\beta}}\right),
 \label{eq-dr-estimated-n}
 \end{equation}
 
 where
-\(d_i^A=\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)^{-1}, \hat{N}^A=\sum_{i \in S_A} d_i^A\)
-and \(\hat{N}^B=\sum_{i \in S_B} d_i^B\). The estimator in
-\eqref{eq-dr-estimated-n}, including the estimated population size, has
-a better performance in terms of bias and the mean squared error and
-should be used in practice. However, the main limitation is associated
-with variance estimation, which is discussed at the end of this section.
+\(d_i^{\text{NP}}=\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)^{-1}, \hat{N}_{\text{NP}}=\sum_{i \in S_{\text{NP}}} d_i^{\text{NP}}\)
+and \(\hat{N}_{\text{P}}=\sum_{i \in S_{\text{P}}} d_i^{\text{P}}\). The
+estimator in Equation \ref{eq-dr-estimated-n}, including the estimated
+population size, has a better performance in terms of bias and the mean
+squared error and should be used in practice. However, the main
+limitation is associated with variance estimation, which is discussed at
+the end of this section.
 
-\citet{chen2020doubly} suggested constructing the estimators in
-\eqref{eq-dr-known-n} or \eqref{eq-dr-estimated-n} based on the two
-models estimated separately, which is an attractive option, since one
-can specify a different number of variables for the propensity and
-outcome model. An alternative approach, proposed by
-\citet{yang_doubly_2020} and similar to the one described by
-\citet{kim2014doubly}, is discussed in the next subsection.
+\citet{chen2020doubly} suggested constructing the estimators in Equation
+\ref{eq-dr-known-n} or \ref{eq-dr-estimated-n} based on the two models
+estimated separately, which is an attractive option, since one can
+specify a different number of variables for the propensity and outcome
+model. An alternative approach, proposed by \citet{yang_doubly_2020},
+and similar to the one described by \citet{kim2014doubly}, is discussed
+in the next section.
 
 \subsubsection{Minimization of the bias for doubly robust
 methods}\label{minimization-of-the-bias-for-doubly-robust-methods}
@@ -756,44 +784,44 @@ that can be used to estimate the \(\boldsymbol{\beta}\) and
 \(\boldsymbol{\gamma}\) parameters based on the bias of the population
 mean estimator. In this way the parameters can be estimated in a single
 step, rather than in two separate steps. First, the authors derived the
-asymptotic bias of the \(\hat{\mu}_{DR}\), assuming
+asymptotic bias of the \(\hat{\mu}_{\text{DR}}\), assuming
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})=\boldsymbol{x}\pi(\boldsymbol{x}, \boldsymbol{\gamma})^{-1}\)
-for the IPW estimator, which is given by equation \eqref{eq-dr-bias}
+for the IPW estimator, which is given by Equation \ref{eq-dr-bias}
 
 \begin{equation}
 \begin{aligned}
-\operatorname{bias}\left(\hat{\mu}_{D R}\right) = E\mid\hat{\mu}_{DR}-\mu\mid &=
-E\left\{\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} - 1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \right\}\\
-& + E\left\{\frac{1}{N} \sum_{i=1}^N\left(R_i^B d_i^B-1\right) m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\}.
+\operatorname{bias}\left(\hat{\mu}_{\text{DR}}\right) = E|\hat{\mu}_{\text{DR}}-\mu| &=
+E\left\{\frac{1}{N} \sum_{i=1}^N\left\{\frac{R_i^{\text{NP}}}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} - 1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \right\}\\
+& + E\left\{\frac{1}{N} \sum_{i=1}^N\left(R_i^{\text{P}} d_i^{\text{P}}-1\right) m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\}.
 \end{aligned}
 \label{eq-dr-bias}
 \end{equation}
 
 The goal of this approach is to minimize
-\(\operatorname{bias}\left(\hat{\mu}_{D R}\right)^2\), which consists in
-solving the following system of empirical equations:
+\(\operatorname{bias}\left(\hat{\mu}_{\text{DR}}\right)^2\), which
+consists in solving the following system of empirical equations:
 
 \begin{equation}
 \left(\begin{array}{c}
-\sum_{i=1}^N R_i^A\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
-\sum_{i=1}^N \frac{R_i^A}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} \dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right) -\sum_{i \in S_{\mathrm{B}}} d_i^{\mathrm{B}} \dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)
+\sum_{i=1}^N R_i^{\text{NP}}\left\{\frac{1}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)}-1\right\}\left\{y_i-m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)\right\} \boldsymbol{x}_i \\
+\sum_{i=1}^N \frac{R_i^{\text{NP}}}{\pi\left(\boldsymbol{x}_i, \boldsymbol{\gamma}\right)} \dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right) -\sum_{i \in S_{\text{P}}} d_i^{\text{P}} \dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)
 \end{array}\right) = \boldsymbol{0},
 \label{eq-bias-min}
 \end{equation}
 
 where
 \(\dot{m}\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)=\frac{\partial m\left(\boldsymbol{x}_i, \boldsymbol{\beta}\right)}{\partial \boldsymbol{\beta}}\).
-The system in \eqref{eq-bias-min} can be solved using the
+The system in Equation \ref{eq-bias-min} can be solved using the
 Newton--Raphson method. This approach, without variable selection, is
 equivalent to that proposed by \citet{kim2014doubly} and was extensively
 discussed by \citet{chen2020doubly} and \citet{wu2022statistical} in the
 context of estimating parameters and the variance of the DR estimator.
 The main limitation of this approach is the possibility that a solution
-to \eqref{eq-bias-min} may not exist unless the two sets of covariates
-used in the outcome regression model and the PS model have the same
-dimensions. That is why \citet{yang_doubly_2020} suggested using this
-approach on the union of variables from both models (e.g.~after variable
-selection).
+to Equation \ref{eq-bias-min} may not exist unless the two sets of
+covariates used in the outcome regression model and the PS model have
+the same dimensions. That is why \citet{yang_doubly_2020} suggested
+using this approach on the union of variables from both models (e.g.,
+after variable selection).
 
 In the \pkg{nonprobsvy} package we have implemented these approaches not
 only for
@@ -801,23 +829,23 @@ only for
 but also for
 \(\boldsymbol{h}(\boldsymbol{x}, \boldsymbol{\gamma})=\boldsymbol{x}\)
 and various link functions for the propensity score model. As noted in
-the beginning, the choice of either \eqref{eq-dr-known-n} or
-\eqref{eq-dr-estimated-n} results in a different approach to estimating
-variance, which is discussed in the next subsection.
+the beginning, the choice of either Equation \ref{eq-dr-known-n} or
+\ref{eq-dr-estimated-n} results in a different approach to estimating
+variance, which is discussed in the next section.
 
 \subsubsection{Variance estimators for the doubly robust
 approach}\label{variance-estimators-for-the-doubly-robust-approach}
 
-\citet{yang_doubly_2020} derived a closed form estimator for
-\eqref{eq-dr-known-n} but this requires the knowledge of the population
+\citet{yang_doubly_2020} derived a closed form estimator for Equation
+\ref{eq-dr-known-n} but this requires the knowledge of the population
 and bias correction to obtain a valid estimator for
-\(V_{\xi p}\left(\hat{\mu}_{y,DR}-\mu_y\right)\) under the outcome
-regression model \(\xi\). A doubly robust variance estimator for
-\(\hat{\mu}_{y,DR2}\) given by \eqref{eq-dr-estimated-n} is not yet
-available in the literature. In the package, to offer the analytical
-variance estimator of \(\hat{\mu}_{y,DR2}\) we simply replace \(N\) with
-estimated \(\hat{N}_A\) and \(\hat{N}_B\) but we urge caution when using
-this approach.
+\(V_{\xi p}\left(\hat{\mu}_{y,\text{DR}}-\mu_y\right)\) under the
+outcome regression model \(\xi\). A doubly robust variance estimator for
+\(\hat{\mu}_{y,\text{DR2}}\) given by Equation \ref{eq-dr-estimated-n}
+is not yet available in the literature. In the package, to offer the
+analytical variance estimator of \(\hat{\mu}_{y,\text{DR2}}\) we simply
+replace \(N\) with estimated \(\hat{N}_{\text{NP}}\) and
+\(\hat{N}_{\text{P}}\) but we urge caution when using this approach.
 
 Alternatively, one can use the bootstrap approach.
 \citet{chen2020doubly} demonstrated that the bootstrap approach
@@ -834,73 +862,71 @@ only improves model stability and computational feasibility, but also
 reduces variance, which can increase when irrelevant auxiliary variables
 are included.
 
-The most popular approaches described in the literature are penalisation
-methods, such as
-\textit{Least Absolute Shrinkage and Selection Operator} (LASSO),
-\textit{Smoothly Clipped Absolute Deviation} (SCAD) or
-\textit{Minimax Concave Penalty} (MCP), which, thanks to appropriate
-loss functions, degenerate the coefficients in variables that have no
-significant effect on the dependent variable
-\citep[cf.][]{tibshirani1996regression, ncvreg}.
+The most popular approaches described in the literature are penalization
+methods, such as least absolute shrinkage and selection operator
+(LASSO), smoothly clipped absolute deviation (SCAD) or minimax concave
+penalty (MCP), which, thanks to the appropriate loss functions, shrink
+the coefficients in variables that have no significant effect on the
+dependent variable \citep[cf.][]{tibshirani1996regression, ncvreg}.
 
 The selection procedure for non-probability methods works in a similar
 way, with loss functions modified to account for external data sources,
 such as sample or population totals or averages. In particular, the
-technique consists of two steps: 1) we select the relevant variables
-using an appropriately constructed loss function (and possibly using the
-approach shown in \eqref{eq-bias-min} to obtain the final estimates of
-the model parameters); and 2) we construct the selected estimator using
-variables selected from the first step. For instance,
-\citet{yang_doubly_2020} used \eqref{eq-varsel-loss-mi} as a loss
-function for estimating outcome equation parameters:
+technique consists of two steps:
+
+\begin{enumerate}
+\item select the relevant variables using an appropriately constructed loss function (and possibly using the approach shown in Equation \ref{eq-bias-min} to obtain the final estimates of the model parameters),
+\item construct the selected estimator using variables selected from the first step. 
+\end{enumerate}
+
+For instance, \citet{yang_doubly_2020} used Equation
+\ref{eq-varsel-loss-mi} as a loss function for estimating outcome
+equation parameters:
 
 \begin{equation}  
-\operatorname{Loss}\left(\lambda_{\boldsymbol{\beta}}\right)=\sum_{i=1}^N R_i^A\left[y_i-m\left\{\boldsymbol{x}_i, \boldsymbol{\beta}(\lambda_{\boldsymbol{\beta}})\right\}\right]^2,
+\operatorname{Loss}\left(\lambda_{\boldsymbol{\beta}}\right)=\sum_{i=1}^N R_i^{\text{NP}}\left[y_i-m\left\{\boldsymbol{x}_i, \boldsymbol{\beta}(\lambda_{\boldsymbol{\beta}})\right\}\right]^2,
 \label{eq-varsel-loss-mi}
 \end{equation}
 
 where
 \(m\left\{\boldsymbol{x}_i, \boldsymbol{\beta}(\lambda_{\boldsymbol{\beta}})\right\}\)
-is the penalised function for the \(\boldsymbol{\beta}\) parameters with
+is the penalized function for the \(\boldsymbol{\beta}\) parameters with
 a tuning parameter \(\lambda_{\boldsymbol{\beta}}\) and loss functions
 for the PS function presented in Table \ref{tab-varsel-loss-ipw}, where
-\(\lambda_{\boldsymbol{\gamma}}\) is the tuning parameter.
+\(\lambda_{\boldsymbol{\gamma}}\) is the tuning parameter and
+\(\boldsymbol{x}_{i, l}\) denotes \(l\)-th component of
+\(\boldsymbol{x}_{i}\).
 
 \begin{table}[ht!]
 \centering
 \begin{tabular}{ll}
 \hline
-$\boldsymbol{h}(\boldsymbol{x}_i, \boldsymbol{\gamma})$ function &  Loss function $\lambda_{\boldsymbol{\gamma}}$ \\
+$\boldsymbol{h}(\boldsymbol{x}_i, \boldsymbol{\gamma})$ function &  Loss function\\
 \hline
-$\boldsymbol{x}_i$ & $\sum_{j=1}^p\left(\sum_{i=1}^N\left[R_i^A - \frac{R^B\pi\left\{\boldsymbol{x}_i, \boldsymbol{\gamma}(\lambda_{\boldsymbol{\gamma}})\right\}}{\pi_i^B}\right] \boldsymbol{x}_{i, j}\right)^2$\\
+$\boldsymbol{x}_i$ & $\sum_{l=1}^L\left(\sum_{i=1}^N\left[R_i^{\text{NP}} - \frac{R_i^{\text{P}}\pi\left\{\boldsymbol{x}_i, \boldsymbol{\gamma}(\lambda_{\boldsymbol{\gamma}})\right\}}{\pi_i^{\text{P}}}\right] \boldsymbol{x}_{i, l}\right)^2$\\
 \hline
-$\boldsymbol{x}_i \pi_i(\boldsymbol{x}_i, \boldsymbol{\gamma})^{-1}$ & $\sum_{j=1}^p\left(\sum_{i=1}^N\left[\frac{R_i^A}{\pi\left\{\boldsymbol{x}_i, \boldsymbol{\gamma}(\lambda_{\boldsymbol{\gamma}})\right\}}-\frac{R_i^B}{\pi_i^B}\right] \boldsymbol{x}_{i, j}\right)^2$ \\
+$\boldsymbol{x}_i \pi(\boldsymbol{x}_i, \boldsymbol{\gamma})^{-1}$ & $\sum_{l=1}^L\left(\sum_{i=1}^N\left[\frac{R_i^{\text{NP}}}{\pi\left\{\boldsymbol{x}_i, \boldsymbol{\gamma}(\lambda_{\boldsymbol{\gamma}})\right\}}-\frac{R_i^{\text{P}}}{\pi_i^{\text{P}}}\right] \boldsymbol{x}_{i, l}\right)^2$ \\
 \hline
 \end{tabular}
-\caption{Loss functions for the PS function depending on the $\boldsymbol{h}(\cdot,\cdot)$ function}
+\caption{Loss functions for the PS function depending on the $\boldsymbol{h}(\cdot,\cdot)$ function.}
 \label{tab-varsel-loss-ipw}
 \end{table}
 
-where \(R_i^A\) and \(R_i^B\) are indicator functions defining the fact
-of being included in the non-probability sample \(S_A\) and the
-probability sample \(S_B\), respectively. \citet{yang_doubly_2020} only
-discussed the SCAD penalty and the
+\citet{yang_doubly_2020} only discussed the SCAD penalty and the
 \(\boldsymbol{h}(\boldsymbol{x}_i, \boldsymbol{\gamma})=\boldsymbol{x}_i\)
 function for the DR estimator. In the \pkg{nonprobsvy} package we have
 extended this approach to the first variant of
 \(\boldsymbol{h}(\boldsymbol{x}_i, \boldsymbol{\gamma})\), shown in the
-first row of Table \eqref{tab-varsel-loss-ipw}, and have allowed the
-user to select other link functions for the \(\pi_i^A\), implemented
-other penalty functions and extended the possibility of selecting
-variables to MI and IPW estimators. In the next section we discuss how
-to define the approaches presented above.
-
-\clearpage
+first row of Table \ref{tab-varsel-loss-ipw}, and have allowed the user
+to select other link functions for the \(\pi_i^{\text{NP}}\),
+implemented other penalty functions and extended the possibility of
+selecting variables to MI and IPW estimators. In the next section we
+discuss how to define the approaches presented above.
 
 \section{The main function and the package
 functionalities}\label{sec-package}
 
-\subsection[The nonprob function]{The \code{nonprob} function}
+\section[The nonprob function]{The \code{nonprob} function}
 
 The \pkg{nonprobsvy} package is built around the \code{nonprob}
 function. The main design objective was to make the use of
@@ -916,38 +942,38 @@ specified.
 
 \begin{table}[ht!]
 \centering
-\small
+\scriptsize
 \resizebox{\linewidth}{!}{
-\begin{tabular}{p{3.5cm}p{10cm}}
+\begin{tabular}{p{3.25cm}p{10.25cm}}
 \hline
 Argument & Description \\
 \hline
-    \code{data} & a \code{data.frame} with data from the non-probability sample \\
-    \code{selection} & a \code{formula} for the selection (PS) equation\\
-    \code{outcome} & a \code{formula} for the outcome equation (e.g. \code{y1 + y2}$\sim$\code{x1 + x2})\\
-    \code{target} & a \code{formula} with target variables (e.g. \code{~y1+y2+y3})\\
-    \code{svydesign} & an optional \code{svydesign2} object\\
-    \code{pop\_totals}, 
-    \code{pop\_means}, 
-    \code{pop\_size} & an optional named \code{vector} with population totals or means of the covariates and population size \\
-    \code{method\_selection} & a link function for the IPW approach (\code{c("logit", "probit", cloglog")})\\
-    \code{method\_outcome} & specification of the MI approach (\code{c("glm", "nn", "pmm", "npar")}) \\
-    \code{family\_outcome} & a GLM family for the MI approach (\code{c("gaussian", "binomial", "poisson")}) \\
-    \code{subset} & an optional \code{vector} specifying a subset of observations to be used in the fitting process\\
-    \code{strata} & an optional parameter for estimation for sub-populations (currently not supported) \\
-    \code{case\_weights} & an optional \code{vector} of prior case-weights to be used in the fitting process\\
-    \code{na\_action} & a \code{function} indicating what to do with \code{NA}'s (default \code{na.omit}) \\
-    \code{control\_selection},
-    \code{control\_outcome}, 
-    \code{control\_inference} & control functions with parameters for PS, the outcome model and variance estimation, respectively \\
-    \code{start\_selection}, \code{start\_outcome}  & an optional \code{vector} with starting values for the parameters of the PS and the outcome equation\\
-    \code{verbose} & a \code{logical} value indicating if information should be printed\\
-    \code{se} & a \code{logical} value indicating whether to calculate and return the standard error of the estimated mean\\
-    \code{...} & Additional optional arguments\\
+   \code{data} & a \code{data.frame} with data from the non-probability sample of size $n_{\text{NP}}$. The data frame must contain all variables referenced in the \code{selection}, \code{outcome}, and \code{target} formulas\\
+   \code{selection} & a \code{formula} for the selection equation (e.g., \code{~x1 + x2}). This formula defines the PS model (for the IPW estimator)\\
+   \code{outcome} & a \code{formula} for the outcome equation (e.g., \code{y1 + y2~x1 + x2}). We allow for multiple target variables under the same prediction model (for the MI and DR estimator)\\
+   \code{target} & a \code{formula} with target variables (e.g., \code{~y1 + y2 + y3})\\
+   \code{svydesign} & an optional \code{svydesign2} object containing the probability sample of size $n_{\text{P}}$. Must include all variables specified in \code{selection}, \code{outcome}, and \code{target} formulas. Used for calibration and validation of the non-probability sample estimates\\
+   \code{pop\_totals}, 
+   \code{pop\_means}, 
+   \code{pop\_size} & an optional named \code{vector} with population totals or means of the covariates and population size. For \code{pop\_totals} and \code{pop\_means}, length must equal the number of covariates in the selection model, with names matching variable names in the \code{data} frame\\
+   \code{method\_selection} & a link function for the IPW approach (\code{c("logit", "probit", cloglog")})\\
+   \code{method\_outcome} & specification of the MI approach (\code{c("glm", "nn", "pmm", "npar")}) \\
+   \code{family\_outcome} & a GLM family for the MI approach (\code{c("gaussian", "binomial", "poisson")}) \\
+   \code{subset} & an optional \code{vector} specifying a subset of observations to be used in the fitting process\\
+   \code{strata} & an optional parameter for estimation for sub-populations (currently not supported) \\
+   \code{case\_weights} & an optional \code{vector} of prior case (frequency) weights to be used in the fitting process\\
+   \code{na\_action} & a \code{function} indicating what to do with \code{NA}'s (default \code{na.omit}) \\
+   \code{control\_selection},
+   \code{control\_outcome}, 
+   \code{control\_inference} & control functions with parameters for PS, the outcome model and variance estimation, respectively \\
+   \code{start\_selection}, \code{start\_outcome}  & an optional \code{vector} with starting values for the parameters of the PS and the outcome equation\\
+   \code{verbose} & a \code{logical} value indicating if information should be printed\\
+   \code{se} & a \code{logical} value indicating whether to calculate and return the standard error of the estimated mean\\
+   \code{...} & additional optional argument for further development (currently not supported) \\
 \hline
 \end{tabular}
 }
-\caption{A description of the \code{nonprob} function arguments}
+\caption{A description of the \code{nonprob} function arguments.}
 \label{tab-arguments-nonprob}
 \end{table}
 
@@ -960,13 +986,13 @@ or a probability sample declared by the \code{svydesign} argument
 
 If a \code{svydesign2} object is provided and the \code{selection}
 argument is specified, then the IPW estimators are used (by default
-parameters of the PS model employ \eqref{eq-ipw-solution-mle}), if the
-\code{outcome} argument is specified, then the MI approach is used (the
-default option is the MI-GLM with the \code{gaussian} family) and if
-both are specified, then the DR approach is applied (parameters
+parameters of the PS model employ Equation \ref{eq-ipw-solution-mle}),
+if the \code{outcome} argument is specified, then the MI approach is
+used (the default option is the MI-GLM with the \code{gaussian} family)
+and if both are specified, then the DR approach is applied (parameters
 \((\boldsymbol{\beta}, \boldsymbol{\gamma})\) are estimated separately
-and the \eqref{eq-dr-estimated-n} is used). A particular inference
-method is selected through the \code{method\_selection},
+and the Equation \ref{eq-dr-estimated-n} is used). A particular
+inference method is selected through the \code{method\_selection},
 \code{method\_outcome}, \code{family\_outcome},
 \code{control\_selection} and \code{control\_outcome} arguments. The
 variance estimation method is selected through the
@@ -977,15 +1003,15 @@ following (most important) elements:
 
 \begin{itemize}
 \item \code{data} -- a \code{data.frame} containing the non-probability sample.
-\item \code{X} -- a \code{matrix} containing both samples,
-\item \code{y} -- a \code{list} containing all variables declared in either the \code{target} or \code{outcome} arguments,
-\item \code{R} -- a numeric \code{vector} informing about inclusion in the non-probability sample,
-\item \code{ps_scores} -- propensity scores or \code{NULL} (for the MI estimators),
-\item \code{ipw_weights} -- inverse probability weights or \code{NULL} (for the MI estimators),
-\item \code{output} - a \code{data.frame} containing point and standard error estimates,
-\item \code{confidence_interval} - a \code{data.frame} containing confidence intervals for the mean,
-\item \code{outcome} -- a \code{list} of results for each \code{outcome} model,
-\item \code{selection} -- a \code{list} of results for the \code{selection} model,
+\item \code{X} -- a \code{matrix} containing both samples.
+\item \code{y} -- a \code{list} containing all variables declared in either the \code{target} or \code{outcome} arguments.
+\item \code{R} -- a numeric \code{vector} informing about inclusion in the non-probability sample.
+\item \code{ps_scores} -- propensity scores or \code{NULL} (for the MI estimators).
+\item \code{ipw_weights} -- inverse probability weights or \code{NULL} (for the MI estimators).
+\item \code{output} - a \code{data.frame} containing point and standard error estimates.
+\item \code{confidence_interval} - a \code{data.frame} containing confidence intervals for the mean.
+\item \code{outcome} -- a \code{list} of results for each \code{outcome} model.
+\item \code{selection} -- a \code{list} of results for the \code{selection} model.
 \item \code{svydesign} -- a \code{svydesign2} object passed by the \code{svydesign} argument.
 \item \code{ys_rand_pred, ys_nons_pred} -- a \code{list} of predicted values from the MI model.
 \end{itemize}
@@ -993,86 +1019,85 @@ following (most important) elements:
 \subsection{Controlling the type of
 estimators}\label{controlling-the-type-of-estimators}
 
-The \code{control_out} function can be used to specify various aspects
+The \code{control_out()} function can be used to specify various aspects
 of the estimation process, including the variable selection methods
 (through different \code{penalty} options like SCAD, LASSO, and MCP with
 their respective tuning parameters defined in the same way as in the
-\code{control_sel} function; cf.~\citet{yang_doubly_2020}), and detailed
-configuration for NN, PMM and NPAR approaches (using parameters like
-\code{pmm_match_type}, \code{pmm_weights}, \code{pmm_k_choice} or
+\code{control_sel()} function; cf.~\citet{yang_doubly_2020}), and
+detailed configuration for NN, PMM and NPAR approaches (using parameters
+like \code{pmm_match_type}, \code{pmm_weights}, \code{pmm_k_choice} or
 \code{npar_loess}). For NN and PMM approaches we use the \pkg{RANN}
 package \citep{rann-pkg} with the kd-tree algorithm and the Euclidean
-distance as default. We currently do not support other distances
-(e.g.~Gower). Table \ref{tab-control-out-examples} presents example
-usage of the \code{control_out} function for three types of MI
-estimators.
+distance as default. We currently do not support other distances (e.g.,
+Gower). Table \ref{tab-control-out-examples} presents example usage of
+the \code{control_out()} function for three types of MI estimators.
 
 \begin{table}[ht!]
 \centering
 \small
 \begin{tabular}{p{4cm}p{11cm}}
 \hline
-Estimator & Declaration with \code{control_out} \\
+Estimator & Declaration with \code{control_out()} \\
 \hline
 MI-GLM with the LASSO penalty and 5 folds & 
 \code{nonprob(outcome = y1 ~ x1 + x2, \newline
-data = df, svydesign=prob, \newline
-control_outcome = control_out(penalty="lasso", folds=5))}\\
+data = df, svydesign = prob, \newline
+control_outcome = control_out(penalty = "lasso", folds = 5))}\\
 MI-NN with the \code{bd} algorithm & 
 \code{nonprob(outcome = y1 ~ x1 + x2, \newline
-data = df, svydesign=prob, \newline
+data = df, svydesign = prob, \newline
 control_outcome = control_out(treetype = "bd"))}\\
-MI-PMM B with $k=3$ & 
+MI-PMM-B with $k=3$ & 
 \code{nonprob(outcome = y1 ~ x1 + x2,  \newline
-data = df, svydesign=prob, \newline
-control_outcome = control_out(k=3, pmm_match_type=2))}\\
+data = df, svydesign = prob, \newline
+control_outcome = control_out(k = 3, pmm_match_type = 2))}\\
 \hline
 \end{tabular}
-\caption{Example declarations of the MI estimators}
+\caption{Example declarations of the MI estimators.}
 \label{tab-control-out-examples}
 \end{table}
 
-The \code{control_sel} function provides essential control parameters
+The \code{control_sel()} function provides essential control parameters
 for fitting the selection model in the \code{nonprob} function. It
-allows users to select between MLE given by \eqref{eq-ipw-solution-mle}
-or GEE defined in \eqref{eq-ipw-solution-gee} through the
-\code{est_method} argument, specify the \(\boldsymbol{h}(\cdot, \cdot)\)
-function through the \code{gee_h_fun} argument, specify the optimizer
-(\code{optimizer} argument) and which variable selection method should
-be applied (using different penalty functions like SCAD, lasso, and MCP
-by specifying the \code{penalty} argument) along with parameters
-(e.g.~the number of folds through the \code{nfolds} argument). The
-parameters of the PS for the calibrated IPW is estimated by using the
-\pkg{nleqslv} package and fitting parameters (arguments starting with
-the \code{nleqslv_*}). Table \ref{tab-control-sel-examples} presents
-example usage of the \code{control_sel} function for two types of IPW
-estimators.
+allows users to select between MLE given by Equation
+\ref{eq-ipw-solution-mle} or GEE defined in Equation
+\ref{eq-ipw-solution-gee} through the \code{est_method} argument,
+specify the \(\boldsymbol{h}(\cdot, \cdot)\) function through the
+\code{gee_h_fun} argument, specify the optimizer (\code{optimizer}
+argument) and which variable selection method should be applied (using
+different penalty functions like SCAD, lasso, and MCP by specifying the
+\code{penalty} argument) along with parameters (e.g., the number of
+folds through the \code{nfolds} argument). The parameters of the PS for
+the calibrated IPW is estimated by using the \pkg{nleqslv} package and
+fitting parameters (arguments starting with the \code{nleqslv_*}). Table
+\ref{tab-control-sel-examples} presents example usage of the
+\code{control_sel()} function for two types of IPW estimators.
 
 \begin{table}[ht!]
 \centering
 \small
 \begin{tabular}{p{4cm}p{11cm}}
 \hline
-Estimator & Declaration with \code{control_sel} \\
+Estimator & Declaration with \code{control_sel()} \\
 \hline
 Calibrated IPW & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
 data = df, svydesign = prob,\newline
-control_selection = control_sel(est_method="gee"))}\\
+control_selection = control_sel(est_method = "gee"))}\\
 IPW with the MCP penalty and 5 folds & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
 data = df, svydesign = prob, \newline
-control_selection = control_sel(penalty="MCP", nfolds=5))}\\
+control_selection = control_sel(penalty = "MCP", nfolds = 5))}\\
 \hline
 \end{tabular}
-\caption{Example declarations of the IPW estimators}
+\caption{Example declarations of the IPW estimators.}
 \label{tab-control-sel-examples}
 \end{table}
 
 \subsection{Controlling variance
 estimation}\label{controlling-variance-estimation}
 
-Finally, the \code{control_inf} function configures the parameters for
+Finally, the \code{control_inf()} function configures the parameters for
 variance estimation in the \code{nonprob} function. It allows users to
 specify whether the analytical or bootstrap approach should be used (the
 \code{var_method} argument), whether the variable selection method
@@ -1084,30 +1109,30 @@ be applied (the \code{vars_combine} argument) and if the bias correction
 (the \code{bias_correction} argument) should be applied after variable
 selection (the \code{vars_selection}) and variable combination. Table
 \ref{tab-control-inf-examples} presents example usage of the
-\code{control_inf} function for the IPW and DR estimators.
+\code{control_inf()} function for the IPW and DR estimators.
 
 \begin{table}[ht!]
 \centering
 \small
 \begin{tabular}{p{4cm}p{11cm}}
 \hline
-Estimator & Declaration with the \code{control_sel} \\
+Estimator & Declaration with the \code{control_sel()} \\
 \hline
 Calibrated IPW with variable selection, bootstrap and $B=50$ & 
 \code{nonprob(selection = ~ x1 + x2, target = ~y1, \newline
 data = df, svydesign = prob, \newline
-control_selection = control_sel(est_method="gee"), \newline
-control_inference = control_inf(vars_selection=TRUE,  \newline
-var_method="bootstrap", rep_type="subbootstrap", B=50))}\\
+control_selection = control_sel(est_method = "gee"), \newline
+control_inference = control_inf(vars_selection = TRUE,  \newline
+var_method = "bootstrap", rep_type = "subbootstrap", B = 50))}\\
 The DR with the SCAD penalty, 5 folds and bias correction & 
 \code{nonprob(selection = ~ x1 + x2, outcome = y1 ~ x1 + x2,  \newline
 data = df, svydesign = prob, \newline
-control_selection = control_sel(penalty="SCAD", nfolds=5), \newline
-control_inference = control_inf(vars_selection=TRUE, bias_correction=TRUE,  
-vars_combine=TRUE))}\\
+control_selection = control_sel(penalty = "SCAD", nfolds = 5), \newline
+control_inference = control_inf(vars_selection = TRUE, bias_correction = TRUE,  
+vars_combine = TRUE))}\\
 \hline
 \end{tabular}
-\caption{Example declarations of the IPW estimators}
+\caption{Example declarations of the IPW estimators.}
 \label{tab-control-inf-examples}
 \end{table}
 
@@ -1115,8 +1140,6 @@ In the next sections we present a case study illustrating the process of
 integrating a non-probability sample with a reference probability
 sample. We present various estimators and compare them. Finally, we
 describe more advanced options available in the package.
-
-\newpage
 
 \section{Data analysis example}\label{sec-data-analysis}
 
@@ -1131,30 +1154,30 @@ R> install.packages("nonprobsvy")
 \end{CodeChunk}
 
 Before we explain the case study let us first load the necessary
-packages.
+packages for this paper.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> library(nonprobsvy) ## for estimation
-R> library(ggplot2)    ## for visualisation
+R> library("nonprobsvy")
+R> library("ggplot2")  
 \end{CodeInput}
 \end{CodeChunk}
 
 The goal of the case study was to integrate survey (\code{jvs}) and
 administrative (\code{admin}) data about job vacancies in Poland. The
-first source, the Job Vacancy Survey (JVS), contains 6,523 units. The
+first source, the job vacancy survey (JVS), contains 6,523 units. The
 JVS provides a probability sample drawn according to a stratified
 sampling design. More details can be found in \cite{jvs2022}. The
-dataset contains information about the NACE code (14 levels, the
+dataset contains information about the industry code (14 levels, the
 \code{nace} column), \code{region} (16 levels), sector (2 levels, the
 \code{private} column), company size (3 levels: Small up to 9, Medium
-10-49 and Large 50+) and the final weight (i.e.~the design weight
+10-49 and Large 50+) and the final weight (i.e., the design weight
 corrected for non-contact and non-response), which is treated as the
 \(d\) weight.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> data(jvs)
+R> data("jvs")
 R> head(jvs)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -1186,24 +1209,23 @@ R> jvs_svy <- svydesign(ids = ~ 1,
 \end{CodeInput}
 \end{CodeChunk}
 
-Our second source (\code{admin}), the Central Job Offers Database
-(CJOD), is a register containing all vacancies submitted to Public
-Employment Offices (see \url{https://oferty.praca.gov.pl}). We treat
-this register as a \textit{non-probability sample} since it contains
-administrative data provided on a voluntary basis, so the inclusion
-mechanism is unknown. This dataset was prepared in such a way that
-records deemed to be out of scope (either in terms of the definition of
-vacancy or the population of entities) were excluded. In addition to the
-same variables found in the JVS, the dataset contains one called
-\code{single\_shift}, which is our target variable, defined as:
-\texttt{whether a company seeks at least one employee for a single-shift job}.
-The goal of this case study is to estimate
-\textit{the share of companies that seek employees for a single-shift job}
-in Poland in a given quarter.
+Our second source (\code{admin}), the Central Job Offers Database, is a
+register containing all vacancies submitted to Public Employment Offices
+(see \url{https://oferty.praca.gov.pl}). We treat this register as a
+non-probability sample since it contains administrative data provided on
+a voluntary basis, so the inclusion mechanism is unknown. This dataset
+was prepared in such a way that records deemed to be out of scope
+(either in terms of the definition of vacancy or the population of
+entities) were excluded. In addition to the same variables found in the
+JVS, the dataset contains one called \code{single\_shift}, which is our
+target variable, defined as: whether a company seeks at least one
+employee for a single-shift job. The goal of this case study is to
+estimate the share of companies that seek employees for a single-shift
+job in Poland in a given quarter.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> data(admin)
+R> data("admin")
 R> head(admin)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -1238,9 +1260,10 @@ two estimation methods: MLE (default) and GEE (calibrated to the
 estimated survey totals). We start by calling the \code{nonprob}
 function, where we define the \code{selection} argument indicating which
 variables are to be included, the \code{target} argument, which
-specifies the variable of interest, i.e.~\code{single_shift}. The
+specifies the variable of interest, i.e., \code{single_shift}. The
 remaining arguments specify the \code{svydesign} object, the dataset and
-the link function (\code{method_selection}).
+the link function (\code{method_selection}; \code{"logit"} is the
+default value).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1249,7 +1272,7 @@ R> ipw_est1 <- nonprob(
 +   target = ~ single_shift,
 +   svydesign = jvs_svy,
 +   data = admin,
-+   method_selection = "logit" ## this is the default
++   method_selection = "logit"
 + )
 \end{CodeInput}
 \end{CodeChunk}
@@ -1259,7 +1282,7 @@ quantity we can use the \code{print} method to display the object. It
 provides information about the methods, source of auxiliary variable,
 variable selection, the naive (uncorrected estimator) and the corrected
 along with the standard error and confidence interval. The the last
-line, i.e.~\code{selected estimator}, is limited to the maximum of 5
+line, i.e., \code{selected estimator}, is limited to the maximum of 5
 variables.
 
 \begin{CodeChunk}
@@ -1285,7 +1308,7 @@ sample sizes, sum of the IPW weights along with the distribution of IPW
 weights (for non-probability sample) and propensity scores (denoted as
 IPW probabilities) for both samples. A more advanced user may be
 interested in inspecting the details of the fit by accessing the
-\code{selection} element (i.e.~\code{ipw_est1$selection}).
+\code{selection} element (i.e., \code{ipw_est1$selection}).
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1383,8 +1406,9 @@ sizeS  1624.2       0
 
 Notice that neither in the package nor in this paper do we provide a
 detailed description of the post-hoc results, such as the covariate
-balance. This can be done using existing CRAN packages, e.g.~through the
-\code{bal.tab} function from the \pkg{cobalt} package \citep{cobalt}.
+balance. This can be done using existing CRAN packages, e.g., through
+the \code{bal.tab} function from the \pkg{cobalt} package
+\citep{cobalt}.
 
 \subsubsection{Prediction-based
 approach}\label{prediction-based-approach}
@@ -1398,7 +1422,7 @@ outcomes (as
 \texttt{y1\ +\ y2\ +\ y3\ \textasciitilde{}\ x1\ +\ x2\ +\ ...\ +\ xk}).
 Note that if the \texttt{outcome} argument is specified, then there is
 no need to specify the \texttt{target} argument. By default, the GLM
-type of an MI estimator is used (i.e.~\texttt{method\_outcome="glm"}).
+type of an MI estimator is used (i.e., \texttt{method\_outcome="glm"}).
 In the code below we show how this type of an MI estimator can be
 declared.
 
@@ -1432,17 +1456,17 @@ In order to employ an MI estimator based on NN matching, one can specify
 using all variables specified in the \texttt{outcome} argument,
 \texttt{method\_outcome\ =\ "pmm"} to use PMM or
 \texttt{method\_outcome\ =\ "npar"} to use non-parametric approach. For
-the NN and PMM estimators, we employ \(k=5\) nearest neighbours
-(i.e.~\texttt{control\_out(k=5)}) but the variance of the PMM estimator
-should be estimated using bootstrap approach suggested by
+the NN and PMM estimators, we employ \(k=5\) nearest neighbours (i.e.,
+\texttt{control\_out(k=5)}) but the variance of the PMM estimator should
+be estimated using bootstrap approach suggested by
 \citet{chlebicki2025}. However, in this example we have decided not to
 use bootstrap as all variables are categorical and this results in a
 large number of NNs having the same distance and the numerical
 approximation defined in \texttt{control\_out(eps)} may give slightly
 different results between platforms. Therefore the reported variance is
-based on the probability sample \(S_B\) only. In the case of the MI-NN
-estimator there is no need to specify the \texttt{family\_outcome}
-argument as no model is estimated underneath.
+based on the probability sample \(S_{\text{P}}\) only. In the case of
+the MI-NN estimator there is no need to specify the
+\texttt{family\_outcome} argument as no model is estimated underneath.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1451,7 +1475,7 @@ R> mi_est2 <- nonprob(
 +   svydesign = jvs_svy,
 +   data = admin,
 +   method_outcome = "nn",
-+   control_outcome = control_out(k=5)
++   control_outcome = control_out(k = 5)
 + )
 R> 
 R> mi_est3 <- nonprob(
@@ -1460,7 +1484,7 @@ R> mi_est3 <- nonprob(
 +   data = admin,
 +   method_outcome = "pmm",
 +   family_outcome = "binomial", 
-+   control_outcome = control_out(k=5)
++   control_outcome = control_out(k = 5)
 + )
 \end{CodeInput}
 \end{CodeChunk}
@@ -1524,7 +1548,7 @@ A nonprob object
 Detailed results can be displayed by using the \texttt{summary}
 function, which prints both information about the distribution of the
 IPW weights as well as the outcome residuals and predictions. For more
-details one can access the \code{ "outcome"} and \code{"selection"}
+details one can access the \code{"outcome"} and \code{"selection"}
 fields in the \texttt{nonprob} object.
 
 \begin{CodeChunk}
@@ -1561,7 +1585,7 @@ A nonprob_summary object
 \end{CodeOutput}
 \end{CodeChunk}
 
-Finally, we can use the bias minimisation approach, as proposed by
+Finally, we can use the bias minimization approach, as proposed by
 \citet{yang_doubly_2020}, by specifying the
 \texttt{control\_inference\ =\ control\_inf(bias\_correction\ =\ TRUE)}
 argument together with the \texttt{vars\_combine=TRUE} and
@@ -1605,7 +1629,7 @@ suggest comparing results in a single table or a plot. Figure
 \ref{fig:comparison-of-est} presents point estimates along with 95\%
 confidence intervals. The various estimators show interesting patterns
 compared to the naive estimate (red dashed line). Both IPW estimators
-are characterised with large standard errors and the point estimates
+are characterized with large standard errors and the point estimates
 over 70\%. The MI estimators demonstrate notably different behaviours:
 while MI-PMM produces the highest point estimate with the widest
 confidence interval, MI-NN yields the lowest estimate, close to the
@@ -1640,7 +1664,7 @@ R> ggplot(data = df_s,
 
 }
 
-\caption[Comparison of estimates of the share of job vacancies offered on a single-shift]{Comparison of estimates of the share of job vacancies offered on a single-shift}\label{fig:comparison-of-est}
+\caption[Comparison of estimates of the share of job vacancies offered on a single-shift]{Comparison of estimates of the share of job vacancies offered on a single-shift.}\label{fig:comparison-of-est}
 \end{figure}
 \end{CodeChunk}
 
@@ -1668,7 +1692,7 @@ for the probability sample is controlled via the \texttt{rep\_type}
 argument, which passes the method to the \texttt{as.svrepdesign}
 function. The number of iterations is set in the \texttt{num\_boot}
 argument (100 by default). If the samples are large or the estimation
-method is complicated (e.g.~involves variable selection) one can set
+method is complicated (e.g., involves variable selection) one can set
 \texttt{verbose=TRUE} to track progress. By default bootstrap results
 are stored in the \texttt{boot\_sample} element of the resulting list
 (to disable this option, \texttt{keep\_boot} should be set to
@@ -1731,15 +1755,15 @@ algorithms. In order to indicate that a variable selection algorithm
 should be used one should specify the
 \texttt{control\_inference\ =\ control\_inf(vars\_selection\ =\ TRUE)}
 argument. Then, the user should either leave the default setting or
-specify the outcome parameters via the \code{control_out} function or
-the \code{control_sel} function. Both functions have the same
+specify the outcome parameters via the \code{control_out()} function or
+the \code{control_sel()} function. Both functions have the same
 parameters:
 
 \begin{itemize}
-\item \code{penalty} -- The penalization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")})
+\item \code{penalty} -- The penalization function used during variables selection (possible values: \code{c("SCAD", "lasso", "MCP")}).
 \item \code{nlambda} -- The number of $\lambda$ values; by default set to 50 (grid search).
 \item \code{lambda_min} -- The smallest value for $\lambda$, as a fraction of \code{lambda.max}; 0.001 by default.
-\item \code{lambda} -- A user specified vector of lambdas (only for the \code{control_sel} function).
+\item \code{lambda} -- A user specified vector of lambdas (only for the \code{control_sel()} function).
 \item \code{nfolds} -- The number of folds for cross validation; by default set to 10.
 \item \code{a_SCAD, a_MCP} -- The tuning parameter of the SCAD and MCP penalty for the selection model; by default set to 3.7 and 3, respectively.
 \end{itemize}
@@ -1838,11 +1862,11 @@ R> round(coef(ipw_est1)$coef_sel[, 1], 4)
 \end{CodeOutput}
 \end{CodeChunk}
 
-\section[Classes and S3Methods]{Classes and \code{S3Methods}}\label{sec-s3methods}
+\section[Classes and S3 methods]{Classes and \code{S3} methods}\label{sec-s3methods}
 
 The package contains the main class \code{nonprob} and the supplementary
 class \code{nonprob_method} and the related \code{nonprob_summary}
-class. All available \code{S3methods} can be obtained by calling
+class. All available \code{S3} methods can be obtained by calling
 \code{methods(class="nonprobsvy")}. For instance, the
 \code{check_balance} function, already mentioned in the case study, is
 used to view the balance by checking how the PS weights reproduce known
@@ -1884,7 +1908,7 @@ Function & Description \\
 \code{weights} & returns IPW weights for the IPW and DR estimator\\
 \hline 
 \end{tabular}
-\caption{\code{S3Methods} implemented in the \pkg{nonprobsvy}}
+\caption{\code{S3} methods implemented in the \pkg{nonprobsvy}}
 \label{tab-s3methods}
 \end{table}
 
@@ -1967,7 +1991,7 @@ known population totals/means. As non-probability data sources, like
 administrative registers, voluntary online panels, and social media data
 become increasingly available, statisticians need robust methods to
 produce reliable population estimates. The package implements
-\textit{state-of-the-art} approaches including mass imputation, inverse
+state-of-the-art approaches including mass imputation, inverse
 probability weighting, and doubly robust methods, each designed to
 correct selection bias by leveraging auxiliary data. By providing a
 unified framework and its integration with the \pkg{survey} package, the
@@ -2013,57 +2037,12 @@ He also prepared the manuscript. He was also responsible for a
 significant restructuring of the package between versions 0.1.0 and
 0.2.0.
 
+The authors thank editors and reviewers for their constructive
+suggestions.
+
 \clearpage
 
 \appendix
-
-\section{List of symbols}\label{list-of-symbols}
-
-\begin{table}[ht!]
-\centering
-\begin{tabular}{ll}
-\hline
-\textbf{Symbol} & \textbf{Description} \\
-\hline
-$U$ & Target population of size $N$ \\
-$S_A$ & Non-probability sample \\
-$S_B$ & Probability sample \\
-$N$ & Population size \\
-$n_A$ & Size of non-probability sample \\
-$n_B$ & Size of probability sample \\
-$\hat{N}^A$ & Estimated size based on non-probability sample \\
-$\hat{N}^B$ & Estimated size based on probability sample \\
-$\boldsymbol{x}_i$ & Vector of auxiliary variables for unit $i$ \\
-$y_i$ & Value of the study/target variable for unit $i$ \\
-$y_i^*$ & Imputed value for unit $i$ in $S_B$\\
-$\pi_i^A$ & Propensity score for unit $i$ in non-probability sample \\
-$\pi_i^B$ & Inclusion probability for unit $i$ in probability sample \\
-$d_i^A$ & Inverse probability weight ($1/\pi_i^A$) for non-probability sample \\
-$d_i^B$ & Design weight ($1/\pi_i^B$) for probability sample \\
-$R_i^A$ & Indicator of inclusion into non-probability sample \\
-$R_i^B$ & Indicator of inclusion into probability sample \\
-$\mu$ & Population mean of target variable $y$ \\
-$\mu_{\boldsymbol{x}}$ & Population means of auxiliary variables $\boldsymbol{x}$ \\
-$m(\boldsymbol{x}_i, \boldsymbol{\beta})$ & Semiparametric model for outcome variable \\
-$\dot{m}(\boldsymbol{x}_i, \boldsymbol{\beta})$ & First derivative of the $m(\boldsymbol{x}_i, \boldsymbol{\beta})$ with respect to $\boldsymbol{\beta}$ \\
-$\pi(\boldsymbol{x}_i, \boldsymbol{\gamma})$ & Propensity score model for $R_i^A$ \\
-$\boldsymbol{\beta}$ & Parameter vector for outcome model \\
-$\boldsymbol{\gamma}$ & Parameter vector for propensity score model \\
-$\lambda_{\boldsymbol{\beta}}, \lambda_{\boldsymbol{\gamma}}$ & Tuning parameters for penalisation methods \\
-$\hat{\mu}_{\boldsymbol{x}}$ & Estimator for the population means of auxiliary variables $\boldsymbol{x}$ \\
-$\bar{\boldsymbol{x}}_{A}$ & A vector of the sample means of the auxiliary variables $\boldsymbol{x}$ from $S_A$ \\ 
-$\hat{\mu}_{PR}$ & Prediction estimators \\
-$\hat{\mu}_{MI}$ & Mass imputation estimator \\
-$\hat{\mu}_{IPW}$ & Inverse probability weighting estimator \\
-$\hat{\mu}_{DR}$ & Doubly robust estimator \\
-$\hat{V}_{boot}$ & Variance estimator based on the bootstrap \\
-\hline
-\end{tabular}
-\caption{List of symbols and their descriptions}
-\label{tab-list-of-symbols}
-\end{table}
-
-\clearpage
 
 \section{Algorithms for the MI-NN and MI-PMM
 estimators}\label{sec-details}
@@ -2072,14 +2051,14 @@ estimators}\label{sec-details}
 \caption{Mass imputation using the $k$ nearest neighbour algorithm}
 \label{algo-2}
 \begin{algorithmic}[1]
-\State If $k=1$, then for each $i \in S_B$ match $\hat{\nu}(i)$ such that
+\State If $k=1$, then for each $i \in S_{\text{P}}$ match $\hat{\nu}(i)$ such that
 $\displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\boldsymbol{x}_i,\boldsymbol{x}_j\right)$.
+\operatornamewithlimits{arg\,min}_{j\in S_{\text{NP}}}d\left(\boldsymbol{x}_i,\boldsymbol{x}_j\right)$.
 \State If $k>1$, then
-$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+$$\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{\text{NP}}\setminus\bigcup_{t=1}^{z-1}
 \{\hat{\nu}(i, t)\}} d\left(\boldsymbol{x}_i, \boldsymbol{x}_j\right)$$
-i.e. $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample $S_A$.\;
-\State For each $i \in S_B$, calculate the imputed value as
+i.e., $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from the sample $S_{\text{NP}}$.\;
+\State For each $i \in S_{\text{P}}$, calculate the imputed value as
 
 $$
 y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
@@ -2096,20 +2075,20 @@ $$
 
 $$\hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right),  \hat{y}_{j}=m\left(\boldsymbol{x}_{j},\hat{\boldsymbol{\beta}}\right)$$
 
-for $i\in S_{B}, j\in S_{A}$ and assign each  $i\in S_{B}$ to $\hat{\nu}(i)$, where
+for $i\in S_{\text{P}}, j\in S_{\text{NP}}$ and assign each  $i\in S_{\text{P}}$ to $\hat{\nu}(i)$, where
 
 $$
 \displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j\in S_{A}}d\left(\hat{y}_{i},\hat{y}_{j}\right).\;
+\operatornamewithlimits{arg\,min}_{j\in S_{\text{NP}}}d\left(\hat{y}_{i},\hat{y}_{j}\right).\;
 $$ 
 
 \State If $k>1$, then:
 $$
-\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{A}\setminus\bigcup_{t=1}^{z-1}
+\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j\in S_{\text{NP}}\setminus\bigcup_{t=1}^{z-1}
 \{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},\hat{y}_{j}\right)
 $$
-e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from a sample $S_A$.\;
-\State For $i \in S_B$, calculate imputation value as 
+e.g., $\hat{\nu}(i, z)$ is $z$-th nearest neighbour from a sample $S_{\text{NP}}$.\;
+\State For $i \in S_{\text{P}}$, calculate imputation value as 
 $$
 y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
 $$
@@ -2126,18 +2105,18 @@ $$
 \State Predict 
 $$
 \hat{y}_{i}=m\left(\boldsymbol{x}_{i},\hat{\boldsymbol{\beta}}\right)
-$$  for $i \in S_{B}$ 
-and assign each  $i \in S_{B}$ do $\hat{\nu}(i)$, where
+$$  for $i \in S_{\text{P}}$ 
+and assign each  $i \in S_{\text{P}}$ do $\hat{\nu}(i)$, where
 $$
 \displaystyle \hat{\nu}(i)=
-\operatornamewithlimits{arg\,min}_{j \in S_{A}}d\left(\hat{y}_{i},y_{j}\right).\;
+\operatornamewithlimits{arg\,min}_{j \in S_{\text{NP}}}d\left(\hat{y}_{i},y_{j}\right).\;
 $$
 \State If $k>1$, then:
 $$
-\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j \in S_{A} \setminus \bigcup_{t=1}^{z-1}
+\hat{\nu}(i, z) = \operatornamewithlimits{arg\,min}_{\displaystyle j \in S_{\text{NP}} \setminus \bigcup_{t=1}^{z-1}
 \{\hat{\nu}(i, t)\}} d\left(\hat{y}_{i},y_{j}\right).
 $$
-\State For each $i \in S_B$ calculate imputation value as
+\State For each $i \in S_{\text{P}}$ calculate imputation value as
 $$
 y_i^* = \frac{1}{k}\sum_{t=1}^{k}y_{\hat{\nu}(i, t)}.
 $$
