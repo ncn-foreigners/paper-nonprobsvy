@@ -1,44 +1,17 @@
 
 
 ``` r
-options(prompt = 'R> ', continue = '+ ')
+options(prompt = 'R> ', continue = '+ ', width = 76)
+knitr::opts_chunk$set(
+  linewidth = 76
+)
 
 # install.packages("nonprobsvy")
 
-library(nonprobsvy) ## for estimation
-```
+library("nonprobsvy")
+library("ggplot2")  
 
-```
-## Loading required package: survey
-```
-
-```
-## Loading required package: grid
-```
-
-```
-## Loading required package: Matrix
-```
-
-```
-## Loading required package: survival
-```
-
-```
-## 
-## Attaching package: 'survey'
-```
-
-```
-## The following object is masked from 'package:graphics':
-## 
-##     dotchart
-```
-
-``` r
-library(ggplot2)    ## for visualisation
-
-data(jvs)
+data("jvs")
 head(jvs)
 ```
 
@@ -58,7 +31,7 @@ jvs_svy <- svydesign(ids = ~ 1,
                      strata = ~ size + nace + region,
                      data = jvs)
 
-data(admin)
+data("admin")
 head(admin)
 ```
 
@@ -78,7 +51,7 @@ ipw_est1 <- nonprob(
   target = ~ single_shift,
   svydesign = jvs_svy,
   data = admin,
-  method_selection = "logit" ## this is the default
+  method_selection = "logit"
 )
 
 ipw_est1
@@ -196,19 +169,18 @@ mi_est2 <- nonprob(
   svydesign = jvs_svy,
   data = admin,
   method_outcome = "nn",
-  control_outcome = control_out(k=5)
+  control_outcome = control_out(k = 5)
 )
-
 mi_est3 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5)
+  control_outcome = control_out(k = 5)
 )
 
-rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
+rbind("NN" = extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 ```
 
 ```
@@ -347,7 +319,7 @@ rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
 ```
 
 ``` r
-head(ipw_est1_boot$boot_sample, n=3)
+head(ipw_est1_boot$boot_sample, n = 3)
 ```
 
 ```
@@ -461,7 +433,6 @@ res_glm <- method_glm(
   X_nons = model.matrix(~ region + private + nace + size, admin),
   X_rand = model.matrix(~ region + private + nace + size, jvs),
   svydesign = jvs_svy)
-
 res_glm
 ```
 
@@ -486,7 +457,7 @@ sessionInfo()
 ```
 ## R version 4.4.2 (2024-10-31)
 ## Platform: aarch64-apple-darwin20
-## Running under: macOS Sequoia 15.5
+## Running under: macOS Sequoia 15.6
 ## 
 ## Matrix products: default
 ## BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
@@ -499,30 +470,32 @@ sessionInfo()
 ## tzcode source: internal
 ## 
 ## attached base packages:
-## [1] grid      stats     graphics  grDevices utils     datasets 
-## [7] methods   base     
+## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+## [8] base     
 ## 
 ## other attached packages:
-## [1] ggplot2_3.5.2    nonprobsvy_0.2.2 survey_4.4-2     survival_3.8-3  
+## [1] ggplot2_3.5.2    nonprobsvy_0.2.3 survey_4.4-2     survival_3.8-3  
 ## [5] Matrix_1.7-3    
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] sandwich_3.1-1       generics_0.1.4       lattice_0.22-7      
-##  [4] digest_0.6.37        magrittr_2.0.3       evaluate_1.0.3      
+##  [4] digest_0.6.37        magrittr_2.0.3       evaluate_1.0.4      
 ##  [7] RColorBrewer_1.1-3   nleqslv_3.3.5        iterators_1.0.14    
 ## [10] fastmap_1.2.0        foreach_1.5.2        doParallel_1.0.17   
 ## [13] operator.tools_1.6.3 DBI_1.2.3            scales_1.4.0        
 ## [16] codetools_0.2-20     cli_3.6.5            mitools_2.4         
-## [19] rlang_1.1.6          miscTools_0.6-28     splines_4.4.2       
-## [22] withr_3.0.2          RANN_2.6.2           yaml_2.3.10         
-## [25] tools_4.4.2          parallel_4.4.2       ncvreg_3.15.0       
-## [28] dplyr_1.1.4          maxLik_1.5-2.1       vctrs_0.6.5         
-## [31] R6_2.6.1             zoo_1.8-14           lifecycle_1.0.4     
-## [34] rticles_0.27         MASS_7.3-65          pkgconfig_2.0.3     
-## [37] pillar_1.10.2        gtable_0.3.6         glue_1.8.0          
-## [40] Rcpp_1.0.14          xfun_0.52            tibble_3.2.1        
-## [43] tidyselect_1.2.1     rstudioapi_0.17.1    knitr_1.50          
-## [46] farver_2.1.2         htmltools_0.5.8.1    rmarkdown_2.29      
-## [49] labeling_0.4.3       formula.tools_1.7.1  compiler_4.4.2
+## [19] rlang_1.1.6          miscTools_0.6-28     litedown_0.7        
+## [22] commonmark_2.0.0     splines_4.4.2        withr_3.0.2         
+## [25] RANN_2.6.2           yaml_2.3.10          tools_4.4.2         
+## [28] parallel_4.4.2       ncvreg_3.15.0        dplyr_1.1.4         
+## [31] maxLik_1.5-2.1       mime_0.13            vctrs_0.6.5         
+## [34] R6_2.6.1             zoo_1.8-14           lifecycle_1.0.4     
+## [37] rticles_0.27         MASS_7.3-65          pkgconfig_2.0.3     
+## [40] pillar_1.11.0        gtable_0.3.6         glue_1.8.0          
+## [43] Rcpp_1.1.0           xfun_0.52            tibble_3.3.0        
+## [46] tidyselect_1.2.1     rstudioapi_0.17.1    knitr_1.50          
+## [49] dichromat_2.0-0.1    farver_2.1.2         htmltools_0.5.8.1   
+## [52] labeling_0.4.3       rmarkdown_2.29       formula.tools_1.7.1 
+## [55] compiler_4.4.2       markdown_2.0
 ```
 

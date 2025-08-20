@@ -1,11 +1,14 @@
-options(prompt = 'R> ', continue = '+ ')
+options(prompt = 'R> ', continue = '+ ', width = 76)
+knitr::opts_chunk$set(
+  linewidth = 76
+)
 
 # install.packages("nonprobsvy")
 
-library(nonprobsvy) ## for estimation
-library(ggplot2)    ## for visualisation
+library("nonprobsvy")
+library("ggplot2")  
 
-data(jvs)
+data("jvs")
 head(jvs)
 
 jvs_svy <- svydesign(ids = ~ 1, 
@@ -13,7 +16,7 @@ jvs_svy <- svydesign(ids = ~ 1,
                      strata = ~ size + nace + region,
                      data = jvs)
 
-data(admin)
+data("admin")
 head(admin)
 
 ipw_est1 <- nonprob(
@@ -21,7 +24,7 @@ ipw_est1 <- nonprob(
   target = ~ single_shift,
   svydesign = jvs_svy,
   data = admin,
-  method_selection = "logit" ## this is the default
+  method_selection = "logit"
 )
 
 ipw_est1
@@ -59,19 +62,18 @@ mi_est2 <- nonprob(
   svydesign = jvs_svy,
   data = admin,
   method_outcome = "nn",
-  control_outcome = control_out(k=5)
+  control_outcome = control_out(k = 5)
 )
-
 mi_est3 <- nonprob(
   outcome = single_shift ~ region + private + nace + size,
   svydesign = jvs_svy,
   data = admin,
   method_outcome = "pmm",
   family_outcome = "binomial", 
-  control_outcome = control_out(k=5)
+  control_outcome = control_out(k = 5)
 )
 
-rbind("NN"= extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
+rbind("NN" = extract(mi_est2)[, 2:3], "PMM" = extract(mi_est3)[, 2:3])
 
 dr_est1 <- nonprob(
   selection = ~ region + private + nace + size,
@@ -132,7 +134,7 @@ ipw_est1_boot <- nonprob(
 rbind("IPW analytic variance"  = extract(ipw_est1)[, 2:3],
       "IPW bootstrap variance" = extract(ipw_est1_boot)[, 2:3])
 
-head(ipw_est1_boot$boot_sample, n=3)
+head(ipw_est1_boot$boot_sample, n = 3)
 
 set.seed(2024)
 mi_est1_sel <- nonprob(
@@ -164,7 +166,6 @@ res_glm <- method_glm(
   X_nons = model.matrix(~ region + private + nace + size, admin),
   X_rand = model.matrix(~ region + private + nace + size, jvs),
   svydesign = jvs_svy)
-
 res_glm
 
 method_ps()
